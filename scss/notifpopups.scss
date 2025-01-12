@@ -18,12 +18,11 @@
 }
 
 .notifpopups {
-    margin-top: lib.s(50); // Bar offset
     min-width: lib.s(410);
     padding-left: lib.s(10); // So notifications can overshoot for init animation
 
     .wrapper {
-        padding-bottom: lib.s(10);
+        padding-top: lib.s(10);
     }
 
     .popup {

@@ -123,7 +123,6 @@ export default () => (
     <window
         namespace="notifpopups"
         anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.BOTTOM}
-        exclusivity={Astal.Exclusivity.IGNORE}
     >
         <box
             vertical
