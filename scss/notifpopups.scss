@@ -1,0 +1,107 @@
+@use "sass:color";
+@use "scheme";
+@use "lib";
+@use "font";
+
+@mixin popup($colour) {
+    @include lib.outer-border($colour);
+
+    border-right: none;
+
+    .separator {
+        background-color: $colour;
+    }
+
+    .image {
+        @include lib.border(color.change($colour, $alpha: 0.05));
+    }
+}
+
+.notifpopups {
+    margin-top: lib.s(50); // Bar offset
+    min-width: lib.s(410);
+    padding-left: lib.s(10); // So notifications can overshoot for init animation
+
+    .wrapper {
+        padding-bottom: lib.s(10);
+    }
+
+    .popup {
+        @include lib.spacing($vertical: true);
+        @include lib.rounded(8, $tr: 0, $br: 0);
+        @include lib.shadow;
+        @include font.main;
+        @include popup(scheme.$lavender);
+
+        background-color: scheme.$base;
+        color: scheme.$text;
+        padding: lib.s(10) lib.s(12);
+
+        &.low {
+            @include popup(scheme.$overlay0);
+        }
+
+        &.critical {
+            @include popup(scheme.$red);
+        }
+    }
+
+    .header,
+    .content {
+        padding: 0 lib.s(5);
+    }
+
+    .header {
+        @include lib.spacing(5);
+        @include font.mono;
+    }
+
+    .content {
+        @include lib.spacing(10);
+    }
+
+    .app-icon {
+        font-size: lib.s(18);
+    }
+
+    .image {
+        @include lib.rounded(10);
+
+        background-size: cover;
+        background-position: center;
+        min-width: lib.s(64);
+        min-height: lib.s(64);
+        margin-top: lib.s(3);
+    }
+
+    .summary {
+        @include font.title;
+
+        font-size: lib.s(16);
+    }
+
+    .body {
+        font-size: lib.s(14);
+    }
+
+    .actions {
+        @include lib.spacing;
+
+        & > * {
+            @include lib.rounded(5);
+            @include lib.element-decel;
+
+            padding: lib.s(5) lib.s(10);
+            background-color: scheme.$surface0;
+
+            &:hover,
+            &:focus {
+                background-color: scheme.$surface1;
+            }
+
+            &:active {
+                background-color: scheme.$surface2;
+            }
+        }
+    }
+}

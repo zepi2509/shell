@@ -3,6 +3,17 @@
 @use "lib";
 @use "font";
 
+label.icon {
+    @include font.icon;
+}
+
+.separator {
+    @include lib.rounded(2);
+
+    min-width: lib.s(0.5);
+    min-height: lib.s(0.5);
+}
+
 @keyframes appear {
     from {
         opacity: 0;

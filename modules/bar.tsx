@@ -90,7 +90,7 @@ const MediaPlaying = () => {
             <label
                 setup={self =>
                     players.hookLastPlayer(self, ["notify::title", "notify::artist"], () => {
-                        self.label = getLabel("No media");
+                        self.label = ellipsize(getLabel("No media")); // TODO: scroll text
                     })
                 }
             />
@@ -263,7 +263,6 @@ export default ({ monitor }: { monitor: AstalHyprland.Monitor }) => (
         monitor={monitor.id}
         anchor={Astal.WindowAnchor.TOP}
         exclusivity={Astal.Exclusivity.EXCLUSIVE}
-        visible
     >
         <centerbox className="bar" css={"min-width: " + monitor.width * 0.8 + "px;"}>
             <box halign={Gtk.Align.START}>

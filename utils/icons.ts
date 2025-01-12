@@ -1,5 +1,4 @@
 import { Gio } from "astal";
-import { Astal } from "astal/gtk3";
 import { Apps } from "../services/apps";
 
 // Code points from https://www.github.com/lukas-w/font-logos
@@ -29,44 +28,6 @@ export const osIcons: Record<string, number> = {
     rocky: 0xf32b,
     slackware: 0xf318,
     ubuntu: 0xf31b,
-};
-
-const appIcons: Record<string, string> = {
-    "code-url-handler": "visual-studio-code",
-    code: "visual-studio-code",
-    "codium-url-handler": "vscodium",
-    codium: "vscodium",
-    "GitHub Desktop": "github-desktop",
-    "gnome-tweaks": "org.gnome.tweaks",
-    "org.pulseaudio.pavucontrol": "pavucontrol",
-    "pavucontrol-qt": "pavucontrol",
-    "jetbrains-pycharm-ce": "pycharm-community",
-    "Spotify Free": "Spotify",
-    safeeyes: "io.github.slgobinath.SafeEyes",
-    "yad-icon-browser": "yad",
-    xterm: "uxterm",
-    "com-atlauncher-App": "atlauncher",
-    avidemux3_qt5: "avidemux",
-};
-
-const appRegex = [
-    { regex: /^steam_app_(\d+)$/, replace: "steam_icon_$1" },
-    { regex: /^Minecraft\* [0-9\.]+$/, replace: "minecraft" },
-];
-
-export const getAppIcon = (name: string) => {
-    if (appIcons.hasOwnProperty(name)) return appIcons[name];
-    for (const { regex, replace } of appRegex) {
-        const postSub = name.replace(regex, replace);
-        if (postSub !== name) return postSub;
-    }
-
-    if (Astal.Icon.lookup_icon(name)) return name;
-
-    const apps = Apps.fuzzy_query(name);
-    if (apps.length > 0) return apps[0].iconName;
-
-    return "image";
 };
 
 const categoryIcons: Record<string, string> = {

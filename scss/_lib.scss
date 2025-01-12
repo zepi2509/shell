@@ -1,3 +1,6 @@
+@use "sass:color";
+@use "scheme";
+
 $scale: 0.068rem;
 @function s($value: 1) {
     @return $value * $scale;
@@ -10,6 +13,14 @@ $scale: 0.068rem;
 
 @mixin border($colour, $width: 1, $style: solid) {
     border: s($width) $style $colour;
+}
+
+@mixin outer-border($colour, $alpha: 0.7, $width: 2, $style: solid) {
+    border: s($width) $style color.change($colour, $alpha: $alpha);
+}
+
+@mixin shadow($colour: scheme.$mantle, $alpha: 0.4, $x: 2, $y: 3, $blur: 8, $spread: 0) {
+    box-shadow: s($x) s($y) s($blur) s($spread) color.change($colour, $alpha: $alpha);
 }
 
 @mixin spacing($val: 5, $vertical: false) {

@@ -2,6 +2,7 @@ import { execAsync, GLib, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
 import Bar from "./modules/bar";
+import NotifPopups from "./modules/notifpopups";
 
 const loadStyleAsync = async () => {
     if (!GLib.file_test(`${SRC}/scss/scheme/_index.scss`, GLib.FileTest.EXISTS))
@@ -12,9 +13,11 @@ const loadStyleAsync = async () => {
 App.start({
     instanceName: "caelestia",
     icons: "assets/icons",
+    iconTheme: "Adwaita",
     main() {
         loadStyleAsync().catch(console.error);
 
+        <NotifPopups />;
         AstalHyprland.get_default().monitors.forEach(m => <Bar monitor={m} />);
 
         console.log("Caelestia started");

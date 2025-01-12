@@ -5,7 +5,7 @@
 
 .bar {
     @include lib.rounded(10, $tl: 0, $tr: 0);
-    @include lib.border(color.change(scheme.$rosewater, $alpha: 0.7), 2);
+    @include lib.outer-border(scheme.$rosewater);
     @include lib.spacing(10);
     @include font.mono;
 
@@ -27,8 +27,6 @@
     }
 
     label.icon {
-        @include font.icon;
-
         font-size: lib.s(18);
     }
 
