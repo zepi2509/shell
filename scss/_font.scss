@@ -1,0 +1,21 @@
+@mixin title {
+    font-family: "Gabarito", "Poppins", "Readex Pro", "Lexend", sans-serif;
+}
+
+@mixin main {
+    font-family: "Rubik", "Geist", "AR One Sans", "Reddit Sans", "Inter", "Roboto", "Ubuntu", "Noto Sans", sans-serif;
+}
+
+@mixin icon {
+    font-family: "Material Symbols Rounded", "MaterialSymbolsRounded", "Material Symbols Outlined",
+        "Material Symbols Sharp";
+}
+
+@mixin mono {
+    font-family: "JetBrains Mono NF", "JetBrains Mono Nerd Font", "JetBrains Mono NL", "SpaceMono NF",
+        "SpaceMono Nerd Font", monospace;
+}
+
+@mixin reading {
+    font-family: "Readex Pro", "Lexend", "Noto Sans", sans-serif;
+}

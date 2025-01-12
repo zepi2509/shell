@@ -1,0 +1,103 @@
+@use "sass:color";
+@use "lib";
+@use "scheme";
+@use "font";
+
+.bar {
+    @include lib.rounded(10, $tl: 0, $tr: 0);
+    @include lib.border(color.change(scheme.$rosewater, $alpha: 0.7), 2);
+    @include lib.spacing(10);
+    @include font.mono;
+
+    border-top: none;
+    background-color: scheme.$base;
+    padding: lib.s(8) lib.s(20);
+    font-size: lib.s(14);
+
+    & > * {
+        @include lib.spacing(10);
+    }
+
+    .module {
+        @include lib.rounded(5);
+        @include lib.spacing;
+
+        padding: lib.s(3) lib.s(8);
+        background-color: scheme.$surface0;
+    }
+
+    label.icon {
+        @include font.icon;
+
+        font-size: lib.s(18);
+    }
+
+    .os-icon {
+        @include lib.border(scheme.$yellow);
+
+        color: scheme.$yellow;
+        font-size: lib.s(14);
+        padding-right: lib.s(12);
+    }
+
+    .active-window {
+        color: scheme.$pink;
+    }
+
+    .media-playing {
+        @include lib.spacing(8);
+
+        color: scheme.$lavender;
+
+        icon {
+            font-size: lib.s(16);
+        }
+    }
+
+    .workspaces {
+        @include lib.border(scheme.$maroon);
+
+        padding: lib.s(3) lib.s(18);
+
+        & > * {
+            @include lib.rounded(2);
+            @include lib.element-decel;
+
+            min-width: lib.s(20);
+            min-height: lib.s(4);
+            background-color: scheme.$surface1;
+
+            &.occupied {
+                background-color: scheme.$sky;
+            }
+
+            &.focused {
+                min-width: lib.s(30);
+                background-color: scheme.$mauve;
+            }
+        }
+    }
+
+    .tray {
+        @include lib.spacing(10);
+
+        font-size: lib.s(15);
+    }
+
+    .notifications {
+        color: scheme.$mauve;
+    }
+
+    .date-time {
+        color: scheme.$peach;
+    }
+
+    .power {
+        @include lib.border(scheme.$red);
+        @include font.icon;
+
+        color: scheme.$red;
+        font-weight: bold;
+        font-size: lib.s(16);
+    }
+}

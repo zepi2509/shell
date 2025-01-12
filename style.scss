@@ -1,0 +1,9 @@
+// Common widgets
+@use "scss/widgets";
+
+// Modules
+@use "scss/bar";
+
+* {
+    all: unset; // Remove GTK theme styles
+}
