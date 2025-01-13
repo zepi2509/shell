@@ -30,6 +30,10 @@ export const osIcons: Record<string, number> = {
     ubuntu: 0xf31b,
 };
 
+export const desktopEntrySubs: Record<string, string> = {
+    Firefox: "firefox",
+};
+
 const categoryIcons: Record<string, string> = {
     WebBrowser: "web",
     Printing: "print",

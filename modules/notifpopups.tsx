@@ -1,6 +1,7 @@
 import { GLib, register, timeout } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
+import { desktopEntrySubs } from "../utils/icons";
 
 const urgencyToString = (urgency: AstalNotifd.Urgency) => {
     switch (urgency) {
@@ -23,7 +24,18 @@ const getTime = (time: number) => {
     return messageTime.format("%d/%m");
 };
 
-const Icon = ({ icon }: { icon: string }) => {
+const AppIcon = ({ appIcon, desktopEntry }: { appIcon: string; desktopEntry: string }) => {
+    // Try app icon
+    let icon = Astal.Icon.lookup_icon(appIcon) && appIcon;
+    // Try desktop entry
+    if (!icon) {
+        if (desktopEntrySubs.hasOwnProperty(desktopEntry)) icon = desktopEntrySubs[desktopEntry];
+        else if (Astal.Icon.lookup_icon(desktopEntry)) icon = desktopEntry;
+    }
+    return icon ? <icon className="app-icon" icon={icon} /> : null;
+};
+
+const Image = ({ icon }: { icon: string }) => {
     if (GLib.file_test(icon, GLib.FileTest.EXISTS))
         return (
             <box
@@ -51,9 +63,7 @@ class NotifPopup extends Widget.Box {
                 <box className="wrapper">
                     <box vertical className={`popup ${urgencyToString(notification.urgency)}`}>
                         <box className="header">
-                            {(notification.appIcon || notification.desktopEntry) && (
-                                <icon className="app-icon" icon={notification.appIcon || notification.desktopEntry} />
-                            )}
+                            <AppIcon appIcon={notification.appIcon} desktopEntry={notification.appName} />
                             <label className="app-name" label={notification.appName ?? "Unknown"} />
                             <box hexpand />
                             <label
@@ -66,7 +76,7 @@ class NotifPopup extends Widget.Box {
                         </box>
                         <box hexpand className="separator" />
                         <box className="content">
-                            {notification.image && <Icon icon={notification.image} />}
+                            {notification.image && <Image icon={notification.image} />}
                             <box vertical>
                                 <label className="summary" xalign={0} label={notification.summary} truncate />
                                 <label className="body" xalign={0} label={notification.body} wrap useMarkup />
