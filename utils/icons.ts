@@ -1,4 +1,5 @@
 import { Gio } from "astal";
+import type AstalApps from "gi://AstalApps";
 import { Apps } from "../services/apps";
 
 // Code points from https://www.github.com/lukas-w/font-logos
@@ -73,10 +74,12 @@ const categoryIcons: Record<string, string> = {
     System: "host",
 };
 
-export const getAppCategoryIcon = (name: string) => {
+export const getAppCategoryIcon = (nameOrApp: string | AstalApps.Application) => {
     const categories =
-        Gio.DesktopAppInfo.new(`${name}.desktop`)?.get_categories()?.split(";") ??
-        Apps.fuzzy_query(name)[0]?.categories;
+        typeof nameOrApp === "string"
+            ? Gio.DesktopAppInfo.new(`${nameOrApp}.desktop`)?.get_categories()?.split(";") ??
+              Apps.fuzzy_query(nameOrApp)[0]?.categories
+            : nameOrApp.categories;
     if (categories)
         for (const [key, value] of Object.entries(categoryIcons)) if (categories.includes(key)) return value;
     return "terminal";

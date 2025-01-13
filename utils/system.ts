@@ -1,4 +1,5 @@
-import { exec, GLib } from "astal";
+import { exec, execAsync, GLib } from "astal";
+import type AstalApps from "gi://AstalApps";
 import { osIcons } from "./icons";
 
 export const inPath = (bin: string) => {
@@ -8,6 +9,14 @@ export const inPath = (bin: string) => {
         return false;
     }
     return true;
+};
+
+export const launch = (app: AstalApps.Application) => {
+    execAsync(["uwsm", "app", "--", app.entry]).catch(() => {
+        app.frequency--; // Decrement frequency cause launch also increments it
+        app.launch();
+    });
+    app.frequency++;
 };
 
 export const osId = GLib.get_os_info("ID") ?? "unknown";
