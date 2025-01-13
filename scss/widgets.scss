@@ -7,6 +7,7 @@ label.icon {
     @include font.icon;
 }
 
+separator,
 .separator {
     @include lib.rounded(2);
 
@@ -79,11 +80,7 @@ menu {
     }
 
     & > separator {
-        @include lib.rounded(1);
-
         background-color: scheme.$blue;
-        min-width: lib.s(0.5);
-        min-height: lib.s(0.5);
         margin: lib.s(8) 0;
     }
 }
