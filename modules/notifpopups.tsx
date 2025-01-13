@@ -101,7 +101,7 @@ class NotifPopup extends Widget.Box {
         const width = this.get_preferred_width()[1];
         this.css = `margin-left: ${width}px; margin-right: -${width}px;`;
         timeout(1, () => {
-            this.css = `transition: 150ms cubic-bezier(0.05, 0.9, 0.1, 1.1); margin-left: 0; margin-right: 0;`;
+            this.css = `transition: 300ms cubic-bezier(0.05, 0.9, 0.1, 1.1); margin-left: 0; margin-right: 0;`;
         });
 
         // Close popup after timeout if transient
