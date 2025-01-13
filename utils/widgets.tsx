@@ -43,3 +43,6 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
 
     return window;
 };
+
+export const setupChildClickthrough = (self: any) =>
+    self.connect("size-allocate", () => self.get_window()?.set_child_input_shapes());

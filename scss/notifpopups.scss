@@ -4,7 +4,7 @@
 @use "font";
 
 @mixin popup($colour) {
-    @include lib.outer-border($colour);
+    @include lib.border($colour, 0.5);
 
     border-right: none;
 
@@ -13,7 +13,7 @@
     }
 
     .image {
-        @include lib.border(color.change($colour, $alpha: 0.05));
+        @include lib.border($colour, 0.05);
     }
 }
 

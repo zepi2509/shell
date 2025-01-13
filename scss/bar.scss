@@ -5,7 +5,7 @@
 
 .bar {
     @include lib.rounded(10, $tl: 0, $tr: 0);
-    @include lib.outer-border(scheme.$rosewater);
+    @include lib.border(scheme.$rosewater, 0.7, 2);
     @include lib.spacing(10);
     @include font.mono;
 

@@ -2,6 +2,7 @@ import { GLib, register, timeout } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
 import { desktopEntrySubs } from "../utils/icons";
+import { setupChildClickthrough } from "../utils/widgets";
 
 const urgencyToString = (urgency: AstalNotifd.Urgency) => {
     switch (urgency) {
@@ -166,7 +167,7 @@ export default () => (
                 });
 
                 // Change input region to child region so can click through empty space
-                self.connect("size-allocate", () => self.get_window()?.set_child_input_shapes());
+                setupChildClickthrough(self);
             }}
         />
     </window>

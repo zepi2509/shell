@@ -11,11 +11,7 @@ $scale: 0.068rem;
     -gtk-outline-radius: s($tl) s($tr) s($br) s($bl);
 }
 
-@mixin border($colour, $width: 1, $style: solid) {
-    border: s($width) $style $colour;
-}
-
-@mixin outer-border($colour, $alpha: 0.7, $width: 2, $style: solid) {
+@mixin border($colour, $alpha: 1, $width: 1, $style: solid) {
     border: s($width) $style color.change($colour, $alpha: $alpha);
 }
 

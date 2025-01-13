@@ -3,6 +3,16 @@
 @use "lib";
 @use "font";
 
+* {
+    selection {
+        background-color: color.change(scheme.$overlay2, $alpha: 0.3);
+    }
+
+    & {
+        caret-color: scheme.$rosewater;
+    }
+}
+
 label.icon {
     @include font.icon;
 }
@@ -35,7 +45,7 @@ separator,
 menu {
     @include -appear;
     @include lib.rounded(5);
-    @include lib.border(color.change(scheme.$blue, $alpha: 0.7), 2);
+    @include lib.border(scheme.$blue, 0.7);
     @include font.main;
 
     padding: lib.s(10);
@@ -88,7 +98,7 @@ menu {
 tooltip,
 .tooltip {
     @include lib.rounded(5);
-    @include lib.border(color.change(scheme.$teal, $alpha: 0.7));
+    @include lib.border(scheme.$teal, 0.7);
     @include font.reading;
 
     background-color: scheme.$surface0;
