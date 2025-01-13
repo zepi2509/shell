@@ -259,7 +259,7 @@ const Power = () => (
 
 export default ({ monitor }: { monitor: AstalHyprland.Monitor }) => (
     <window
-        namespace="bar"
+        namespace="caelestia-bar"
         monitor={monitor.id}
         anchor={Astal.WindowAnchor.TOP}
         exclusivity={Astal.Exclusivity.EXCLUSIVE}

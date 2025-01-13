@@ -93,15 +93,16 @@ class NotifPopup extends Widget.Box {
             this.css = `transition: 150ms cubic-bezier(0.05, 0.9, 0.1, 1.1); margin-left: 0; margin-right: 0;`;
         });
 
-        // Close popup after timeout
-        // timeout(
-        //     notification.expireTimeout > 0
-        //         ? notification.expireTimeout
-        //         : notification.urgency === AstalNotifd.Urgency.CRITICAL
-        //         ? 10000
-        //         : 5000,
-        //     () => this.destroyWithAnims()
-        // );
+        // Close popup after timeout if transient
+        if (notification.transient)
+            timeout(
+                notification.expireTimeout > 0
+                    ? notification.expireTimeout
+                    : notification.urgency === AstalNotifd.Urgency.CRITICAL
+                    ? 10000
+                    : 5000,
+                () => this.destroyWithAnims()
+            );
     }
 
     destroyWithAnims() {
@@ -121,7 +122,7 @@ class NotifPopup extends Widget.Box {
 
 export default () => (
     <window
-        namespace="notifpopups"
+        namespace="caelestia-notifpopups"
         anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.BOTTOM}
     >
         <box
