@@ -51,12 +51,14 @@ const ActiveWindow = () => (
             className="icon"
             setup={self =>
                 hookFocusedClientProp(self, "class", c => {
-                    self.label = c ? getAppCategoryIcon(c.class) : "desktop_windows";
+                    self.label = c?.class ? getAppCategoryIcon(c.class) : "desktop_windows";
                 })
             }
         />
         <label
-            setup={self => hookFocusedClientProp(self, "title", c => (self.label = c ? ellipsize(c.title) : "Desktop"))}
+            setup={self =>
+                hookFocusedClientProp(self, "title", c => (self.label = c?.title ? ellipsize(c.title) : "Desktop"))
+            }
         />
     </box>
 );
