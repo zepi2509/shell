@@ -1,15 +1,6 @@
-import { exec, execAsync, GLib } from "astal";
+import { execAsync, GLib } from "astal";
 import type AstalApps from "gi://AstalApps";
 import { osIcons } from "./icons";
-
-export const inPath = (bin: string) => {
-    try {
-        exec(`which ${bin}`);
-    } catch {
-        return false;
-    }
-    return true;
-};
 
 export const launch = (app: AstalApps.Application) => {
     execAsync(["uwsm", "app", "--", app.entry]).catch(() => {

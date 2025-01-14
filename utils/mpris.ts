@@ -1,7 +1,7 @@
+import { GLib } from "astal";
 import AstalMpris from "gi://AstalMpris";
-import { inPath } from "./system";
 
-const hasPlasmaIntegration = inPath("plasma-browser-integration-host");
+const hasPlasmaIntegration = GLib.find_program_in_path("plasma-browser-integration-host") !== null;
 
 export const isRealPlayer = (player?: AstalMpris.Player) =>
     player !== undefined &&
