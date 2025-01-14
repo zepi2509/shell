@@ -121,7 +121,7 @@ export default class Math extends GObject.Object {
                 icon = "calculate";
             }
         } catch (e) {
-            equation = "Invalid equation";
+            equation = "Invalid equation: " + equation;
             result = String(e);
             icon = "error";
         }
