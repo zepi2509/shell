@@ -22,12 +22,8 @@ $scale: 0.068rem;
 @mixin spacing($val: 5, $vertical: false) {
     $dir: if($vertical, bottom, right);
 
-    & > * {
+    & > *:not(:last-child) {
         margin-#{$dir}: s($val);
-
-        &:last-child {
-            margin-#{$dir}: 0;
-        }
     }
 }
 
