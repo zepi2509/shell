@@ -148,7 +148,8 @@ export default () => (
                     const notification = notifd.get_notification(id);
 
                     const popup = (<NotifPopup notification={notification} />) as NotifPopup;
-                    popup.connect("destroy", () => map.delete(notification.id));
+                    popup.connect("destroy", () => map.get(notification.id) === popup && map.delete(notification.id));
+                    map.get(notification.id)?.destroyWithAnims();
                     map.set(notification.id, popup);
 
                     self.add(
