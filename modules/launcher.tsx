@@ -5,6 +5,7 @@ import type AstalApps from "gi://AstalApps";
 import AstalHyprland from "gi://AstalHyprland";
 import { Apps } from "../services/apps";
 import Math, { type HistoryItem } from "../services/math";
+import { HOME } from "../utils/constants";
 import { getAppCategoryIcon } from "../utils/icons";
 import { launch } from "../utils/system";
 import { PopupWindow, setupCustomTooltip, TransitionType } from "../utils/widgets";
@@ -19,6 +20,7 @@ interface Subcommand {
 }
 
 const maxSearchResults = 15;
+const fdOptions = ["-a", "-t", "f", "-E", ".git"];
 
 const browser = [
     "firefox",
@@ -56,10 +58,23 @@ const getEmptyTextFromMode = (mode: Mode) => {
     }
 };
 
-const launchAndClose = (self: JSX.Element, astalApp: AstalApps.Application) => {
+const close = (self: JSX.Element) => {
     const toplevel = self.get_toplevel();
     if (toplevel instanceof Widget.Window) toplevel.hide();
+};
+
+const launchAndClose = (self: JSX.Element, astalApp: AstalApps.Application) => {
+    close(self);
     launch(astalApp);
+};
+
+const openFileAndClose = (self: JSX.Element, path: string) => {
+    close(self);
+    execAsync([
+        "bash",
+        "-c",
+        `dbus-send --session --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://${path}" string:"" || xdg-open "${path}"`,
+    ]).catch(console.error);
 };
 
 const PinnedApp = ({ names }: { names: string[] }) => {
@@ -137,7 +152,7 @@ const Result = ({
             )}
             {sublabel ? (
                 <box vertical valign={Gtk.Align.CENTER} className="has-sublabel">
-                    <label xalign={0} label={label} />
+                    <label hexpand truncate maxWidthChars={1} xalign={0} label={label} />
                     <label hexpand truncate maxWidthChars={1} className="sublabel" xalign={0} label={sublabel} />
                 </box>
             ) : (
@@ -196,6 +211,14 @@ const MathResult = ({ math, isHistory, entry }: { math: HistoryItem; isHistory?:
     />
 );
 
+const FileResult = ({ path }: { path: string }) => (
+    <Result
+        label={path.split("/").pop()!}
+        sublabel={path.startsWith(HOME) ? "~" + path.slice(HOME.length) : path}
+        onClicked={self => openFileAndClose(self, path)}
+    />
+);
+
 const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> }) => {
     const empty = Variable(true);
 
@@ -248,9 +271,10 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                     };
                     const subcommandList = Object.keys(subcommands);
 
+                    const updateEmpty = () => empty.set(self.get_children().length === 0);
+
                     const appSearch = () => {
                         const apps = Apps.fuzzy_query(entry.text);
-                        empty.set(apps.length === 0);
                         if (apps.length > maxSearchResults) apps.length = maxSearchResults;
                         for (const app of apps) self.add(<AppResult app={app} />);
                     };
@@ -264,6 +288,20 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                             self.add(<MathResult isHistory math={item} entry={entry} />);
                     };
 
+                    const fileSearch = () =>
+                        execAsync(["fd", ...fdOptions, entry.text, HOME])
+                            .then(out => {
+                                const paths = out.split("\n").filter(path => path);
+                                if (paths.length > maxSearchResults) paths.length = maxSearchResults;
+                                self.foreach(ch => ch.destroy());
+                                for (const path of paths) self.add(<FileResult path={path} />);
+                            })
+                            .catch(e => {
+                                // Ignore execAsync error
+                                if (!(e instanceof Gio.IOErrorEnum || e instanceof GLib.SpawnError)) console.error(e);
+                            })
+                            .finally(updateEmpty);
+
                     self.hook(entry, "activate", () => {
                         if (!entry.text) return;
                         if (mode.get() === "math") {
@@ -274,7 +312,10 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                     });
                     self.hook(entry, "changed", () => {
                         if (!entry.text && mode.get() === "apps") return;
-                        self.foreach(ch => ch.destroy());
+
+                        // Files has delay cause async so it does some stuff by itself
+                        const ignoreFileAsync = !entry.text || entry.text.startsWith(">") || mode.get() !== "files";
+                        if (ignoreFileAsync) self.foreach(ch => ch.destroy());
 
                         if (entry.text.startsWith(">")) {
                             const args = entry.text.split(" ");
@@ -288,8 +329,9 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                                 );
                         } else if (mode.get() === "apps") appSearch();
                         else if (mode.get() === "math") calculate();
+                        else if (mode.get() === "files") fileSearch();
 
-                        empty.set(self.get_children().length === 0);
+                        if (ignoreFileAsync) updateEmpty();
                     });
                 }}
             />
