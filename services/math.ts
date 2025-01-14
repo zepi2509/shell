@@ -1,12 +1,5 @@
 import { GLib, GObject, property, readFile, register, writeFileAsync } from "astal";
-import {
-    create,
-    derivativeDependencies,
-    evaluateDependencies,
-    rationalizeDependencies,
-    simplifyDependencies,
-    type MathNode,
-} from "mathjs/number";
+import { derivative, evaluate, rationalize, simplify } from "mathjs/number";
 import { CACHE_DIR } from "../utils/constants";
 
 export interface HistoryItem {
@@ -24,18 +17,11 @@ export default class Math extends GObject.Object {
         return this.instance;
     }
 
-    static math = create({
-        simplifyDependencies,
-        derivativeDependencies,
-        rationalizeDependencies,
-        evaluateDependencies,
-    });
-
     readonly #maxHistory = 20;
     readonly #path = `${CACHE_DIR}/math-history.json`;
     readonly #history: HistoryItem[] = [];
 
-    #variables: Record<string, number | MathNode> = {};
+    #variables: Record<string, string> = {};
     #lastExpression: HistoryItem | null = null;
 
     @property(Object)
@@ -69,7 +55,7 @@ export default class Math extends GObject.Object {
      * @returns If the item was successfully selected
      */
     select(item: HistoryItem) {
-        const idx = this.#history.indexOf(item);
+        const idx = this.#history.findIndex(i => i.equation === item.equation && i.result === item.result);
         if (idx >= 0) {
             this.#history.splice(idx, 1);
             this.#history.unshift(item);
@@ -113,30 +99,31 @@ export default class Math extends GObject.Object {
             if (equation.includes("=")) {
                 const [left, right] = equation.split("=");
                 try {
-                    this.#variables[left] = Math.math.simplify(right);
+                    this.#variables[left.trim()] = simplify(right).toString();
                 } catch {
-                    this.#variables[left] = parseFloat(right);
+                    this.#variables[left.trim()] = right.trim();
                 }
-                result = this.#variables[left].toString();
+                result = this.#variables[left.trim()];
                 icon = "equal";
             } else if (equation.startsWith("simplify")) {
-                result = Math.math.simplify(equation.slice(8), this.#variables).toString();
+                result = simplify(equation.slice(8), this.#variables).toString();
                 icon = "function";
             } else if (equation.startsWith("derive")) {
-                const respectTo = equation.slice(6).split(" ")[0];
-                result = Math.math.derivative(equation.slice(7 + respectTo.length), respectTo).toString();
+                const respectTo = equation.split(" ")[1];
+                if (!respectTo) throw new Error("Format: derive <respect-to> <equation>");
+                result = derivative(equation.slice(7 + respectTo.length), respectTo).toString();
                 icon = "function";
             } else if (equation.startsWith("rationalize")) {
-                result = Math.math.rationalize(equation.slice(11), this.#variables).toString();
+                result = rationalize(equation.slice(11), this.#variables).toString();
                 icon = "function";
             } else {
-                result = Math.math.evaluate(equation, this.#variables).toString();
+                result = evaluate(equation, this.#variables).toString();
                 icon = "calculate";
             }
-        } catch {
-            result = equation;
-            icon = "error";
+        } catch (e) {
             equation = "Invalid equation";
+            result = String(e);
+            icon = "error";
         }
 
         return (this.#lastExpression = { equation, result, icon });
