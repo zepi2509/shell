@@ -14,10 +14,10 @@
     padding: lib.s(10) lib.s(14);
 
     .search-bar {
-        @include lib.spacing;
-
         margin-bottom: lib.s(5);
         font-size: lib.s(16);
+
+        @include lib.spacing;
 
         .icon {
             font-size: lib.s(18);
@@ -54,9 +54,9 @@
 
     .results {
         .empty {
-            @include lib.spacing;
-
             color: scheme.$subtext0;
+
+            @include lib.spacing;
 
             .icon {
                 font-size: lib.s(32);

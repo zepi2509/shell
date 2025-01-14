@@ -6,7 +6,6 @@
 .bar {
     @include lib.rounded(10, $tl: 0, $tr: 0);
     @include lib.border(scheme.$rosewater, 0.7, 2);
-    @include lib.spacing(10);
     @include font.mono;
 
     border-top: none;
@@ -14,16 +13,19 @@
     padding: lib.s(8) lib.s(20);
     font-size: lib.s(14);
 
+    @include lib.spacing(10);
+
     & > * {
         @include lib.spacing(10);
     }
 
     .module {
         @include lib.rounded(5);
-        @include lib.spacing;
 
         padding: lib.s(3) lib.s(8);
         background-color: scheme.$surface0;
+
+        @include lib.spacing;
     }
 
     label.icon {
@@ -43,9 +45,9 @@
     }
 
     .media-playing {
-        @include lib.spacing(8);
-
         color: scheme.$lavender;
+
+        @include lib.spacing(8);
 
         icon {
             font-size: lib.s(16);
@@ -77,9 +79,9 @@
     }
 
     .tray {
-        @include lib.spacing(10);
-
         font-size: lib.s(15);
+
+        @include lib.spacing(10);
     }
 
     .notifications {

@@ -26,7 +26,6 @@
     }
 
     .popup {
-        @include lib.spacing($vertical: true);
         @include lib.rounded(8, $tr: 0, $br: 0);
         @include lib.shadow;
         @include font.main;
@@ -35,6 +34,8 @@
         background-color: scheme.$base;
         color: scheme.$text;
         padding: lib.s(10) lib.s(12);
+
+        @include lib.spacing($vertical: true);
 
         &.low {
             @include popup(scheme.$overlay0);
@@ -51,8 +52,8 @@
     }
 
     .header {
-        @include lib.spacing(5);
         @include font.mono;
+        @include lib.spacing(5);
     }
 
     .content {
