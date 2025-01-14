@@ -363,7 +363,6 @@ export default class Launcher extends PopupWindow {
         super({
             name: "launcher",
             keymode: Astal.Keymode.EXCLUSIVE,
-            exclusivity: Astal.Exclusivity.IGNORE,
             onKeyPressEvent(_, event) {
                 const keyval = event.get_keyval()[1];
                 // Focus entry on typing

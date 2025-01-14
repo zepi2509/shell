@@ -100,6 +100,8 @@ export class PopupWindow extends Widget.Window {
         sProps.namespace = `caelestia-${props.name}`;
         sProps.anchor =
             Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.RIGHT;
+        sProps.exclusivity = Astal.Exclusivity.IGNORE;
+        if (!sProps.keymode) sProps.keymode = Astal.Keymode.ON_DEMAND;
         sProps.onKeyPressEvent = (self, event) => {
             // Close window on escape
             if (event.get_keyval()[1] === Gdk.KEY_Escape) self.hide();

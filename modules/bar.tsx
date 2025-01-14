@@ -1,4 +1,4 @@
-import { GLib, register, Variable } from "astal";
+import { execAsync, GLib, register, Variable } from "astal";
 import { bind, kebabify } from "astal/binding";
 import { App, Astal, astalify, Gdk, Gtk, type ConstructProps } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
@@ -251,9 +251,7 @@ const Power = () => (
         className="module power"
         label="power_settings_new"
         cursor="pointer"
-        onClicked={() => {
-            // TODO: Power menu
-        }}
+        onClicked={() => execAsync("fish -c 'pkill wlogout || wlogout -p layer-shell'").catch(console.error)}
     />
 );
 
