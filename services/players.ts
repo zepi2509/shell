@@ -1,4 +1,4 @@
-import { execAsync, GLib, GObject, property, readFile, register, writeFileAsync } from "astal";
+import { GLib, GObject, property, readFile, register, writeFileAsync } from "astal";
 import AstalMpris from "gi://AstalMpris";
 import { CACHE_DIR } from "../utils/constants";
 import { isRealPlayer } from "../utils/mpris";
@@ -89,9 +89,7 @@ export default class Players extends GObject.Object {
     }
 
     #save() {
-        execAsync(`mkdir -p ${CACHE_DIR}`)
-            .then(() => writeFileAsync(this.#path, this.#players.map(p => p.busName).join("\n")).catch(console.error))
-            .catch(console.error);
+        writeFileAsync(this.#path, this.#players.map(p => p.busName).join("\n")).catch(console.error);
     }
 
     #connectPlayerSignals(player: AstalMpris.Player) {

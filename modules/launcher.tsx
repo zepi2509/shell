@@ -3,8 +3,8 @@ import { Astal, Gtk, Widget } from "astal/gtk3";
 import fuzzysort from "fuzzysort";
 import type AstalApps from "gi://AstalApps";
 import AstalHyprland from "gi://AstalHyprland";
-import Mexp from "math-expression-evaluator";
 import { Apps } from "../services/apps";
+import Math, { type HistoryItem } from "../services/math";
 import { getAppCategoryIcon } from "../utils/icons";
 import { launch } from "../utils/system";
 import { PopupWindow, setupCustomTooltip, TransitionType } from "../utils/widgets";
@@ -104,7 +104,6 @@ const SearchEntry = ({ entry }: { entry: Widget.Entry }) => (
     </stack>
 );
 
-// TODO: description field
 const Result = ({
     icon,
     materialIcon,
@@ -167,6 +166,25 @@ const AppResult = ({ app }: { app: AstalApps.Application }) => (
     />
 );
 
+const MathResult = ({ math, isHistory, entry }: { math: HistoryItem; isHistory?: boolean; entry: Widget.Entry }) => (
+    <Result
+        materialIcon={math.icon}
+        label={math.equation}
+        sublabel={math.result}
+        onClicked={() => {
+            if (isHistory) {
+                Math.get_default().select(math);
+                entry.set_text(math.equation);
+                entry.grab_focus();
+                entry.set_position(-1);
+            } else {
+                execAsync(`wl-copy -- ${math.result}`).catch(console.error);
+                entry.set_text("");
+            }
+        }}
+    />
+);
+
 const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> }) => {
     const empty = Variable(true);
 
@@ -198,10 +216,10 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                             description: "Search for files",
                             command: () => mode.set("files"),
                         },
-                        calc: {
+                        math: {
                             icon: "calculate",
-                            name: "Calculator",
-                            description: "A calculator...",
+                            name: "Math",
+                            description: "Do math calculations",
                             command: () => mode.set("math"),
                         },
                         todo: {
@@ -214,7 +232,6 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                         },
                     };
                     const subcommandList = Object.keys(subcommands);
-                    const mexp = new Mexp();
 
                     const appSearch = () => {
                         const apps = Apps.fuzzy_query(entry.text);
@@ -224,27 +241,24 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                     };
 
                     const calculate = () => {
-                        // TODO: allow defs, history
-                        let math = null;
-                        try {
-                            math = mexp.eval(entry.text);
-                        } catch (e) {
-                            // Ignore
+                        if (entry.text) {
+                            self.add(<MathResult math={Math.get_default().evaluate(entry.text)} entry={entry} />);
+                            self.add(<box className="separator" />);
                         }
-                        if (math !== null)
-                            self.add(
-                                <Result
-                                    materialIcon="calculate"
-                                    label={entry.text}
-                                    sublabel={String(math)}
-                                    onClicked={() => execAsync(`wl-copy -- ${math}`).catch(console.error)}
-                                />
-                            );
+                        for (const item of Math.get_default().history)
+                            self.add(<MathResult isHistory math={item} entry={entry} />);
                     };
 
-                    self.hook(entry, "activate", () => entry.text && self.get_children()[0].activate());
-                    self.hook(entry, "changed", () => {
+                    self.hook(entry, "activate", () => {
                         if (!entry.text) return;
+                        if (mode.get() === "math") {
+                            if (entry.text.startsWith("clear")) Math.get_default().clear();
+                            else Math.get_default().commit();
+                        }
+                        self.get_children()[0]?.activate();
+                    });
+                    self.hook(entry, "changed", () => {
+                        if (!entry.text && mode.get() === "apps") return;
                         self.foreach(ch => ch.destroy());
 
                         if (entry.text.startsWith(">")) {
@@ -268,7 +282,15 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
     );
 };
 
-const LauncherContent = ({ mode, entry }: { mode: Variable<Mode>; entry: Widget.Entry }) => (
+const LauncherContent = ({
+    mode,
+    showResults,
+    entry,
+}: {
+    mode: Variable<Mode>;
+    showResults: Variable<boolean>;
+    entry: Widget.Entry;
+}) => (
     <box
         vertical
         className={bind(mode).as(m => `launcher ${m}`)}
@@ -280,14 +302,14 @@ const LauncherContent = ({ mode, entry }: { mode: Variable<Mode>; entry: Widget.
             <label className="icon" label={bind(mode).as(getIconFromMode)} />
         </box>
         <revealer
-            revealChild={bind(entry, "textLength").as(t => t === 0)}
+            revealChild={bind(showResults).as(s => !s)}
             transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
             transitionDuration={150}
         >
             <PinnedApps />
         </revealer>
         <revealer
-            revealChild={bind(entry, "textLength").as(t => t > 0)}
+            revealChild={bind(showResults)}
             transitionType={Gtk.RevealerTransitionType.SLIDE_UP}
             transitionDuration={150}
         >
@@ -303,6 +325,7 @@ export default class Launcher extends PopupWindow {
     constructor() {
         const entry = (<entry name="entry" />) as Widget.Entry;
         const mode = Variable<Mode>("apps");
+        const showResults = Variable.derive([bind(entry, "textLength"), mode], (t, m) => t > 0 || m !== "apps");
 
         super({
             name: "launcher",
@@ -323,12 +346,13 @@ export default class Launcher extends PopupWindow {
             transitionType: TransitionType.SLIDE_DOWN,
             halign: Gtk.Align.CENTER,
             valign: Gtk.Align.START,
-            child: <LauncherContent mode={mode} entry={entry} />,
+            child: <LauncherContent mode={mode} showResults={showResults} entry={entry} />,
         });
 
         this.mode = mode;
 
-        this.connect("hide", () => entry.set_text(""));
+        // Clear search on hide if not in math mode
+        this.connect("hide", () => mode.get() !== "math" && entry.set_text(""));
     }
 
     open(mode: Mode) {

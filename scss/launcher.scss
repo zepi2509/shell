@@ -2,6 +2,19 @@
 @use "lib";
 @use "font";
 
+@mixin launcher($mode, $colour) {
+    &.#{$mode} {
+        label.icon {
+            color: $colour;
+        }
+
+        .separator {
+            background-color: $colour;
+            margin: lib.s(5) 0;
+        }
+    }
+}
+
 .launcher-wrapper {
     @include lib.ease-in-out;
 
@@ -20,6 +33,10 @@
     background-color: scheme.$mantle;
     color: scheme.$text;
     padding: lib.s(10) lib.s(14);
+
+    @include launcher(apps, scheme.$sapphire);
+    @include launcher(files, scheme.$peach);
+    @include launcher(math, scheme.$green);
 
     .search-bar {
         margin-bottom: lib.s(5);
@@ -86,17 +103,5 @@
                 }
             }
         }
-    }
-
-    &.apps label.icon {
-        color: scheme.$sapphire;
-    }
-
-    &.files label.icon {
-        color: scheme.$peach;
-    }
-
-    &.math label.icon {
-        color: scheme.$green;
     }
 }
