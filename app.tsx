@@ -4,6 +4,7 @@ import AstalHyprland from "gi://AstalHyprland";
 import Bar from "./modules/bar";
 import Launcher from "./modules/launcher";
 import NotifPopups from "./modules/notifpopups";
+import Players from "./services/players";
 import { PopupWindow } from "./utils/widgets";
 
 const loadStyleAsync = async () => {
@@ -29,6 +30,10 @@ App.start({
         let log = true;
 
         if (request === "reload css") loadStyleAsync().catch(console.error);
+        else if (request === "media play pause") Players.get_default().lastPlayer?.play_pause();
+        else if (request === "media next") Players.get_default().lastPlayer?.next();
+        else if (request === "media previous") Players.get_default().lastPlayer?.previous();
+        else if (request === "media stop") Players.get_default().lastPlayer?.stop();
         else if (request.startsWith("toggle")) {
             const window = App.get_window(request.slice(7));
             if (window instanceof PopupWindow) window.toggle();

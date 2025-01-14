@@ -1,11 +1,22 @@
-import { bind, Gio, timeout, Variable } from "astal";
+import { bind, execAsync, Gio, register, timeout, Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
+import fuzzysort from "fuzzysort";
 import type AstalApps from "gi://AstalApps";
 import AstalHyprland from "gi://AstalHyprland";
+import Mexp from "math-expression-evaluator";
 import { Apps } from "../services/apps";
 import { getAppCategoryIcon } from "../utils/icons";
 import { launch } from "../utils/system";
 import { PopupWindow, setupCustomTooltip, TransitionType } from "../utils/widgets";
+
+type Mode = "apps" | "files" | "math";
+
+interface Subcommand {
+    icon: string;
+    name: string;
+    description: string;
+    command: (...args: string[]) => void;
+}
 
 const maxSearchResults = 15;
 
@@ -22,6 +33,17 @@ const terminal = ["foot", "alacritty", "kitty", "wezterm"];
 const files = ["thunar", "nemo", "nautilus"];
 const ide = ["codium", "code", "clion", "intellij-idea-ultimate-edition"];
 const music = ["spotify-adblock", "spotify", "audacious", "elisa"];
+
+const getIconFromMode = (mode: Mode) => {
+    switch (mode) {
+        case "apps":
+            return "apps";
+        case "files":
+            return "folder";
+        case "math":
+            return "calculate";
+    }
+};
 
 const launchAndClose = (self: JSX.Element, astalApp: AstalApps.Application) => {
     const toplevel = self.get_toplevel();
@@ -45,7 +67,7 @@ const PinnedApp = ({ names }: { names: string[] }) => {
 
     return app ? (
         <button
-            className="app"
+            className="pinned-app result"
             cursor="pointer"
             onClicked={self => launchAndClose(self, astalApp!)}
             setup={self => setupCustomTooltip(self, app.get_display_name())}
@@ -56,7 +78,7 @@ const PinnedApp = ({ names }: { names: string[] }) => {
 };
 
 const PinnedApps = () => (
-    <box homogeneous className="pinned">
+    <box homogeneous>
         <PinnedApp names={browser} />
         <PinnedApp names={terminal} />
         <PinnedApp names={files} />
@@ -82,21 +104,72 @@ const SearchEntry = ({ entry }: { entry: Widget.Entry }) => (
     </stack>
 );
 
-const Result = ({ app }: { app: AstalApps.Application }) => (
-    <button className="app" cursor="pointer" onClicked={self => launchAndClose(self, app)}>
+// TODO: description field
+const Result = ({
+    icon,
+    materialIcon,
+    label,
+    sublabel,
+    onClicked,
+}: {
+    icon?: string;
+    materialIcon?: string;
+    label: string;
+    sublabel?: string;
+    onClicked: (self: Widget.Button) => void;
+}) => (
+    <button className="result" cursor="pointer" onClicked={onClicked}>
         <box>
-            {Astal.Icon.lookup_icon(app.iconName) ? (
-                <icon className="icon" icon={app.iconName} />
+            {icon && Astal.Icon.lookup_icon(icon) ? (
+                <icon className="icon" icon={icon} />
             ) : (
-                <label className="icon" label={getAppCategoryIcon(app)} />
+                <label className="icon" label={materialIcon} />
             )}
-            <label xalign={0} label={app.name} />
+            {sublabel ? (
+                <box vertical valign={Gtk.Align.CENTER} className="has-sublabel">
+                    <label xalign={0} label={label} />
+                    <label hexpand truncate maxWidthChars={1} className="sublabel" xalign={0} label={sublabel} />
+                </box>
+            ) : (
+                <label xalign={0} label={label} />
+            )}
         </box>
     </button>
 );
 
-const Results = ({ entry }: { entry: Widget.Entry }) => {
+const SubcommandResult = ({
+    entry,
+    subcommand,
+    args,
+}: {
+    entry: Widget.Entry;
+    subcommand: Subcommand;
+    args: string[];
+}) => (
+    <Result
+        materialIcon={subcommand.icon}
+        label={subcommand.name}
+        sublabel={subcommand.description}
+        onClicked={() => {
+            subcommand.command(...args);
+            entry.set_text("");
+        }}
+    />
+);
+
+const AppResult = ({ app }: { app: AstalApps.Application }) => (
+    <Result
+        icon={app.iconName}
+        materialIcon={getAppCategoryIcon(app)}
+        label={app.name}
+        sublabel={app.description}
+        onClicked={self => launchAndClose(self, app)}
+    />
+);
+
+const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> }) => {
     const empty = Variable(true);
+
     return (
         <stack
             className="results"
@@ -112,17 +185,82 @@ const Results = ({ entry }: { entry: Widget.Entry }) => {
                 vertical
                 name="list"
                 setup={self => {
-                    let apps: AstalApps.Application[] = [];
-                    self.hook(entry, "activate", () => {
-                        if (entry.text && apps[0]) launchAndClose(self, apps[0]);
-                    });
+                    const subcommands: Record<string, Subcommand> = {
+                        apps: {
+                            icon: "apps",
+                            name: "Apps",
+                            description: "Search for apps",
+                            command: () => mode.set("apps"),
+                        },
+                        files: {
+                            icon: "folder",
+                            name: "Files",
+                            description: "Search for files",
+                            command: () => mode.set("files"),
+                        },
+                        calc: {
+                            icon: "calculate",
+                            name: "Calculator",
+                            description: "A calculator...",
+                            command: () => mode.set("math"),
+                        },
+                        todo: {
+                            icon: "checklist",
+                            name: "Todo",
+                            description: "Create a todo in <INSERT_TODO_APP>",
+                            command: (...args) => {
+                                // TODO: todo service or maybe use external app
+                            },
+                        },
+                    };
+                    const subcommandList = Object.keys(subcommands);
+                    const mexp = new Mexp();
+
+                    const appSearch = () => {
+                        const apps = Apps.fuzzy_query(entry.text);
+                        empty.set(apps.length === 0);
+                        if (apps.length > maxSearchResults) apps.length = maxSearchResults;
+                        for (const app of apps) self.add(<AppResult app={app} />);
+                    };
+
+                    const calculate = () => {
+                        // TODO: allow defs, history
+                        let math = null;
+                        try {
+                            math = mexp.eval(entry.text);
+                        } catch (e) {
+                            // Ignore
+                        }
+                        if (math !== null)
+                            self.add(
+                                <Result
+                                    materialIcon="calculate"
+                                    label={entry.text}
+                                    sublabel={String(math)}
+                                    onClicked={() => execAsync(`wl-copy -- ${math}`).catch(console.error)}
+                                />
+                            );
+                    };
+
+                    self.hook(entry, "activate", () => entry.text && self.get_children()[0].activate());
                     self.hook(entry, "changed", () => {
                         if (!entry.text) return;
                         self.foreach(ch => ch.destroy());
-                        apps = Apps.fuzzy_query(entry.text);
-                        empty.set(apps.length === 0);
-                        if (apps.length > maxSearchResults) apps.length = maxSearchResults;
-                        for (const app of apps) self.add(<Result app={app} />);
+
+                        if (entry.text.startsWith(">")) {
+                            const args = entry.text.split(" ");
+                            for (const { target } of fuzzysort.go(args[0].slice(1), subcommandList, { all: true }))
+                                self.add(
+                                    <SubcommandResult
+                                        entry={entry}
+                                        subcommand={subcommands[target]}
+                                        args={args.slice(1)}
+                                    />
+                                );
+                        } else if (mode.get() === "apps") appSearch();
+                        else if (mode.get() === "math") calculate();
+
+                        empty.set(self.get_children().length === 0);
                     });
                 }}
             />
@@ -130,16 +268,16 @@ const Results = ({ entry }: { entry: Widget.Entry }) => {
     );
 };
 
-const Launcher = ({ entry }: { entry: Widget.Entry }) => (
+const LauncherContent = ({ mode, entry }: { mode: Variable<Mode>; entry: Widget.Entry }) => (
     <box
         vertical
-        className="launcher"
+        className={bind(mode).as(m => `launcher ${m}`)}
         css={bind(AstalHyprland.get_default(), "focusedMonitor").as(m => `margin-top: ${m.height / 4}px;`)}
     >
         <box className="search-bar">
             <label className="icon" label="search" />
             <SearchEntry entry={entry} />
-            <label className="icon" label="apps" />
+            <label className="icon" label={bind(mode).as(getIconFromMode)} />
         </box>
         <revealer
             revealChild={bind(entry, "textLength").as(t => t === 0)}
@@ -153,20 +291,24 @@ const Launcher = ({ entry }: { entry: Widget.Entry }) => (
             transitionType={Gtk.RevealerTransitionType.SLIDE_UP}
             transitionDuration={150}
         >
-            <Results entry={entry} />
+            <Results entry={entry} mode={mode} />
         </revealer>
     </box>
 );
 
-export default () => {
-    const entry = (<entry name="entry" />) as Widget.Entry;
+@register()
+export default class Launcher extends PopupWindow {
+    readonly mode: Variable<Mode>;
 
-    return (
-        <PopupWindow
-            name="launcher"
-            keymode={Astal.Keymode.EXCLUSIVE}
-            exclusivity={Astal.Exclusivity.IGNORE}
-            onKeyPressEvent={(_, event) => {
+    constructor() {
+        const entry = (<entry name="entry" />) as Widget.Entry;
+        const mode = Variable<Mode>("apps");
+
+        super({
+            name: "launcher",
+            keymode: Astal.Keymode.EXCLUSIVE,
+            exclusivity: Astal.Exclusivity.IGNORE,
+            onKeyPressEvent(_, event) {
                 const keyval = event.get_keyval()[1];
                 // Focus entry on typing
                 if (!entry.isFocus && keyval >= 32 && keyval <= 126) {
@@ -177,14 +319,20 @@ export default () => {
                     // Consume event, if not consumed it will duplicate character in entry
                     return true;
                 }
-            }}
-            // Clear entry text on hide
-            setup={self => self.connect("hide", () => entry.set_text(""))}
-            transitionType={TransitionType.SLIDE_DOWN}
-            halign={Gtk.Align.CENTER}
-            valign={Gtk.Align.START}
-        >
-            <Launcher entry={entry} />
-        </PopupWindow>
-    );
-};
+            },
+            transitionType: TransitionType.SLIDE_DOWN,
+            halign: Gtk.Align.CENTER,
+            valign: Gtk.Align.START,
+            child: <LauncherContent mode={mode} entry={entry} />,
+        });
+
+        this.mode = mode;
+
+        this.connect("hide", () => entry.set_text(""));
+    }
+
+    open(mode: Mode) {
+        this.mode.set(mode);
+        this.show();
+    }
+}

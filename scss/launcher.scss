@@ -29,7 +29,6 @@
 
         .icon {
             font-size: lib.s(18);
-            color: scheme.$sapphire;
         }
 
         .placeholder {
@@ -37,7 +36,7 @@
         }
     }
 
-    .app {
+    .result {
         @include lib.element-decel;
 
         padding: lib.s(5) lib.s(10);
@@ -52,35 +51,52 @@
         }
     }
 
-    .pinned .app {
+    .pinned-app {
         @include lib.rounded(5);
 
         font-size: lib.s(64);
     }
 
     .results {
+        .icon {
+            font-size: lib.s(32);
+        }
+
         .empty {
             color: scheme.$subtext0;
 
             @include lib.spacing;
-
-            .icon {
-                font-size: lib.s(32);
-            }
         }
 
-        .app {
+        .result {
             @include lib.rounded(10);
 
             font-size: lib.s(18);
 
             & > * {
-                @include lib.spacing;
+                @include lib.spacing(8);
             }
 
-            .icon {
-                font-size: lib.s(32);
+            .has-sublabel {
+                font-size: lib.s(16);
+
+                .sublabel {
+                    color: scheme.$subtext0;
+                    font-size: lib.s(14);
+                }
             }
         }
+    }
+
+    &.apps label.icon {
+        color: scheme.$sapphire;
+    }
+
+    &.files label.icon {
+        color: scheme.$peach;
+    }
+
+    &.math label.icon {
+        color: scheme.$green;
     }
 }
