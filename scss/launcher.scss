@@ -44,12 +44,10 @@
         }
     }
 
-    .pinned {
-        .app {
-            @include lib.rounded(5);
+    .pinned .app {
+        @include lib.rounded(5);
 
-            font-size: lib.s(64);
-        }
+        font-size: lib.s(64);
     }
 
     .results {

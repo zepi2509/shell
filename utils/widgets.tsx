@@ -82,7 +82,6 @@ export class PopupWindow extends Widget.Window {
         }
     ) {
         const {
-            onKeyPressEvent,
             clickThrough,
             child,
             halign = Gtk.Align.START,
@@ -102,7 +101,7 @@ export class PopupWindow extends Widget.Window {
             // Close window on escape
             if (event.get_keyval()[1] === Gdk.KEY_Escape) self.hide();
 
-            return onKeyPressEvent?.(self, event);
+            return props.onKeyPressEvent?.(self, event);
         };
         super(sProps);
 
