@@ -1,6 +1,7 @@
 import { GLib, register, timeout } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
+import { notifpopups as config } from "../config";
 import { desktopEntrySubs } from "../utils/icons";
 import { setupChildClickthrough } from "../utils/widgets";
 
@@ -104,8 +105,8 @@ class NotifPopup extends Widget.Box {
             this.css = `transition: 300ms cubic-bezier(0.05, 0.9, 0.1, 1.1); margin-left: 0; margin-right: 0;`;
         });
 
-        // Close popup after timeout if transient
-        if (notification.transient)
+        // Close popup after timeout if transient or expire enabled in config
+        if (config.expire || notification.transient)
             timeout(
                 notification.expireTimeout > 0
                     ? notification.expireTimeout
@@ -145,8 +146,11 @@ export default () => (
                 const map = new Map<number, NotifPopup>();
                 self.hook(notifd, "notified", (self, id) => {
                     const notification = notifd.get_notification(id);
+
                     const popup = (<NotifPopup notification={notification} />) as NotifPopup;
+                    popup.connect("destroy", () => map.delete(notification.id));
                     map.set(notification.id, popup);
+
                     self.add(
                         <eventbox
                             // Dismiss on middle click
@@ -157,14 +161,12 @@ export default () => (
                             {popup}
                         </eventbox>
                     );
+
+                    // Limit number of popups
+                    if (config.maxPopups > 0 && self.children.length > config.maxPopups)
+                        map.values().next().value?.destroyWithAnims();
                 });
-                self.hook(notifd, "resolved", (_, id) => {
-                    const popup = map.get(id);
-                    if (popup) {
-                        popup.destroyWithAnims();
-                        map.delete(id);
-                    }
-                });
+                self.hook(notifd, "resolved", (_, id) => map.get(id)?.destroyWithAnims());
 
                 // Change input region to child region so can click through empty space
                 setupChildClickthrough(self);

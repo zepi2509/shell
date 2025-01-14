@@ -3,6 +3,7 @@ import { Astal, Gtk, Widget } from "astal/gtk3";
 import fuzzysort from "fuzzysort";
 import type AstalApps from "gi://AstalApps";
 import AstalHyprland from "gi://AstalHyprland";
+import { launcher as config } from "../config";
 import { Apps } from "../services/apps";
 import Math, { type HistoryItem } from "../services/math";
 import { HOME } from "../utils/constants";
@@ -18,23 +19,6 @@ interface Subcommand {
     description: string;
     command: (...args: string[]) => void;
 }
-
-const maxSearchResults = 15;
-const fdOptions = ["-a", "-t", "f", "-E", ".git"];
-
-const browser = [
-    "firefox",
-    "waterfox",
-    "google-chrome",
-    "chromium",
-    "brave-browser",
-    "vivaldi-stable",
-    "vivaldi-snapshot",
-];
-const terminal = ["foot", "alacritty", "kitty", "wezterm"];
-const files = ["thunar", "nemo", "nautilus"];
-const ide = ["codium", "code", "clion", "intellij-idea-ultimate-edition"];
-const music = ["spotify-adblock", "spotify", "audacious", "elisa"];
 
 const getIconFromMode = (mode: Mode) => {
     switch (mode) {
@@ -77,7 +61,7 @@ const openFileAndClose = (self: JSX.Element, path: string) => {
     ]).catch(console.error);
 };
 
-const PinnedApp = ({ names }: { names: string[] }) => {
+const PinnedApp = (names: string[]) => {
     let app: Gio.DesktopAppInfo | null = null;
     let astalApp: AstalApps.Application | undefined;
     for (const name of names) {
@@ -103,15 +87,7 @@ const PinnedApp = ({ names }: { names: string[] }) => {
     ) : null;
 };
 
-const PinnedApps = () => (
-    <box homogeneous>
-        <PinnedApp names={browser} />
-        <PinnedApp names={terminal} />
-        <PinnedApp names={files} />
-        <PinnedApp names={ide} />
-        <PinnedApp names={music} />
-    </box>
-);
+const PinnedApps = () => <box homogeneous>{config.pins.map(PinnedApp)}</box>;
 
 const SearchEntry = ({ entry }: { entry: Widget.Entry }) => (
     <stack
@@ -275,7 +251,7 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
 
                     const appSearch = () => {
                         const apps = Apps.fuzzy_query(entry.text);
-                        if (apps.length > maxSearchResults) apps.length = maxSearchResults;
+                        if (apps.length > config.maxResults) apps.length = config.maxResults;
                         for (const app of apps) self.add(<AppResult app={app} />);
                     };
 
@@ -289,10 +265,10 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                     };
 
                     const fileSearch = () =>
-                        execAsync(["fd", ...fdOptions, entry.text, HOME])
+                        execAsync(["fd", ...config.fdOpts, entry.text, HOME])
                             .then(out => {
                                 const paths = out.split("\n").filter(path => path);
-                                if (paths.length > maxSearchResults) paths.length = maxSearchResults;
+                                if (paths.length > config.maxResults) paths.length = config.maxResults;
                                 self.foreach(ch => ch.destroy());
                                 for (const path of paths) self.add(<FileResult path={path} />);
                             })

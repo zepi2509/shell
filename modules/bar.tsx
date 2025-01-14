@@ -4,6 +4,7 @@ import { App, Astal, astalify, Gdk, Gtk, type ConstructProps } from "astal/gtk3"
 import AstalHyprland from "gi://AstalHyprland";
 import AstalNotifd from "gi://AstalNotifd";
 import AstalTray from "gi://AstalTray";
+import { bar as config } from "../config";
 import Players from "../services/players";
 import { getAppCategoryIcon } from "../utils/icons";
 import { ellipsize } from "../utils/strings";
@@ -11,8 +12,6 @@ import { osIcon } from "../utils/system";
 import { setupCustomTooltip } from "../utils/widgets";
 
 const hyprland = AstalHyprland.get_default();
-
-const wsPerGroup = 10;
 
 const hookFocusedClientProp = (
     self: any, // Ugh why is there no base Widget type
@@ -99,7 +98,7 @@ const MediaPlaying = () => {
 };
 
 const Workspace = ({ idx }: { idx: number }) => {
-    let wsId = Math.floor((hyprland.focusedWorkspace.id - 1) / wsPerGroup) * wsPerGroup + idx;
+    let wsId = Math.floor((hyprland.focusedWorkspace.id - 1) / config.wsPerGroup) * config.wsPerGroup + idx;
     return (
         <button
             halign={Gtk.Align.CENTER}
@@ -115,7 +114,7 @@ const Workspace = ({ idx }: { idx: number }) => {
                 };
 
                 self.hook(hyprland, "notify::focused-workspace", () => {
-                    wsId = Math.floor((hyprland.focusedWorkspace.id - 1) / wsPerGroup) * wsPerGroup + idx;
+                    wsId = Math.floor((hyprland.focusedWorkspace.id - 1) / config.wsPerGroup) * config.wsPerGroup + idx;
                     update();
                 });
                 self.hook(hyprland, "client-added", update);
@@ -138,7 +137,7 @@ const Workspaces = () => (
         }}
     >
         <box className="module workspaces">
-            {Array.from({ length: wsPerGroup }).map((_, idx) => (
+            {Array.from({ length: config.wsPerGroup }).map((_, idx) => (
                 <Workspace idx={idx + 1} /> // Start from 1
             ))}
         </box>
@@ -237,7 +236,8 @@ const DateTime = () => (
         <label
             setup={self => {
                 const pollVar = Variable(null).poll(5000, () => {
-                    self.label = GLib.DateTime.new_now_local().format("%d/%m/%y %R") ?? new Date().toLocaleString();
+                    self.label =
+                        GLib.DateTime.new_now_local().format(config.dateTimeFormat) ?? new Date().toLocaleString();
                     return null;
                 });
                 self.connect("destroy", () => pollVar.drop());
