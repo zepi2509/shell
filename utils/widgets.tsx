@@ -58,7 +58,8 @@ export enum TransitionType {
 @register()
 export class PopupWindow extends Widget.Window {
     readonly transitionType: TransitionType;
-    readonly transitionDuration: number;
+    readonly transitionInDuration: number;
+    readonly transitionOutDuration: number;
     readonly transitionAmount: number;
 
     readonly #content: Widget.Box;
@@ -77,7 +78,8 @@ export class PopupWindow extends Widget.Window {
     constructor(
         props: Widget.WindowProps & {
             transitionType?: TransitionType;
-            transitionDuration?: number;
+            transitionInDuration?: number;
+            transitionOutDuration?: number;
             transitionAmount?: number;
         }
     ) {
@@ -87,7 +89,8 @@ export class PopupWindow extends Widget.Window {
             halign = Gtk.Align.START,
             valign = Gtk.Align.START,
             transitionType = TransitionType.FADE,
-            transitionDuration = 200,
+            transitionInDuration = 300,
+            transitionOutDuration = 200,
             transitionAmount = 0.2,
             ...sProps
         } = props;
@@ -106,7 +109,8 @@ export class PopupWindow extends Widget.Window {
         super(sProps);
 
         this.transitionType = transitionType;
-        this.transitionDuration = transitionDuration;
+        this.transitionInDuration = transitionInDuration;
+        this.transitionOutDuration = transitionOutDuration;
         this.transitionAmount = transitionAmount;
 
         // Wrapper box for animations
@@ -123,7 +127,7 @@ export class PopupWindow extends Widget.Window {
 
     #getTransitionCss(visible: boolean) {
         return (
-            `transition-duration: ${this.transitionDuration}ms;` +
+            `transition-duration: ${visible ? this.transitionInDuration : this.transitionOutDuration}ms;` +
             (visible
                 ? "opacity: 1;" + this.transitionType.replaceAll("${width}", "0").replaceAll("${height}", "0")
                 : "opacity: 0;" +
@@ -138,6 +142,7 @@ export class PopupWindow extends Widget.Window {
         this.notify("real-visible");
 
         super.show();
+        this.#content.toggleClassName("visible", true);
         this.#content.css = this.#getTransitionCss(true);
     }
 
@@ -145,8 +150,9 @@ export class PopupWindow extends Widget.Window {
         this.#visible = false;
         this.notify("real-visible");
 
+        this.#content.toggleClassName("visible", false);
         this.#content.css = this.#getTransitionCss(false);
-        timeout(this.transitionDuration, () => !this.#visible && super.hide());
+        timeout(this.transitionOutDuration, () => !this.#visible && super.hide());
     }
 
     toggle() {
