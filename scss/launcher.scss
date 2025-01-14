@@ -81,8 +81,14 @@
 
         .empty {
             color: scheme.$subtext0;
+            font-size: lib.s(18);
+            padding: lib.s(10) 0;
 
             @include lib.spacing;
+
+            .icon {
+                color: scheme.$subtext0;
+            }
         }
 
         .result {

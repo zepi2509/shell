@@ -1,4 +1,4 @@
-import { bind, execAsync, Gio, register, timeout, Variable } from "astal";
+import { bind, execAsync, Gio, GLib, register, timeout, Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
 import fuzzysort from "fuzzysort";
 import type AstalApps from "gi://AstalApps";
@@ -42,6 +42,17 @@ const getIconFromMode = (mode: Mode) => {
             return "folder";
         case "math":
             return "calculate";
+    }
+};
+
+const getEmptyTextFromMode = (mode: Mode) => {
+    switch (mode) {
+        case "apps":
+            return "No apps found";
+        case "files":
+            return GLib.find_program_in_path("fd") === null ? "File search requires `fd`" : "No files found";
+        case "math":
+            return "Type an expression";
     }
 };
 
@@ -196,8 +207,12 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
             shown={bind(empty).as(t => (t ? "empty" : "list"))}
         >
             <box name="empty" className="empty" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
-                <label className="icon" label="apps_outage" />
-                <label label="No results" />
+                <label className="icon" label="bug_report" />
+                <label
+                    label={bind(entry, "text").as(t =>
+                        t.startsWith(">") ? "No matching subcommands" : getEmptyTextFromMode(mode.get())
+                    )}
+                />
             </box>
             <box
                 vertical
