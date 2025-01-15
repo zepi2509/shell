@@ -86,13 +86,17 @@ const SliderOsd = ({
                     let fontDesc: Pango.FontDescription | null = null;
 
                     self.connect("draw", (_, cr: cairo.Context) => {
+                        const parent = self.get_parent();
+                        if (!parent) return;
+
                         const styleContext = self.get_style_context();
+                        const pContext = parent.get_style_context();
 
                         let width = getNumStyle(styleContext, "min-width");
                         let height = getNumStyle(styleContext, "min-height");
 
                         const progressValue = getNumStyle(styleContext, "font-size");
-                        let radius = getNumStyle(styleContext, "border-radius");
+                        let radius = getNumStyle(pContext, "border-radius");
                         // Flatten when near 0, do before swap cause its simpler
                         radius = Math.min(radius, Math.min(width * progressValue, height) / 2);
 
@@ -106,6 +110,7 @@ const SliderOsd = ({
                         const bg = styleContext.get_background_color(Gtk.StateFlags.NORMAL);
                         cr.setSourceRGBA(bg.red, bg.green, bg.blue, bg.alpha);
 
+                        // Background
                         if (vertical) {
                             cr.arc(radius, progressPosition, radius, -Math.PI, -halfPi); // Top left
                             cr.arc(width - radius, progressPosition, radius, -halfPi, 0); // Top right
@@ -118,44 +123,73 @@ const SliderOsd = ({
                         cr.arc(radius, height - radius, radius, halfPi, Math.PI); // Bottom left
                         cr.fill();
 
-                        const parent = self.get_parent();
-                        if (parent) {
-                            if (fontDesc === null) {
-                                const pContext = parent.get_style_context();
-                                const families = (getStyle(pContext, "font-family") as string[]).join(",");
-                                const weight = pangoWeightToStr(getStyle(pContext, "font-weight") as Pango.Weight);
-                                const size = getNumStyle(pContext, "font-size");
-                                fontDesc = Pango.font_description_from_string(`${families} ${weight} ${size}px`);
-                                // Ugh GTK CSS doesn't support font-variations, so you need to manually create the layout and font desc instead of using Gtk.Widget#create_pango_layout
-                                if (fillIcons) fontDesc.set_variations("FILL=1");
-                            }
+                        const fg = styleContext.get_color(Gtk.StateFlags.NORMAL);
+                        cr.setAntialias(cairo.Antialias.BEST);
 
-                            const layout = PangoCairo.create_layout(cr);
-                            layout.set_font_description(fontDesc);
-                            layout.set_text(icon.get(), -1);
-
-                            const [w, h] = layout.get_pixel_size();
-                            let diff;
-                            if (vertical) {
-                                diff = (progressValue * height) / h;
-                                cr.moveTo((width - w) / 2, Math.min(height - h, progressPosition - h / 2 + radius));
-                            } else {
-                                diff = (progressValue * width) / w;
-                                cr.moveTo(Math.max(0, progressPosition - w / 2 - radius), (height - h) / 2);
-                            }
-                            diff = Math.max(0, Math.min(1, diff));
-
-                            const fg = styleContext.get_color(Gtk.StateFlags.NORMAL);
-                            cr.setSourceRGBA(
-                                mix(fg.red, bg.red, diff),
-                                mix(fg.green, bg.green, diff),
-                                mix(fg.blue, bg.blue, diff),
-                                mix(fg.alpha, bg.alpha, diff)
-                            );
-
-                            cr.setAntialias(cairo.Antialias.BEST);
-                            PangoCairo.show_layout(cr, layout);
+                        // Progress number, at top/right
+                        const numLayout = parent.create_pango_layout(String(Math.round(progressValue * 100)));
+                        const [nw, nh] = numLayout.get_pixel_size();
+                        let diff;
+                        if (vertical) {
+                            diff = ((1 - progressValue) * height) / nh;
+                            cr.moveTo((width - nw) / 2, radius / 2);
+                        } else {
+                            diff = ((1 - progressValue) * width) / nw;
+                            cr.moveTo(width - nw - radius, (height - nh) / 2);
                         }
+                        diff = Math.max(0, Math.min(1, diff));
+
+                        cr.setSourceRGBA(
+                            mix(bg.red, fg.red, diff),
+                            mix(bg.green, fg.green, diff),
+                            mix(bg.blue, fg.blue, diff),
+                            mix(bg.alpha, fg.alpha, diff)
+                        );
+
+                        PangoCairo.show_layout(cr, numLayout);
+
+                        // Progress icon, follows progress
+                        if (fontDesc === null) {
+                            const weight = pangoWeightToStr(getStyle(pContext, "font-weight") as Pango.Weight);
+                            const size = getNumStyle(pContext, "font-size") * 1.5;
+                            fontDesc = Pango.font_description_from_string(
+                                `Material Symbols Rounded ${weight} ${size}px`
+                            );
+                            // Ugh GTK CSS doesn't support font-variations, so you need to manually create the layout and font desc instead of using Gtk.Widget#create_pango_layout
+                            if (fillIcons) fontDesc.set_variations("FILL=1");
+                        }
+
+                        const iconLayout = PangoCairo.create_layout(cr);
+                        iconLayout.set_font_description(fontDesc);
+                        iconLayout.set_text(icon.get(), -1);
+
+                        const [iw, ih] = iconLayout.get_pixel_size();
+                        if (vertical) {
+                            diff = (progressValue * height) / ih;
+                            cr.moveTo(
+                                (width - iw) / 2,
+                                Math.max(nh, Math.min(height - ih, progressPosition - ih / 2 + radius))
+                            );
+                        } else {
+                            diff = (progressValue * width) / iw;
+                            cr.moveTo(
+                                Math.min(
+                                    width - nw * 1.1 - iw - radius,
+                                    Math.max(0, progressPosition - iw / 2 - radius)
+                                ),
+                                (height - ih) / 2
+                            );
+                        }
+                        diff = Math.max(0, Math.min(1, diff));
+
+                        cr.setSourceRGBA(
+                            mix(fg.red, bg.red, diff),
+                            mix(fg.green, bg.green, diff),
+                            mix(fg.blue, bg.blue, diff),
+                            mix(fg.alpha, bg.alpha, diff)
+                        );
+
+                        PangoCairo.show_layout(cr, iconLayout);
                     });
                 }}
             />

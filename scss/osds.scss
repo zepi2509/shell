@@ -7,14 +7,13 @@
     @include lib.rounded(8);
     @include lib.border(scheme.$overlay0, 0.1);
     @include lib.shadow;
-    @include font.icon;
+    @include font.mono;
 
     background-color: scheme.$base;
-    font-size: lib.s(28);
+    font-size: lib.s(16);
     padding: lib.s(3);
 
     .inner {
-        @include lib.rounded(8);
         @include lib.fluent-decel(1000ms);
 
         min-width: lib.s(300);
@@ -22,8 +21,4 @@
         background-color: scheme.$teal;
         color: scheme.$base;
     }
-}
-
-.brightness {
-    font-size: lib.s(26);
 }
