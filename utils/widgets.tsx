@@ -8,7 +8,7 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
     const window = (
         <window
             visible={false}
-            namespace="tooltip"
+            namespace="caelestia-tooltip"
             keymode={Astal.Keymode.NONE}
             exclusivity={Astal.Exclusivity.IGNORE}
             anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT}
