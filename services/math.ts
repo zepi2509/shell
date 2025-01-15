@@ -95,7 +95,12 @@ export default class Math extends GObject.Object {
 
         let result: string, icon: string;
         try {
-            if (equation.includes("=")) {
+            if (equation.startsWith("help")) {
+                equation = "Help";
+                result =
+                    "This is a calculator powered by Math.js.\nAvailable functions:\n\thelp: show help\n\tclear: clear history\n\t<x> = <equation>: sets <x> to <equation>\n\tsimplify <equation>: simplifies <equation>\n\tderive <x> <equation>: derives <equation> with respect to <x>\n\tdd<x> <equation>: short form of derive\n\trationalize <equation>: rationalizes <equation>\n\t<equation>: evaluates <equation>\nSee the documentation for syntax and inbuilt functions.";
+                icon = "help";
+            } else if (equation.includes("=")) {
                 const [left, right] = equation.split("=");
                 try {
                     this.#variables[left.trim()] = simplify(right).toString();
@@ -107,10 +112,11 @@ export default class Math extends GObject.Object {
             } else if (equation.startsWith("simplify")) {
                 result = simplify(equation.slice(8), this.#variables).toString();
                 icon = "function";
-            } else if (equation.startsWith("derive")) {
-                const respectTo = equation.split(" ")[1];
-                if (!respectTo) throw new Error("Format: derive <respect-to> <equation>");
-                result = derivative(equation.slice(7 + respectTo.length), respectTo).toString();
+            } else if (equation.startsWith("derive") || equation.startsWith("dd")) {
+                const isShortForm = equation.startsWith("dd");
+                const respectTo = isShortForm ? equation.split(" ")[0].slice(2) : equation.split(" ")[1];
+                if (!respectTo) throw new Error(`Format: ${isShortForm ? "dd" : "derive "}<respect-to> <equation>`);
+                result = derivative(equation.slice((isShortForm ? 2 : 7) + respectTo.length), respectTo).toString();
                 icon = "function";
             } else if (equation.startsWith("rationalize")) {
                 result = rationalize(equation.slice(11), this.#variables).toString();

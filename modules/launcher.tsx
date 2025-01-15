@@ -121,9 +121,9 @@ const Result = ({
     <button className="result" cursor="pointer" onClicked={onClicked}>
         <box>
             {icon && Astal.Icon.lookup_icon(icon) ? (
-                <icon className="icon" icon={icon} />
+                <icon valign={Gtk.Align.START} className="icon" icon={icon} />
             ) : (
-                <label className="icon" label={materialIcon} />
+                <label valign={Gtk.Align.START} className="icon" label={materialIcon} />
             )}
             {sublabel ? (
                 <box vertical valign={Gtk.Align.CENTER} className="has-sublabel">
