@@ -19,6 +19,9 @@
         min-width: lib.s(300);
         min-height: lib.s(32);
         background-color: scheme.$teal;
-        color: scheme.$base;
     }
+}
+
+.volume .inner.mute {
+    background-color: scheme.$overlay0;
 }

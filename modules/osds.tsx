@@ -42,7 +42,7 @@ const SliderOsd = ({
     fillIcons?: boolean;
     monitor: Monitor;
     type: keyof typeof config;
-    windowSetup: (self: Widget.Window, hideAfterTimeout: () => void) => void;
+    windowSetup: (self: Widget.Window, show: () => void) => void;
     className?: string;
     initValue: number;
     drawAreaSetup: (self: Widget.DrawingArea, icon: Variable<string>) => void;
@@ -60,7 +60,10 @@ const SliderOsd = ({
                 time = timeout(config[type].hideDelay, () => self.hide());
             };
             self.connect("show", hideAfterTimeout);
-            windowSetup(self, hideAfterTimeout);
+            windowSetup(self, () => {
+                self.show();
+                hideAfterTimeout();
+            });
         }}
     >
         <box className={type}>
@@ -75,6 +78,7 @@ const SliderOsd = ({
 
                     const icon = Variable("");
                     drawAreaSetup(self, icon);
+                    self.hook(icon, () => self.queue_draw());
 
                     // Init size
                     const styleContext = self.get_style_context();
@@ -123,7 +127,7 @@ const SliderOsd = ({
                         cr.arc(radius, height - radius, radius, halfPi, Math.PI); // Bottom left
                         cr.fill();
 
-                        const fg = styleContext.get_color(Gtk.StateFlags.NORMAL);
+                        const fg = pContext.get_background_color(Gtk.StateFlags.NORMAL);
                         cr.setAntialias(cairo.Antialias.BEST);
 
                         // Progress number, at top/right
@@ -202,11 +206,9 @@ const Volume = ({ monitor, audio }: { monitor: Monitor; audio: AstalWp.Audio }) 
         fillIcons
         monitor={monitor}
         type="volume"
-        windowSetup={(self, hideAfterTimeout) => {
-            self.hook(audio.defaultSpeaker, "notify::volume", () => {
-                self.show();
-                hideAfterTimeout();
-            });
+        windowSetup={(self, show) => {
+            self.hook(audio.defaultSpeaker, "notify::volume", show);
+            self.hook(audio.defaultSpeaker, "notify::mute", show);
         }}
         className={audio.defaultSpeaker.mute ? "mute" : ""}
         initValue={audio.defaultSpeaker.volume}
@@ -236,12 +238,7 @@ const Brightness = ({ monitor }: { monitor: Monitor }) => (
     <SliderOsd
         monitor={monitor}
         type="brightness"
-        windowSetup={(self, hideAfterTimeout) => {
-            self.hook(monitor, "notify::brightness", () => {
-                self.show();
-                hideAfterTimeout();
-            });
-        }}
+        windowSetup={(self, show) => self.hook(monitor, "notify::brightness", show)}
         initValue={monitor.brightness}
         drawAreaSetup={(self, icon) => {
             const update = () => {
