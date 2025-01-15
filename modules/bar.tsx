@@ -251,6 +251,7 @@ const Network = () => (
             <label className="icon" label="signal_wifi_4_bar" name="4" />
         </stack>
         <stack
+            name="wired"
             transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
             transitionDuration={120}
             setup={self => {
