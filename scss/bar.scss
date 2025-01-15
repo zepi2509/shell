@@ -84,6 +84,10 @@
         @include lib.spacing(10);
     }
 
+    .status-icons {
+        color: scheme.$rosewater;
+    }
+
     .notifications {
         color: scheme.$mauve;
     }
@@ -94,10 +98,20 @@
 
     .power {
         @include lib.border(scheme.$red);
+        @include lib.element-decel;
         @include font.icon;
 
         color: scheme.$red;
         font-weight: bold;
         font-size: lib.s(16);
+
+        &:hover,
+        &:focus {
+            background-color: scheme.$surface1;
+        }
+
+        &:active {
+            background-color: scheme.$surface2;
+        }
     }
 }

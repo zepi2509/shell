@@ -1,7 +1,9 @@
 import { execAsync, GLib, register, Variable } from "astal";
 import { bind, kebabify } from "astal/binding";
 import { App, Astal, astalify, Gdk, Gtk, type ConstructProps } from "astal/gtk3";
+import AstalBluetooth01 from "gi://AstalBluetooth";
 import AstalHyprland from "gi://AstalHyprland";
+import AstalNetwork from "gi://AstalNetwork";
 import AstalNotifd from "gi://AstalNotifd";
 import AstalTray from "gi://AstalTray";
 import { bar as config } from "../config";
@@ -184,6 +186,127 @@ const TrayItem = (item: AstalTray.TrayItem) => {
 
 const Tray = () => <box className="module tray">{bind(AstalTray.get_default(), "items").as(i => i.map(TrayItem))}</box>;
 
+const Network = () => (
+    <stack
+        transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
+        transitionDuration={120}
+        shown={bind(AstalNetwork.get_default(), "primary").as(p =>
+            p === AstalNetwork.Primary.WIFI ? "wifi" : "wired"
+        )}
+        setup={self => {
+            const network = AstalNetwork.get_default();
+            const tooltipText = Variable("");
+            const update = () => {
+                if (network.primary === AstalNetwork.Primary.WIFI) {
+                    if (network.wifi.internet === AstalNetwork.Internet.CONNECTED)
+                        tooltipText.set(`${network.wifi.ssid} | Strength: ${network.wifi.strength}/100`);
+                    else if (network.wifi.internet === AstalNetwork.Internet.CONNECTING)
+                        tooltipText.set(`Connecting to ${network.wifi.ssid}`);
+                    else tooltipText.set("Disconnected");
+                } else if (network.primary === AstalNetwork.Primary.WIRED) {
+                    if (network.wired.internet === AstalNetwork.Internet.CONNECTED)
+                        tooltipText.set(`Speed: ${network.wired.speed}`);
+                    else if (network.wired.internet === AstalNetwork.Internet.CONNECTING) tooltipText.set("Connecting");
+                    else tooltipText.set("Disconnected");
+                } else {
+                    tooltipText.set("Unknown");
+                }
+            };
+            self.hook(network, "notify::primary", update);
+            self.hook(network.wifi, "notify::internet", update);
+            self.hook(network.wifi, "notify::ssid", update);
+            self.hook(network.wifi, "notify::strength", update);
+            if (network.wired) {
+                self.hook(network.wired, "notify::internet", update);
+                self.hook(network.wired, "notify::speed", update);
+            }
+            update();
+            setupCustomTooltip(self, bind(tooltipText));
+        }}
+    >
+        <stack
+            name="wifi"
+            transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
+            transitionDuration={120}
+            setup={self => {
+                const network = AstalNetwork.get_default();
+                const update = () => {
+                    if (network.wifi.internet === AstalNetwork.Internet.CONNECTED)
+                        self.shown = String(Math.ceil(network.wifi.strength / 25));
+                    else if (network.wifi.internet === AstalNetwork.Internet.CONNECTING) self.shown = "connecting";
+                    else self.shown = "disconnected";
+                };
+                self.hook(network.wifi, "notify::internet", update);
+                self.hook(network.wifi, "notify::strength", update);
+                update();
+            }}
+        >
+            <label className="icon" label="wifi_off" name="disconnected" />
+            <label className="icon" label="settings_ethernet" name="connecting" />
+            <label className="icon" label="signal_wifi_0_bar" name="0" />
+            <label className="icon" label="network_wifi_1_bar" name="1" />
+            <label className="icon" label="network_wifi_2_bar" name="2" />
+            <label className="icon" label="network_wifi_3_bar" name="3" />
+            <label className="icon" label="signal_wifi_4_bar" name="4" />
+        </stack>
+        <stack
+            transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
+            transitionDuration={120}
+            setup={self => {
+                const network = AstalNetwork.get_default();
+                const update = () => {
+                    if (network.primary !== AstalNetwork.Primary.WIRED) return;
+
+                    if (network.wired.internet === AstalNetwork.Internet.CONNECTED) self.shown = "connected";
+                    else if (network.wired.internet === AstalNetwork.Internet.CONNECTING) self.shown = "connecting";
+                    else self.shown = "disconnected";
+                };
+                self.hook(network, "notify::primary", update);
+                if (network.wired) self.hook(network.wired, "notify::internet", update);
+                update();
+            }}
+        >
+            <label className="icon" label="wifi_off" name="disconnected" />
+            <label className="icon" label="settings_ethernet" name="connecting" />
+            <label className="icon" label="lan" name="connected" />
+        </stack>
+    </stack>
+);
+
+const Bluetooth = () => (
+    <stack
+        transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
+        transitionDuration={120}
+        shown={bind(AstalBluetooth01.get_default(), "isPowered").as(p => (p ? "enabled" : "disabled"))}
+        setup={self => {
+            const tooltipText = Variable("");
+            const update = () => {
+                const devices = AstalBluetooth01.get_default()
+                    .get_devices()
+                    .filter(d => d.connected);
+                tooltipText.set(
+                    devices.length > 0
+                        ? `Connected devices: ${devices.map(d => d.alias).join(", ")}`
+                        : "No connected devices"
+                );
+            };
+            self.hook(AstalBluetooth01.get_default(), "notify", update);
+            update();
+            setupCustomTooltip(self, bind(tooltipText));
+        }}
+    >
+        <label className="icon" label="bluetooth" name="enabled" />
+        <label className="icon" label="bluetooth_disabled" name="disabled" />
+    </stack>
+);
+
+const StatusIcons = () => (
+    <box className="module status-icons">
+        <Network />
+        <Bluetooth />
+    </box>
+);
+
 const Notifications = () => {
     const unreadCount = Variable(0);
     return (
@@ -252,7 +375,6 @@ const Power = () => (
     <button
         className="module power"
         label="power_settings_new"
-        cursor="pointer"
         onClicked={() => execAsync("fish -c 'pkill wlogout || wlogout -p layer-shell'").catch(console.error)}
     />
 );
@@ -273,6 +395,7 @@ export default ({ monitor }: { monitor: AstalHyprland.Monitor }) => (
             <Workspaces />
             <box halign={Gtk.Align.END}>
                 <Tray />
+                <StatusIcons />
                 <Notifications />
                 <DateTime />
                 <Power />
