@@ -52,12 +52,16 @@ const overrideProp = <T,>(
     override: (prop: T | undefined) => T | undefined
 ) => prop && (prop instanceof Binding ? prop.as(override) : override(prop));
 
+// TODO: fix shadow by putting child in a box with padding, also add shadow to .popup
 export const convertPopupWindowProps = (props: Widget.WindowProps): Widget.WindowProps => ({
     keymode: Astal.Keymode.ON_DEMAND,
     exclusivity: Astal.Exclusivity.IGNORE,
     ...props,
     visible: false,
     application: App,
+    name: props.monitor
+        ? overrideProp(props.name, n => (n && props.monitor ? n + props.monitor : undefined))
+        : props.name,
     namespace: overrideProp(props.name, n => `caelestia-${n}`),
     className: overrideProp(props.className, c => `popup ${c}`),
     onKeyPressEvent: (self, event) => {

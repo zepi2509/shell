@@ -7,6 +7,7 @@ import AstalNetwork from "gi://AstalNetwork";
 import AstalNotifd from "gi://AstalNotifd";
 import AstalTray from "gi://AstalTray";
 import { bar as config } from "../config";
+import type { Monitor } from "../services/monitors";
 import Players from "../services/players";
 import Updates from "../services/updates";
 import { getAppCategoryIcon } from "../utils/icons";
@@ -396,7 +397,7 @@ const Power = () => (
     />
 );
 
-export default ({ monitor }: { monitor: AstalHyprland.Monitor }) => (
+export default ({ monitor }: { monitor: Monitor }) => (
     <window
         namespace="caelestia-bar"
         monitor={monitor.id}

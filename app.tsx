@@ -1,9 +1,10 @@
 import { execAsync, GLib, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
-import AstalHyprland from "gi://AstalHyprland";
 import Bar from "./modules/bar";
 import Launcher from "./modules/launcher";
 import NotifPopups from "./modules/notifpopups";
+import Osds from "./modules/osds";
+import Monitors from "./services/monitors";
 import Players from "./services/players";
 
 const loadStyleAsync = async () => {
@@ -21,21 +22,24 @@ App.start({
 
         <Launcher />;
         <NotifPopups />;
-        AstalHyprland.get_default().monitors.forEach(m => <Bar monitor={m} />);
+        Monitors.get_default().forEach(m => {
+            <Osds monitor={m} />;
+            <Bar monitor={m} />;
+        });
 
         console.log("Caelestia started");
     },
     requestHandler(request, res) {
-        let log = true;
-
         if (request === "reload css") loadStyleAsync().catch(console.error);
         else if (request === "media play pause") Players.get_default().lastPlayer?.play_pause();
         else if (request === "media next") Players.get_default().lastPlayer?.next();
         else if (request === "media previous") Players.get_default().lastPlayer?.previous();
         else if (request === "media stop") Players.get_default().lastPlayer?.stop();
+        else if (request === "brightness up") Monitors.get_default().active.brightness += 0.1;
+        else if (request === "brightness down") Monitors.get_default().active.brightness -= 0.1;
         else return res("Unknown command: " + request);
 
-        if (log) console.log(`Request handled: ${request}`);
+        console.log(`Request handled: ${request}`);
         res("OK");
     },
 });

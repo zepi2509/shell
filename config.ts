@@ -1,3 +1,5 @@
+import { Astal } from "astal/gtk3";
+
 // Modules
 export const bar = {
     wsPerGroup: 10,
@@ -19,6 +21,19 @@ export const launcher = {
 export const notifpopups = {
     maxPopups: -1,
     expire: false,
+};
+
+export const osds = {
+    volume: {
+        position: Astal.WindowAnchor.RIGHT,
+        margin: 20,
+        hideDelay: 1500,
+    },
+    brightness: {
+        position: Astal.WindowAnchor.LEFT,
+        margin: 20,
+        hideDelay: 1500,
+    },
 };
 
 // Services

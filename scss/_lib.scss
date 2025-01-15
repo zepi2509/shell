@@ -31,6 +31,10 @@ $scale: 0.068rem;
     transition: $duration cubic-bezier(0, 0.55, 0.45, 1);
 }
 
+@mixin fluent-decel($duration: 200ms) {
+    transition: $duration cubic-bezier(0.1, 1, 0, 1);
+}
+
 @mixin overshot {
     transition-timing-function: cubic-bezier(0.05, 0.9, 0.1, 1.1);
 }
