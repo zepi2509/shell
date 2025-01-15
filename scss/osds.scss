@@ -5,9 +5,11 @@
 .brightness,
 .volume {
     @include lib.rounded(8);
+    @include lib.border(scheme.$overlay0, 0.1);
+    @include lib.shadow;
     @include font.icon;
 
-    background-color: scheme.$mantle;
+    background-color: scheme.$base;
     font-size: lib.s(28);
     padding: lib.s(3);
 
@@ -18,7 +20,7 @@
         min-width: lib.s(300);
         min-height: lib.s(32);
         background-color: scheme.$teal;
-        color: scheme.$mantle;
+        color: scheme.$base;
     }
 }
 

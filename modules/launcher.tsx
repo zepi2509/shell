@@ -381,6 +381,8 @@ export default class Launcher extends Widget.Window {
 
         // Clear search on hide if not in math mode
         this.connect("hide", () => mode.get() !== "math" && entry.set_text(""));
+
+        this.connect("destroy", () => showResults.drop());
     }
 
     open(mode: Mode) {
