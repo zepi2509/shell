@@ -8,7 +8,7 @@ import { Apps } from "../services/apps";
 import Math, { type HistoryItem } from "../services/math";
 import { getAppCategoryIcon } from "../utils/icons";
 import { launch } from "../utils/system";
-import { PopupWindow, setupCustomTooltip, TransitionType } from "../utils/widgets";
+import { convertPopupWindowProps, setupCustomTooltip } from "../utils/widgets";
 
 type Mode = "apps" | "files" | "math";
 
@@ -323,11 +323,7 @@ const LauncherContent = ({
     showResults: Variable<boolean>;
     entry: Widget.Entry;
 }) => (
-    <box
-        vertical
-        className={bind(mode).as(m => `launcher ${m}`)}
-        css={bind(AstalHyprland.get_default(), "focusedMonitor").as(m => `margin-top: ${m.height / 4}px;`)}
-    >
+    <box vertical className={bind(mode).as(m => `launcher ${m}`)}>
         <box className="search-bar">
             <label className="icon" label="search" />
             <SearchEntry entry={entry} />
@@ -351,7 +347,7 @@ const LauncherContent = ({
 );
 
 @register()
-export default class Launcher extends PopupWindow {
+export default class Launcher extends Widget.Window {
     readonly mode: Variable<Mode>;
 
     constructor() {
@@ -359,28 +355,32 @@ export default class Launcher extends PopupWindow {
         const mode = Variable<Mode>("apps");
         const showResults = Variable.derive([bind(entry, "textLength"), mode], (t, m) => t > 0 || m !== "apps");
 
-        super({
-            name: "launcher",
-            keymode: Astal.Keymode.EXCLUSIVE,
-            onKeyPressEvent(_, event) {
-                const keyval = event.get_keyval()[1];
-                // Focus entry on typing
-                if (!entry.isFocus && keyval >= 32 && keyval <= 126) {
-                    entry.text += String.fromCharCode(keyval);
-                    entry.grab_focus();
-                    entry.set_position(-1);
+        super(
+            convertPopupWindowProps({
+                name: "launcher",
+                anchor: Astal.WindowAnchor.TOP,
+                keymode: Astal.Keymode.EXCLUSIVE,
+                onKeyPressEvent(_, event) {
+                    const keyval = event.get_keyval()[1];
+                    // Focus entry on typing
+                    if (!entry.isFocus && keyval >= 32 && keyval <= 126) {
+                        entry.text += String.fromCharCode(keyval);
+                        entry.grab_focus();
+                        entry.set_position(-1);
 
-                    // Consume event, if not consumed it will duplicate character in entry
-                    return true;
-                }
-            },
-            transitionType: TransitionType.SLIDE_DOWN,
-            halign: Gtk.Align.CENTER,
-            valign: Gtk.Align.START,
-            child: <LauncherContent mode={mode} showResults={showResults} entry={entry} />,
-        });
+                        // Consume event, if not consumed it will duplicate character in entry
+                        return true;
+                    }
+                },
+                halign: Gtk.Align.CENTER,
+                valign: Gtk.Align.START,
+                child: <LauncherContent mode={mode} showResults={showResults} entry={entry} />,
+            })
+        );
 
         this.mode = mode;
+
+        this.connect("show", () => (this.marginTop = AstalHyprland.get_default().focusedMonitor.height / 4));
 
         // Clear search on hide if not in math mode
         this.connect("hide", () => mode.get() !== "math" && entry.set_text(""));

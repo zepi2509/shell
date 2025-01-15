@@ -5,7 +5,6 @@ import Bar from "./modules/bar";
 import Launcher from "./modules/launcher";
 import NotifPopups from "./modules/notifpopups";
 import Players from "./services/players";
-import { PopupWindow } from "./utils/widgets";
 
 const loadStyleAsync = async () => {
     if (!GLib.file_test(`${SRC}/scss/scheme/_index.scss`, GLib.FileTest.EXISTS))
@@ -34,13 +33,7 @@ App.start({
         else if (request === "media next") Players.get_default().lastPlayer?.next();
         else if (request === "media previous") Players.get_default().lastPlayer?.previous();
         else if (request === "media stop") Players.get_default().lastPlayer?.stop();
-        else if (request.startsWith("toggle")) {
-            const window = App.get_window(request.slice(7));
-            if (window instanceof PopupWindow) window.toggle();
-            else App.toggle_window(request.slice(7));
-
-            log = false;
-        } else return res("Unknown command: " + request);
+        else return res("Unknown command: " + request);
 
         if (log) console.log(`Request handled: ${request}`);
         res("OK");

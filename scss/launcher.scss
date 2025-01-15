@@ -15,14 +15,6 @@
     }
 }
 
-.launcher-wrapper {
-    @include lib.ease-in-out;
-
-    &.visible {
-        @include lib.overshot;
-    }
-}
-
 .launcher {
     @include lib.rounded(10);
     @include lib.border(scheme.$overlay0, 0.2);
