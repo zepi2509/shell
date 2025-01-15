@@ -63,7 +63,7 @@ export const convertPopupWindowProps = (props: Widget.WindowProps): Widget.Windo
         ? overrideProp(props.name, n => (n && props.monitor ? n + props.monitor : undefined))
         : props.name,
     namespace: overrideProp(props.name, n => `caelestia-${n}`),
-    className: overrideProp(props.className, c => `popup ${c}`),
+    className: overrideProp(props.className, c => `popup-window ${c}`),
     onKeyPressEvent: (self, event) => {
         // Close window on escape
         if (event.get_keyval()[1] === Gdk.KEY_Escape) self.hide();

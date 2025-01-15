@@ -17,7 +17,7 @@ label.icon {
     @include font.icon;
 }
 
-window.popup {
+.popup-window {
     transition: opacity 300ms linear;
     opacity: 0;
 
