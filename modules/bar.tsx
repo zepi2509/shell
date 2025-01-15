@@ -331,7 +331,7 @@ const Notifications = () => {
             setup={self =>
                 setupCustomTooltip(
                     self,
-                    bind(unreadCount).as(n => n + " unread notifications")
+                    bind(unreadCount).as(n => `${n} unread notification${n === 1 ? "" : "s"}`)
                 )
             }
         >
