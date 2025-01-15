@@ -52,7 +52,6 @@ const overrideProp = <T,>(
     override: (prop: T | undefined) => T | undefined
 ) => prop && (prop instanceof Binding ? prop.as(override) : override(prop));
 
-// TODO: fix shadow by putting child in a box with padding, also add shadow to .popup
 export const convertPopupWindowProps = (props: Widget.WindowProps): Widget.WindowProps => ({
     keymode: Astal.Keymode.ON_DEMAND,
     exclusivity: Astal.Exclusivity.IGNORE,
@@ -74,6 +73,7 @@ export const convertPopupWindowProps = (props: Widget.WindowProps): Widget.Windo
         self.connect("notify::visible", () => self.toggleClassName("visible", self.visible));
         props.setup?.(self);
     },
+    borderWidth: 20, // To allow shadow, cause if not it gets cut off
 });
 
 export const PopupWindow = (props: Widget.WindowProps) => <window {...convertPopupWindowProps(props)} />;
