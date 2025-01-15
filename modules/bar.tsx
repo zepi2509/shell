@@ -309,18 +309,21 @@ const Bluetooth = () => (
                 execAsync("uwsm app -- blueman-manager").catch(console.error);
         }}
         setup={self => {
+            const bluetooth = AstalBluetooth.get_default();
             const tooltipText = Variable("");
             const update = () => {
-                const devices = AstalBluetooth.get_default()
-                    .get_devices()
-                    .filter(d => d.connected);
+                const devices = bluetooth.get_devices().filter(d => d.connected);
                 tooltipText.set(
                     devices.length > 0
                         ? `Connected devices: ${devices.map(d => d.alias).join(", ")}`
                         : "No connected devices"
                 );
             };
-            self.hook(AstalBluetooth.get_default(), "notify", update); // TODO: fix not updating
+            bluetooth.get_devices().forEach(d => self.hook(d, "notify::connected", update));
+            self.hook(bluetooth, "device-added", (_, device) => {
+                self.hook(device, "notify::connected", update);
+                update();
+            });
             update();
             setupCustomTooltip(self, bind(tooltipText));
         }}
