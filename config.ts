@@ -1,3 +1,4 @@
+// Modules
 export const bar = {
     wsPerGroup: 10,
     dateTimeFormat: "%d/%m/%y %R",
@@ -18,4 +19,9 @@ export const launcher = {
 export const notifpopups = {
     maxPopups: -1,
     expire: false,
+};
+
+// Services
+export const updates = {
+    interval: 900000,
 };

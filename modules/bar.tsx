@@ -8,6 +8,7 @@ import AstalNotifd from "gi://AstalNotifd";
 import AstalTray from "gi://AstalTray";
 import { bar as config } from "../config";
 import Players from "../services/players";
+import Updates from "../services/updates";
 import { getAppCategoryIcon } from "../utils/icons";
 import { ellipsize } from "../utils/strings";
 import { osIcon } from "../utils/system";
@@ -307,6 +308,21 @@ const StatusIcons = () => (
     </box>
 );
 
+const PkgUpdates = () => (
+    <box
+        className="module updates"
+        setup={self =>
+            setupCustomTooltip(
+                self,
+                bind(Updates.get_default(), "numUpdates").as(n => `${n} update${n === 1 ? "" : "s"} available`)
+            )
+        }
+    >
+        <label className="icon" label="download" />
+        <label label={bind(Updates.get_default(), "numUpdates").as(String)} />
+    </box>
+);
+
 const Notifications = () => {
     const unreadCount = Variable(0);
     return (
@@ -396,6 +412,7 @@ export default ({ monitor }: { monitor: AstalHyprland.Monitor }) => (
             <box halign={Gtk.Align.END}>
                 <Tray />
                 <StatusIcons />
+                <PkgUpdates />
                 <Notifications />
                 <DateTime />
                 <Power />
