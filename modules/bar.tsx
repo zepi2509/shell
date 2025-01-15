@@ -319,9 +319,13 @@ const Bluetooth = () => (
                         : "No connected devices"
                 );
             };
-            bluetooth.get_devices().forEach(d => self.hook(d, "notify::connected", update));
-            self.hook(bluetooth, "device-added", (_, device) => {
+            const hookDevice = (device: AstalBluetooth.Device) => {
                 self.hook(device, "notify::connected", update);
+                self.hook(device, "notify::alias", update);
+            };
+            bluetooth.get_devices().forEach(hookDevice);
+            self.hook(bluetooth, "device-added", (_, device) => {
+                hookDevice(device);
                 update();
             });
             update();
