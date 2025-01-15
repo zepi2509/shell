@@ -278,7 +278,6 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                             .finally(updateEmpty);
 
                     self.hook(entry, "activate", () => {
-                        if (!entry.text) return;
                         if (mode.get() === "math") {
                             if (entry.text.startsWith("clear")) Math.get_default().clear();
                             else Math.get_default().commit();
@@ -289,7 +288,7 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                         if (!entry.text && mode.get() === "apps") return;
 
                         // Files has delay cause async so it does some stuff by itself
-                        const ignoreFileAsync = !entry.text || entry.text.startsWith(">") || mode.get() !== "files";
+                        const ignoreFileAsync = entry.text.startsWith(">") || mode.get() !== "files";
                         if (ignoreFileAsync) self.foreach(ch => ch.destroy());
 
                         if (entry.text.startsWith(">")) {
@@ -372,8 +371,6 @@ export default class Launcher extends Widget.Window {
                         return true;
                     }
                 },
-                halign: Gtk.Align.CENTER,
-                valign: Gtk.Align.START,
                 child: <LauncherContent mode={mode} showResults={showResults} entry={entry} />,
             })
         );
