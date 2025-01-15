@@ -1,6 +1,5 @@
 import { GLib, GObject, property, readFile, register, writeFileAsync } from "astal";
 import AstalMpris from "gi://AstalMpris";
-import { CACHE_DIR } from "../utils/constants";
 import { isRealPlayer } from "../utils/mpris";
 
 @register({ GTypeName: "Players" })
@@ -12,7 +11,7 @@ export default class Players extends GObject.Object {
         return this.instance;
     }
 
-    readonly #path = `${CACHE_DIR}/players.txt`;
+    readonly #path = `${CACHE}/players.txt`;
     readonly #players: AstalMpris.Player[] = [];
     readonly #subs = new Map<
         JSX.Element,

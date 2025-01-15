@@ -6,7 +6,6 @@ import AstalHyprland from "gi://AstalHyprland";
 import { launcher as config } from "../config";
 import { Apps } from "../services/apps";
 import Math, { type HistoryItem } from "../services/math";
-import { HOME } from "../utils/constants";
 import { getAppCategoryIcon } from "../utils/icons";
 import { launch } from "../utils/system";
 import { PopupWindow, setupCustomTooltip, TransitionType } from "../utils/widgets";

@@ -1,6 +1,5 @@
 import { GLib, GObject, property, readFile, register, writeFileAsync } from "astal";
 import { derivative, evaluate, rationalize, simplify } from "mathjs/number";
-import { CACHE_DIR } from "../utils/constants";
 
 export interface HistoryItem {
     equation: string;
@@ -18,7 +17,7 @@ export default class Math extends GObject.Object {
     }
 
     readonly #maxHistory = 20;
-    readonly #path = `${CACHE_DIR}/math-history.json`;
+    readonly #path = `${CACHE}/math-history.json`;
     readonly #history: HistoryItem[] = [];
 
     #variables: Record<string, string> = {};
