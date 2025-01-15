@@ -1,7 +1,7 @@
 import { execAsync, GLib, register, Variable } from "astal";
 import { bind, kebabify } from "astal/binding";
 import { App, Astal, astalify, Gdk, Gtk, type ConstructProps } from "astal/gtk3";
-import AstalBluetooth01 from "gi://AstalBluetooth";
+import AstalBluetooth from "gi://AstalBluetooth";
 import AstalHyprland from "gi://AstalHyprland";
 import AstalNetwork from "gi://AstalNetwork";
 import AstalNotifd from "gi://AstalNotifd";
@@ -189,12 +189,27 @@ const TrayItem = (item: AstalTray.TrayItem) => {
 const Tray = () => <box className="module tray">{bind(AstalTray.get_default(), "items").as(i => i.map(TrayItem))}</box>;
 
 const Network = () => (
-    <stack
-        transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
-        transitionDuration={120}
-        shown={bind(AstalNetwork.get_default(), "primary").as(p =>
-            p === AstalNetwork.Primary.WIFI ? "wifi" : "wired"
-        )}
+    <button
+        onClick={(_, event) => {
+            const network = AstalNetwork.get_default();
+            if (event.button === Astal.MouseButton.PRIMARY) {
+                // TODO: networks panel
+            } else if (event.button === Astal.MouseButton.SECONDARY) network.wifi.enabled = !network.wifi.enabled;
+            else if (event.button === Astal.MouseButton.MIDDLE)
+                execAsync("uwsm app -- gnome-control-center wifi").catch(() => {
+                    network.wifi.scan();
+                    execAsync(
+                        "uwsm app -- foot -T nmtui fish -c 'sleep .1; set -e COLORTERM; TERM=xterm-old nmtui connect'"
+                    ).catch(err => {
+                        // Idk why but foot always throws this error when it opens
+                        if (
+                            err.message !==
+                            "warn: wayland.c:1619: compositor does not implement the XDG toplevel icon protocol\nwarn: terminal.c:1973: slave exited with signal 1 (Hangup)"
+                        )
+                            console.error(err);
+                    });
+                });
+        }}
         setup={self => {
             const network = AstalNetwork.get_default();
             const tooltipText = Variable("");
@@ -227,64 +242,76 @@ const Network = () => (
         }}
     >
         <stack
-            name="wifi"
             transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
             transitionDuration={120}
-            setup={self => {
-                const network = AstalNetwork.get_default();
-                const update = () => {
-                    if (network.wifi.internet === AstalNetwork.Internet.CONNECTED)
-                        self.shown = String(Math.ceil(network.wifi.strength / 25));
-                    else if (network.wifi.internet === AstalNetwork.Internet.CONNECTING) self.shown = "connecting";
-                    else self.shown = "disconnected";
-                };
-                self.hook(network.wifi, "notify::internet", update);
-                self.hook(network.wifi, "notify::strength", update);
-                update();
-            }}
+            shown={bind(AstalNetwork.get_default(), "primary").as(p =>
+                p === AstalNetwork.Primary.WIFI ? "wifi" : "wired"
+            )}
         >
-            <label className="icon" label="wifi_off" name="disconnected" />
-            <label className="icon" label="settings_ethernet" name="connecting" />
-            <label className="icon" label="signal_wifi_0_bar" name="0" />
-            <label className="icon" label="network_wifi_1_bar" name="1" />
-            <label className="icon" label="network_wifi_2_bar" name="2" />
-            <label className="icon" label="network_wifi_3_bar" name="3" />
-            <label className="icon" label="signal_wifi_4_bar" name="4" />
-        </stack>
-        <stack
-            name="wired"
-            transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
-            transitionDuration={120}
-            setup={self => {
-                const network = AstalNetwork.get_default();
-                const update = () => {
-                    if (network.primary !== AstalNetwork.Primary.WIRED) return;
+            <stack
+                name="wifi"
+                transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
+                transitionDuration={120}
+                setup={self => {
+                    const network = AstalNetwork.get_default();
+                    const update = () => {
+                        if (network.wifi.internet === AstalNetwork.Internet.CONNECTED)
+                            self.shown = String(Math.ceil(network.wifi.strength / 25));
+                        else if (network.wifi.internet === AstalNetwork.Internet.CONNECTING) self.shown = "connecting";
+                        else self.shown = "disconnected";
+                    };
+                    self.hook(network.wifi, "notify::internet", update);
+                    self.hook(network.wifi, "notify::strength", update);
+                    update();
+                }}
+            >
+                <label className="icon" label="wifi_off" name="disconnected" />
+                <label className="icon" label="settings_ethernet" name="connecting" />
+                <label className="icon" label="signal_wifi_0_bar" name="0" />
+                <label className="icon" label="network_wifi_1_bar" name="1" />
+                <label className="icon" label="network_wifi_2_bar" name="2" />
+                <label className="icon" label="network_wifi_3_bar" name="3" />
+                <label className="icon" label="signal_wifi_4_bar" name="4" />
+            </stack>
+            <stack
+                name="wired"
+                transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
+                transitionDuration={120}
+                setup={self => {
+                    const network = AstalNetwork.get_default();
+                    const update = () => {
+                        if (network.primary !== AstalNetwork.Primary.WIRED) return;
 
-                    if (network.wired.internet === AstalNetwork.Internet.CONNECTED) self.shown = "connected";
-                    else if (network.wired.internet === AstalNetwork.Internet.CONNECTING) self.shown = "connecting";
-                    else self.shown = "disconnected";
-                };
-                self.hook(network, "notify::primary", update);
-                if (network.wired) self.hook(network.wired, "notify::internet", update);
-                update();
-            }}
-        >
-            <label className="icon" label="wifi_off" name="disconnected" />
-            <label className="icon" label="settings_ethernet" name="connecting" />
-            <label className="icon" label="lan" name="connected" />
+                        if (network.wired.internet === AstalNetwork.Internet.CONNECTED) self.shown = "connected";
+                        else if (network.wired.internet === AstalNetwork.Internet.CONNECTING) self.shown = "connecting";
+                        else self.shown = "disconnected";
+                    };
+                    self.hook(network, "notify::primary", update);
+                    if (network.wired) self.hook(network.wired, "notify::internet", update);
+                    update();
+                }}
+            >
+                <label className="icon" label="wifi_off" name="disconnected" />
+                <label className="icon" label="settings_ethernet" name="connecting" />
+                <label className="icon" label="lan" name="connected" />
+            </stack>
         </stack>
-    </stack>
+    </button>
 );
 
 const Bluetooth = () => (
-    <stack
-        transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
-        transitionDuration={120}
-        shown={bind(AstalBluetooth01.get_default(), "isPowered").as(p => (p ? "enabled" : "disabled"))}
+    <button
+        onClick={(_, event) => {
+            if (event.button === Astal.MouseButton.PRIMARY) {
+                // TODO: bluetooth panel
+            } else if (event.button === Astal.MouseButton.SECONDARY) AstalBluetooth.get_default().toggle();
+            else if (event.button === Astal.MouseButton.MIDDLE)
+                execAsync("uwsm app -- blueman-manager").catch(console.error);
+        }}
         setup={self => {
             const tooltipText = Variable("");
             const update = () => {
-                const devices = AstalBluetooth01.get_default()
+                const devices = AstalBluetooth.get_default()
                     .get_devices()
                     .filter(d => d.connected);
                 tooltipText.set(
@@ -293,14 +320,20 @@ const Bluetooth = () => (
                         : "No connected devices"
                 );
             };
-            self.hook(AstalBluetooth01.get_default(), "notify", update);
+            self.hook(AstalBluetooth.get_default(), "notify", update); // TODO: fix not updating
             update();
             setupCustomTooltip(self, bind(tooltipText));
         }}
     >
-        <label className="icon" label="bluetooth" name="enabled" />
-        <label className="icon" label="bluetooth_disabled" name="disabled" />
-    </stack>
+        <stack
+            transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
+            transitionDuration={120}
+            shown={bind(AstalBluetooth.get_default(), "isPowered").as(p => (p ? "enabled" : "disabled"))}
+        >
+            <label className="icon" label="bluetooth" name="enabled" />
+            <label className="icon" label="bluetooth_disabled" name="disabled" />
+        </stack>
+    </button>
 );
 
 const StatusIcons = () => (
