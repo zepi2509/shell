@@ -294,7 +294,9 @@ class LockOsd extends Widget.Window {
             if (window !== this && window instanceof LockOsd) {
                 const child = this.get_child();
                 if (!child) return;
-                this[right ? "marginLeft" : "marginRight"] = window.visible ? child.get_preferred_width()[1] + 5 : 0;
+                this[right ? "marginLeft" : "marginRight"] = window.visible
+                    ? child.get_preferred_width()[1] + config.lock.spacing
+                    : 0;
             }
         });
     }

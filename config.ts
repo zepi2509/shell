@@ -37,6 +37,7 @@ export const osds = {
         showValue: true,
     },
     lock: {
+        spacing: 5,
         caps: {
             hideDelay: 1000,
         },
