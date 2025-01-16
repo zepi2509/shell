@@ -1,8 +1,8 @@
 import { bind } from "astal";
 import { Astal, Gtk } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
-import Notification from "../widgets/notification";
-import PopdownWindow from "../widgets/popdownwindow";
+import Notification from "../../widgets/notification";
+import PopdownWindow from "../../widgets/popdownwindow";
 
 const List = () => (
     <box
