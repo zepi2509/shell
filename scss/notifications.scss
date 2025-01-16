@@ -14,57 +14,10 @@
 }
 
 .notifications {
-    @include lib.rounded(8);
-    @include lib.border(scheme.$mauve, 0.4, 2);
-    @include lib.shadow;
-    @include font.mono;
+    @include lib.popdown-window(scheme.$mauve);
 
     min-width: lib.s(400);
     min-height: lib.s(600);
-    background-color: scheme.$base;
-    color: scheme.$mauve;
-    padding: lib.s(10) lib.s(12);
-
-    .header {
-        @include lib.spacing(8);
-
-        padding: 0 lib.s(5);
-        margin-bottom: lib.s(8);
-
-        button {
-            @include lib.rounded(5);
-            @include lib.element-decel;
-
-            padding: lib.s(3) lib.s(8);
-
-            &:hover,
-            &:focus {
-                background-color: scheme.$surface0;
-            }
-
-            &:active {
-                background-color: scheme.$surface1;
-            }
-
-            &.enabled {
-                background-color: scheme.$mauve;
-                color: scheme.$base;
-
-                &:hover,
-                &:focus {
-                    background-color: color.mix(scheme.$mauve, scheme.$base, 80%);
-                }
-
-                &:active {
-                    background-color: color.mix(scheme.$mauve, scheme.$base, 70%);
-                }
-            }
-        }
-    }
-
-    .icon {
-        font-size: lib.s(32);
-    }
 
     .notification {
         .wrapper {

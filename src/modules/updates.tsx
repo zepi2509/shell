@@ -2,7 +2,7 @@ import { bind, execAsync, Variable } from "astal";
 import { App, Astal, Gtk } from "astal/gtk3";
 import Updates, { Repo as IRepo, Update as IUpdate } from "../services/updates";
 import { MenuItem } from "../utils/widgets";
-import PopupWindow from "../widgets/popupwindow";
+import PopdownWindow from "../widgets/popdownwindow";
 
 const constructItem = (label: string, exec: string, quiet = true) =>
     new MenuItem({
@@ -67,36 +67,22 @@ const List = () => (
 );
 
 export default () => (
-    <PopupWindow name="updates">
-        <box vertical className="updates">
-            <box className="header">
-                <label label={bind(Updates.get_default(), "numUpdates").as(n => `${n} update${n === 1 ? "" : "s"}`)} />
-                <box hexpand />
-                <button
-                    cursor="pointer"
-                    onClicked={() =>
-                        execAsync("uwsm app -T -- yay")
-                            .then(() => Updates.get_default().getUpdates())
-                            // Ignore errors
-                            .catch(() => {})
-                    }
-                    label="Update all"
-                />
-                <button cursor="pointer" onClicked={() => Updates.get_default().getUpdates()} label="Reload" />
-            </box>
-            <stack
-                transitionType={Gtk.StackTransitionType.CROSSFADE}
-                transitionDuration={150}
-                shown={bind(Updates.get_default(), "numUpdates").as(n => (n > 0 ? "list" : "empty"))}
-            >
-                <box vertical valign={Gtk.Align.CENTER} name="empty">
-                    <label className="icon" label="deployed_code_history" />
-                    <label label="All packages up to date!" />
-                </box>
-                <scrollable expand hscroll={Gtk.PolicyType.NEVER} name="list">
-                    <List />
-                </scrollable>
-            </stack>
-        </box>
-    </PopupWindow>
+    <PopdownWindow
+        name="updates"
+        count={bind(Updates.get_default(), "numUpdates")}
+        headerButtons={[
+            {
+                label: "Update all",
+                onClicked: () =>
+                    execAsync("uwsm app -T -- yay")
+                        .then(() => Updates.get_default().getUpdates())
+                        // Ignore errors
+                        .catch(() => {}),
+            },
+            { label: "Reload", onClicked: () => Updates.get_default().getUpdates() },
+        ]}
+        emptyIcon="deployed_code_history"
+        emptyLabel="All packages up to date!"
+        list={<List />}
+    />
 );

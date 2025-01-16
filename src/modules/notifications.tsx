@@ -2,7 +2,7 @@ import { bind } from "astal";
 import { Astal, Gtk } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
 import Notification from "../widgets/notification";
-import PopupWindow from "../widgets/popupwindow";
+import PopdownWindow from "../widgets/popdownwindow";
 
 const List = () => (
     <box
@@ -44,40 +44,22 @@ const List = () => (
 );
 
 export default () => (
-    <PopupWindow name="notifications">
-        <box vertical className="notifications">
-            <box className="header">
-                <label
-                    label={bind(AstalNotifd.get_default(), "notifications").as(
-                        n => `${n.length} notification${n.length === 1 ? "" : "s"}`
-                    )}
-                />
-                <box hexpand />
-                <button
-                    cursor="pointer"
-                    onClicked={() => (AstalNotifd.get_default().dontDisturb = !AstalNotifd.get_default().dontDisturb)}
-                    label="Silence"
-                    className={bind(AstalNotifd.get_default(), "dontDisturb").as(d => (d ? "enabled" : ""))}
-                />
-                <button
-                    cursor="pointer"
-                    onClicked={() => AstalNotifd.get_default().notifications.forEach(n => n.dismiss())}
-                    label="Clear"
-                />
-            </box>
-            <stack
-                transitionType={Gtk.StackTransitionType.CROSSFADE}
-                transitionDuration={150}
-                shown={bind(AstalNotifd.get_default(), "notifications").as(n => (n.length > 0 ? "list" : "empty"))}
-            >
-                <box vertical valign={Gtk.Align.CENTER} name="empty">
-                    <label className="icon" label="notifications_active" />
-                    <label label="All caught up!" />
-                </box>
-                <scrollable expand hscroll={Gtk.PolicyType.NEVER} name="list">
-                    <List />
-                </scrollable>
-            </stack>
-        </box>
-    </PopupWindow>
+    <PopdownWindow
+        name="notifications"
+        count={bind(AstalNotifd.get_default(), "notifications").as(n => n.length)}
+        headerButtons={[
+            {
+                label: "Silence",
+                onClicked: () => (AstalNotifd.get_default().dontDisturb = !AstalNotifd.get_default().dontDisturb),
+                className: bind(AstalNotifd.get_default(), "dontDisturb").as(d => (d ? "enabled" : "")),
+            },
+            {
+                label: "Clear",
+                onClicked: () => AstalNotifd.get_default().notifications.forEach(n => n.dismiss()),
+            },
+        ]}
+        emptyIcon="notifications_active"
+        emptyLabel="All caught up!"
+        list={<List />}
+    />
 );
