@@ -183,26 +183,22 @@ tooltip {
 }
 
 scrollbar {
-    trough {
-        background-color: transparent;
-    }
-
     slider {
         @include lib.rounded(1000);
         @include lib.element-decel;
 
         min-width: lib.s(3);
         min-height: lib.s(30);
-        background-color: color.change(scheme.$overlay0, $alpha: 0.3);
+        background-color: color.change(scheme.$overlay0, $alpha: 0.6);
 
         &:hover,
         &:focus {
             min-width: lib.s(6);
-            background-color: color.change(scheme.$overlay0, $alpha: 0.4);
+            background-color: color.change(scheme.$overlay0, $alpha: 0.7);
         }
 
         &:active {
-            background-color: color.change(scheme.$overlay1, $alpha: 0.5);
+            background-color: color.change(scheme.$overlay1, $alpha: 0.8);
         }
     }
 }

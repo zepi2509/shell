@@ -65,9 +65,19 @@ export default () => (
                     label="Clear"
                 />
             </box>
-            <scrollable expand hscroll={Gtk.PolicyType.NEVER}>
-                <List />
-            </scrollable>
+            <stack
+                transitionType={Gtk.StackTransitionType.CROSSFADE}
+                transitionDuration={150}
+                shown={bind(AstalNotifd.get_default(), "notifications").as(n => (n.length > 0 ? "list" : "empty"))}
+            >
+                <box vertical valign={Gtk.Align.CENTER} name="empty">
+                    <label className="icon" label="notifications_active" />
+                    <label label="All caught up!" />
+                </box>
+                <scrollable expand hscroll={Gtk.PolicyType.NEVER} name="list">
+                    <List />
+                </scrollable>
+            </stack>
         </box>
     </PopupWindow>
 );
