@@ -131,26 +131,30 @@ const SliderOsd = ({
                         cr.setAntialias(cairo.Antialias.BEST);
 
                         // Progress number, at top/right
-                        const numLayout = parent.create_pango_layout(String(Math.round(progressValue * 100)));
-                        const [nw, nh] = numLayout.get_pixel_size();
-                        let diff;
-                        if (vertical) {
-                            diff = ((1 - progressValue) * height) / nh;
-                            cr.moveTo((width - nw) / 2, radius / 2);
-                        } else {
-                            diff = ((1 - progressValue) * width) / nw;
-                            cr.moveTo(width - nw - radius, (height - nh) / 2);
+                        let nw = 0;
+                        let nh = 0;
+                        if (config[type].showValue) {
+                            const numLayout = parent.create_pango_layout(String(Math.round(progressValue * 100)));
+                            [nw, nh] = numLayout.get_pixel_size();
+                            let diff;
+                            if (vertical) {
+                                diff = ((1 - progressValue) * height) / nh;
+                                cr.moveTo((width - nw) / 2, radius / 2);
+                            } else {
+                                diff = ((1 - progressValue) * width) / nw;
+                                cr.moveTo(width - nw - radius, (height - nh) / 2);
+                            }
+                            diff = Math.max(0, Math.min(1, diff));
+
+                            cr.setSourceRGBA(
+                                mix(bg.red, fg.red, diff),
+                                mix(bg.green, fg.green, diff),
+                                mix(bg.blue, fg.blue, diff),
+                                mix(bg.alpha, fg.alpha, diff)
+                            );
+
+                            PangoCairo.show_layout(cr, numLayout);
                         }
-                        diff = Math.max(0, Math.min(1, diff));
-
-                        cr.setSourceRGBA(
-                            mix(bg.red, fg.red, diff),
-                            mix(bg.green, fg.green, diff),
-                            mix(bg.blue, fg.blue, diff),
-                            mix(bg.alpha, fg.alpha, diff)
-                        );
-
-                        PangoCairo.show_layout(cr, numLayout);
 
                         // Progress icon, follows progress
                         if (fontDesc === null) {
@@ -168,6 +172,7 @@ const SliderOsd = ({
                         iconLayout.set_text(icon.get(), -1);
 
                         const [iw, ih] = iconLayout.get_pixel_size();
+                        let diff;
                         if (vertical) {
                             diff = (progressValue * height) / ih;
                             cr.moveTo(

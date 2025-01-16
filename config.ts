@@ -28,11 +28,13 @@ export const osds = {
         position: Astal.WindowAnchor.RIGHT,
         margin: 20,
         hideDelay: 1500,
+        showValue: true,
     },
     brightness: {
         position: Astal.WindowAnchor.LEFT,
         margin: 20,
         hideDelay: 1500,
+        showValue: true,
     },
 };
 
