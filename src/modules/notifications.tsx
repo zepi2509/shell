@@ -1,6 +1,8 @@
-import { Gtk } from "astal/gtk3";
+import { bind } from "astal";
+import { Astal, Gtk } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
-import { PopupWindow, setupChildClickthrough } from "../utils/widgets";
+import Notification from "../widgets/notification";
+import PopupWindow from "../widgets/popupwindow";
 
 const List = () => (
     <box
@@ -9,49 +11,63 @@ const List = () => (
         className="list"
         setup={self => {
             const notifd = AstalNotifd.get_default();
-            const map = new Map<number, NotifPopup>();
-            self.hook(notifd, "notified", (self, id) => {
-                const notification = notifd.get_notification(id);
+            const map = new Map<number, Notification>();
 
-                const popup = (<NotifPopup notification={notification} />) as NotifPopup;
-                popup.connect("destroy", () => map.get(notification.id) === popup && map.delete(notification.id));
+            const addNotification = (notification: AstalNotifd.Notification) => {
+                const notif = (<Notification notification={notification} />) as Notification;
+                notif.connect("destroy", () => map.get(notification.id) === notif && map.delete(notification.id));
                 map.get(notification.id)?.destroyWithAnims();
-                map.set(notification.id, popup);
+                map.set(notification.id, notif);
 
-                self.add(
+                self.pack_end(
                     <eventbox
                         // Dismiss on middle click
                         onClick={(_, event) => event.button === Astal.MouseButton.MIDDLE && notification.dismiss()}
-                        // Close on hover lost
-                        onHoverLost={() => popup.destroyWithAnims()}
                     >
-                        {popup}
-                    </eventbox>
+                        {notif}
+                    </eventbox>,
+                    false,
+                    false,
+                    0
                 );
+            };
 
-                // Limit number of popups
-                if (config.maxPopups > 0 && self.children.length > config.maxPopups)
-                    map.values().next().value?.destroyWithAnims();
-            });
+            notifd
+                .get_notifications()
+                .sort((a, b) => a.time - b.time)
+                .forEach(addNotification);
+
+            self.hook(notifd, "notified", (_, id) => addNotification(notifd.get_notification(id)));
             self.hook(notifd, "resolved", (_, id) => map.get(id)?.destroyWithAnims());
-
-            // Change input region to child region so can click through empty space
-            setupChildClickthrough(self);
         }}
     />
 );
 
-export default class Notifications extends PopupWindow {
-    constructor() {
-        super({
-            name: "notifications",
-            child: (
-                <box>
-                    <List />
-                </box>
-            ),
-        });
-
-        setupChildClickthrough(self);
-    }
-}
+export default () => (
+    <PopupWindow name="notifications">
+        <box vertical className="notifications">
+            <box className="header">
+                <label
+                    label={bind(AstalNotifd.get_default(), "notifications").as(
+                        n => `${n.length} notification${n.length === 1 ? "" : "s"}`
+                    )}
+                />
+                <box hexpand />
+                <button
+                    cursor="pointer"
+                    onClicked={() => (AstalNotifd.get_default().dontDisturb = !AstalNotifd.get_default().dontDisturb)}
+                    label="Silence"
+                    className={bind(AstalNotifd.get_default(), "dontDisturb").as(d => (d ? "enabled" : ""))}
+                />
+                <button
+                    cursor="pointer"
+                    onClicked={() => AstalNotifd.get_default().notifications.forEach(n => n.dismiss())}
+                    label="Clear"
+                />
+            </box>
+            <scrollable expand hscroll={Gtk.PolicyType.NEVER}>
+                <List />
+            </scrollable>
+        </box>
+    </PopupWindow>
+);

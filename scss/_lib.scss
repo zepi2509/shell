@@ -15,7 +15,7 @@ $scale: 0.068rem;
     border: s($width) $style color.change($colour, $alpha: $alpha);
 }
 
-@mixin shadow($colour: scheme.$mantle, $alpha: 0.4, $x: 2, $y: 3, $blur: 8, $spread: 0) {
+@mixin shadow($colour: black, $alpha: 0.4, $x: 2, $y: 3, $blur: 8, $spread: 0) {
     box-shadow: s($x) s($y) s($blur) s($spread) color.change($colour, $alpha: $alpha);
 }
 

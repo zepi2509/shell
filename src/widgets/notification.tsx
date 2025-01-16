@@ -57,12 +57,16 @@ export default class Notification extends Widget.Box {
     #destroyed = false;
 
     constructor({ notification, popup }: { notification: AstalNotifd.Notification; popup?: boolean }) {
-        super();
+        super({ className: "notification" });
 
         this.#revealer = (
-            <revealer revealChild transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN} transitionDuration={150}>
+            <revealer
+                revealChild={popup}
+                transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                transitionDuration={150}
+            >
                 <box className="wrapper">
-                    <box vertical className={`notification ${urgencyToString(notification.urgency)}`}>
+                    <box vertical className={`inner ${urgencyToString(notification.urgency)}`}>
                         <box className="header">
                             <AppIcon appIcon={notification.appIcon} desktopEntry={notification.appName} />
                             <label className="app-name" label={notification.appName ?? "Unknown"} />
@@ -101,6 +105,7 @@ export default class Notification extends Widget.Box {
         const width = this.get_preferred_width()[1];
         this.css = `margin-left: ${width}px; margin-right: -${width}px;`;
         timeout(1, () => {
+            this.#revealer.revealChild = true;
             this.css = `transition: 300ms cubic-bezier(0.05, 0.9, 0.1, 1.1); margin-left: 0; margin-right: 0;`;
         });
 

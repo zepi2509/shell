@@ -1,0 +1,101 @@
+@use "sass:color";
+@use "scheme";
+@use "lib";
+@use "font";
+
+@mixin popup($accent) {
+    .separator {
+        background-color: $accent;
+    }
+
+    .image {
+        @include lib.border($accent, 0.05);
+    }
+}
+
+.notifications {
+    @include lib.rounded(8);
+    @include lib.border(scheme.$mauve, 0.4, 2);
+    @include lib.shadow;
+
+    min-width: lib.s(400);
+    min-height: lib.s(600);
+    background-color: scheme.$base;
+    color: scheme.$mauve;
+    padding: lib.s(10) lib.s(12);
+
+    .header {
+        @include font.mono;
+        @include lib.spacing(8);
+
+        padding: 0 lib.s(5);
+        margin-bottom: lib.s(8);
+
+        button {
+            @include lib.rounded(5);
+            @include lib.element-decel;
+
+            padding: lib.s(3) lib.s(8);
+
+            &:hover,
+            &:focus {
+                background-color: scheme.$surface0;
+            }
+
+            &:active {
+                background-color: scheme.$surface1;
+            }
+
+            &.enabled {
+                background-color: scheme.$mauve;
+                color: scheme.$base;
+
+                &:hover,
+                &:focus {
+                    background-color: color.mix(scheme.$mauve, scheme.$base, 80%);
+                }
+
+                &:active {
+                    background-color: color.mix(scheme.$mauve, scheme.$base, 70%);
+                }
+            }
+        }
+    }
+
+    .notification {
+        .wrapper {
+            padding-bottom: lib.s(10);
+        }
+
+        .inner {
+            background-color: color.mix(scheme.$surface0, scheme.$base, 70%);
+
+            &.low {
+                @include popup(scheme.$overlay0);
+            }
+
+            &.normal {
+                @include lib.border(scheme.$lavender, 0.3);
+                @include popup(scheme.$lavender);
+            }
+
+            &.critical {
+                @include lib.border(scheme.$red, 0.5);
+                @include popup(scheme.$red);
+            }
+        }
+
+        .actions > * {
+            background-color: scheme.$surface1;
+
+            &:hover,
+            &:focus {
+                background-color: scheme.$surface2;
+            }
+
+            &:active {
+                background-color: scheme.$overlay0;
+            }
+        }
+    }
+}

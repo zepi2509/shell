@@ -1,4 +1,4 @@
-import { Astal, Gtk } from "astal/gtk3";
+import { App, Astal, Gtk } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
 import { notifpopups as config } from "../../config";
 import { setupChildClickthrough } from "../utils/widgets";
@@ -16,7 +16,11 @@ export default () => (
             setup={self => {
                 const notifd = AstalNotifd.get_default();
                 const map = new Map<number, Notification>();
+                let notifsOpen = false;
+
                 self.hook(notifd, "notified", (self, id) => {
+                    if (notifsOpen) return;
+
                     const notification = notifd.get_notification(id);
 
                     const popup = (<Notification popup notification={notification} />) as Notification;
@@ -40,6 +44,10 @@ export default () => (
                         map.values().next().value?.destroyWithAnims();
                 });
                 self.hook(notifd, "resolved", (_, id) => map.get(id)?.destroyWithAnims());
+
+                self.hook(App, "window-toggled", (_, window) => {
+                    if (window.name === "notifications") notifsOpen = window.visible;
+                });
 
                 // Change input region to child region so can click through empty space
                 setupChildClickthrough(self);

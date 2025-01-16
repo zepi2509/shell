@@ -15,6 +15,7 @@ import { getAppCategoryIcon } from "../utils/icons";
 import { ellipsize } from "../utils/strings";
 import { osIcon } from "../utils/system";
 import { setupCustomTooltip } from "../utils/widgets";
+import type PopupWindow from "../widgets/popupwindow";
 
 const hyprland = AstalHyprland.get_default();
 
@@ -385,11 +386,19 @@ const PkgUpdates = () => (
     </box>
 );
 
-const Notifications = () => {
+const Unread = () => {
     const unreadCount = Variable(0);
     return (
-        <box
-            className="module notifications"
+        <button
+            onClick={(self, event) => {
+                if (event.button === Astal.MouseButton.PRIMARY) {
+                    const popup = App.get_window("notifications") as PopupWindow | null;
+                    if (popup) {
+                        if (popup.visible) popup.hide();
+                        else popup.popup_at_widget(self, event);
+                    }
+                } else if (event.button === Astal.MouseButton.SECONDARY) unreadCount.set(0);
+            }}
             setup={self =>
                 setupCustomTooltip(
                     self,
@@ -397,39 +406,37 @@ const Notifications = () => {
                 )
             }
         >
-            <label className="icon" label="info" />
-            <label
-                label="0"
-                setup={self => {
-                    const notifd = AstalNotifd.get_default();
-                    let notifsOpen = false;
-                    let unread = new Set<number>();
+            <box className="module unread">
+                <label className="icon" label="info" />
+                <label
+                    label={bind(unreadCount).as(String)}
+                    setup={self => {
+                        const notifd = AstalNotifd.get_default();
+                        let notifsOpen = false;
+                        let unread = new Set<number>();
+                        self.hook(unreadCount, (_, u) => u === 0 && unread.clear());
 
-                    self.hook(notifd, "notified", (self, id, replaced) => {
-                        if (!notifsOpen && !replaced) {
-                            unread.add(id);
-                            unreadCount.set(unread.size);
-                            self.label = String(unread.size);
-                        }
-                    });
-                    self.hook(notifd, "resolved", (self, id) => {
-                        if (unread.delete(id)) {
-                            unreadCount.set(unread.size);
-                            self.label = String(unread.size);
-                        }
-                    });
-                    self.hook(App, "window-toggled", (_, window) => {
-                        if (window.name === "notifications") {
-                            notifsOpen = window.visible;
-                            if (notifsOpen) {
-                                unread.clear();
-                                unreadCount.set(0);
+                        self.hook(notifd, "notified", (_, id, replaced) => {
+                            if (!notifsOpen && !replaced) {
+                                unread.add(id);
+                                unreadCount.set(unread.size);
                             }
-                        }
-                    });
-                }}
-            />
-        </box>
+                        });
+                        self.hook(notifd, "resolved", (_, id) => {
+                            if (unread.delete(id)) {
+                                unreadCount.set(unread.size);
+                            }
+                        });
+                        self.hook(App, "window-toggled", (_, window) => {
+                            if (window.name === "notifications") {
+                                notifsOpen = window.visible;
+                                if (notifsOpen) unreadCount.set(0);
+                            }
+                        });
+                    }}
+                />
+            </box>
+        </button>
     );
 };
 
@@ -491,7 +498,7 @@ export default ({ monitor }: { monitor: Monitor }) => (
                 <Tray />
                 <StatusIcons />
                 <PkgUpdates />
-                <Notifications />
+                <Unread />
                 <DateTime />
                 <Power />
             </box>

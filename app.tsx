@@ -2,6 +2,7 @@ import { execAsync, GLib, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
 import Bar from "./src/modules/bar";
 import Launcher from "./src/modules/launcher";
+import Notifications from "./src/modules/notifications";
 import NotifPopups from "./src/modules/notifpopups";
 import Osds from "./src/modules/osds";
 import Monitors from "./src/services/monitors";
@@ -24,6 +25,7 @@ App.start({
         <NotifPopups />;
         <Osds />;
         Monitors.get_default().forEach(m => <Bar monitor={m} />);
+        <Notifications />;
 
         console.log("Caelestia started");
     },
