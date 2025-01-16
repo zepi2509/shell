@@ -389,59 +389,32 @@ const PkgUpdates = () => (
     </button>
 );
 
-const Unread = () => {
-    const unreadCount = Variable(0);
-    return (
-        <button
-            onClick={(self, event) => {
-                if (event.button === Astal.MouseButton.PRIMARY) {
-                    const popup = App.get_window("notifications") as PopupWindow | null;
-                    if (popup) {
-                        if (popup.visible) popup.hide();
-                        else popup.popup_at_widget(self, event);
-                    }
-                } else if (event.button === Astal.MouseButton.SECONDARY) unreadCount.set(0);
-            }}
-            setup={self =>
-                setupCustomTooltip(
-                    self,
-                    bind(unreadCount).as(n => `${n} unread notification${n === 1 ? "" : "s"}`)
-                )
+const NotifCount = () => (
+    <button
+        onClick={(self, event) => {
+            if (event.button === Astal.MouseButton.PRIMARY) {
+                const popup = App.get_window("notifications") as PopupWindow | null;
+                if (popup) {
+                    if (popup.visible) popup.hide();
+                    else popup.popup_at_widget(self, event);
+                }
             }
-        >
-            <box className="module unread">
-                <label className="icon" label="info" />
-                <label
-                    label={bind(unreadCount).as(String)}
-                    setup={self => {
-                        const notifd = AstalNotifd.get_default();
-                        let notifsOpen = false;
-                        let unread = new Set<number>();
-                        self.hook(unreadCount, (_, u) => u === 0 && unread.clear());
-
-                        self.hook(notifd, "notified", (_, id, replaced) => {
-                            if (!notifsOpen && !replaced) {
-                                unread.add(id);
-                                unreadCount.set(unread.size);
-                            }
-                        });
-                        self.hook(notifd, "resolved", (_, id) => {
-                            if (unread.delete(id)) {
-                                unreadCount.set(unread.size);
-                            }
-                        });
-                        self.hook(App, "window-toggled", (_, window) => {
-                            if (window.name === "notifications") {
-                                notifsOpen = window.visible;
-                                if (notifsOpen) unreadCount.set(0);
-                            }
-                        });
-                    }}
-                />
-            </box>
-        </button>
-    );
-};
+        }}
+        setup={self =>
+            setupCustomTooltip(
+                self,
+                bind(AstalNotifd.get_default(), "notifications").as(
+                    n => `${n.length} notification${n.length === 1 ? "" : "s"}`
+                )
+            )
+        }
+    >
+        <box className="module notif-count">
+            <label className="icon" label="info" />
+            <label label={bind(AstalNotifd.get_default(), "notifications").as(n => String(n.length))} />
+        </box>
+    </button>
+);
 
 const DateTime = () => (
     <box className="module date-time">
@@ -501,7 +474,7 @@ export default ({ monitor }: { monitor: Monitor }) => (
                 <Tray />
                 <StatusIcons />
                 <PkgUpdates />
-                <Unread />
+                <NotifCount />
                 <DateTime />
                 <Power />
             </box>
