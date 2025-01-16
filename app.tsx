@@ -35,9 +35,14 @@ App.start({
         else if (request === "media next") Players.get_default().lastPlayer?.next();
         else if (request === "media previous") Players.get_default().lastPlayer?.previous();
         else if (request === "media stop") Players.get_default().lastPlayer?.stop();
-        else if (request === "brightness up") Monitors.get_default().active.brightness += 0.1;
-        else if (request === "brightness down") Monitors.get_default().active.brightness -= 0.1;
-        else return res("Unknown command: " + request);
+        else if (request.startsWith("brightness")) {
+            const value = request.split(" ")[1];
+            const num = parseFloat(value) / (value.includes("%") ? 100 : 1);
+            if (isNaN(num)) return res("Syntax: brightness <value>[%][+ | -]");
+            if (value.includes("+")) Monitors.get_default().active.brightness += num;
+            else if (value.includes("-")) Monitors.get_default().active.brightness -= num;
+            else Monitors.get_default().active.brightness = num;
+        } else return res("Unknown command: " + request);
 
         console.log(`Request handled: ${request}`);
         res("OK");
