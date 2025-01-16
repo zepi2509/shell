@@ -17,15 +17,6 @@ label.icon {
     @include font.icon;
 }
 
-.popup-window {
-    transition: opacity 300ms linear;
-    opacity: 0;
-
-    &.visible {
-        opacity: 1;
-    }
-}
-
 separator,
 .separator {
     @include lib.rounded(2);

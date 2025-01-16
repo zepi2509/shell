@@ -47,7 +47,7 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
 export const setupChildClickthrough = (self: any) =>
     self.connect("size-allocate", () => self.get_window()?.set_child_input_shapes());
 
-const overrideProp = <T,>(
+const extendProp = <T,>(
     prop: T | Binding<T | undefined> | undefined,
     override: (prop: T | undefined) => T | undefined
 ) => prop && (prop instanceof Binding ? prop.as(override) : override(prop));
@@ -58,20 +58,13 @@ export const convertPopupWindowProps = (props: Widget.WindowProps): Widget.Windo
     ...props,
     visible: false,
     application: App,
-    name: props.monitor
-        ? overrideProp(props.name, n => (n && props.monitor ? n + props.monitor : undefined))
-        : props.name,
-    namespace: overrideProp(props.name, n => `caelestia-${n}`),
-    className: overrideProp(props.className, c => `popup-window ${c}`),
+    name: props.monitor ? extendProp(props.name, n => (n ? n + props.monitor : undefined)) : props.name,
+    namespace: extendProp(props.name, n => `caelestia-${n}`),
     onKeyPressEvent: (self, event) => {
         // Close window on escape
         if (event.get_keyval()[1] === Gdk.KEY_Escape) self.hide();
 
         return props.onKeyPressEvent?.(self, event);
-    },
-    setup: self => {
-        self.connect("notify::visible", () => self.toggleClassName("visible", self.visible));
-        props.setup?.(self);
     },
     borderWidth: 20, // To allow shadow, cause if not it gets cut off
 });
