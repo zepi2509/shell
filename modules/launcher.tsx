@@ -8,7 +8,7 @@ import { Apps } from "../services/apps";
 import Math, { type HistoryItem } from "../services/math";
 import { getAppCategoryIcon } from "../utils/icons";
 import { launch } from "../utils/system";
-import { convertPopupWindowProps, setupCustomTooltip } from "../utils/widgets";
+import { PopupWindow, setupCustomTooltip } from "../utils/widgets";
 
 type Mode = "apps" | "files" | "math";
 
@@ -346,7 +346,7 @@ const LauncherContent = ({
 );
 
 @register()
-export default class Launcher extends Widget.Window {
+export default class Launcher extends PopupWindow {
     readonly mode: Variable<Mode>;
 
     constructor() {
@@ -354,26 +354,24 @@ export default class Launcher extends Widget.Window {
         const mode = Variable<Mode>("apps");
         const showResults = Variable.derive([bind(entry, "textLength"), mode], (t, m) => t > 0 || m !== "apps");
 
-        super(
-            convertPopupWindowProps({
-                name: "launcher",
-                anchor: Astal.WindowAnchor.TOP,
-                keymode: Astal.Keymode.EXCLUSIVE,
-                onKeyPressEvent(_, event) {
-                    const keyval = event.get_keyval()[1];
-                    // Focus entry on typing
-                    if (!entry.isFocus && keyval >= 32 && keyval <= 126) {
-                        entry.text += String.fromCharCode(keyval);
-                        entry.grab_focus();
-                        entry.set_position(-1);
+        super({
+            name: "launcher",
+            anchor: Astal.WindowAnchor.TOP,
+            keymode: Astal.Keymode.EXCLUSIVE,
+            onKeyPressEvent(_, event) {
+                const keyval = event.get_keyval()[1];
+                // Focus entry on typing
+                if (!entry.isFocus && keyval >= 32 && keyval <= 126) {
+                    entry.text += String.fromCharCode(keyval);
+                    entry.grab_focus();
+                    entry.set_position(-1);
 
-                        // Consume event, if not consumed it will duplicate character in entry
-                        return true;
-                    }
-                },
-                child: <LauncherContent mode={mode} showResults={showResults} entry={entry} />,
-            })
-        );
+                    // Consume event, if not consumed it will duplicate character in entry
+                    return true;
+                }
+            },
+            child: <LauncherContent mode={mode} showResults={showResults} entry={entry} />,
+        });
 
         this.mode = mode;
 
