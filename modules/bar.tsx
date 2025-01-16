@@ -6,6 +6,7 @@ import AstalHyprland from "gi://AstalHyprland";
 import AstalNetwork from "gi://AstalNetwork";
 import AstalNotifd from "gi://AstalNotifd";
 import AstalTray from "gi://AstalTray";
+import AstalWp01 from "gi://AstalWp";
 import { bar as config } from "../config";
 import type { Monitor } from "../services/monitors";
 import Players from "../services/players";
@@ -122,22 +123,22 @@ const Workspace = ({ idx }: { idx: number }) => {
             valign={Gtk.Align.CENTER}
             onClicked={() => hyprland.dispatch("workspace", String(wsId))}
             setup={self => {
-                const update = () => {
+                const update = () =>
                     self.toggleClassName(
                         "occupied",
                         hyprland.clients.some(c => c.workspace.id === wsId)
                     );
-                    self.toggleClassName("focused", hyprland.focusedWorkspace.id === wsId);
-                };
 
                 self.hook(hyprland, "notify::focused-workspace", () => {
                     wsId = Math.floor((hyprland.focusedWorkspace.id - 1) / config.wsPerGroup) * config.wsPerGroup + idx;
+                    self.toggleClassName("focused", hyprland.focusedWorkspace.id === wsId);
                     update();
                 });
                 self.hook(hyprland, "client-added", update);
                 self.hook(hyprland, "client-moved", update);
                 self.hook(hyprland, "client-removed", update);
 
+                self.toggleClassName("focused", hyprland.focusedWorkspace.id === wsId);
                 update();
             }}
         />
@@ -163,14 +164,23 @@ const Workspaces = () => (
 
 @register()
 class TrayItemMenu extends astalify(Gtk.Menu) {
+    readonly item: AstalTray.TrayItem;
+
     constructor(props: ConstructProps<TrayItemMenu, Gtk.Menu.ConstructorProps> & { item: AstalTray.TrayItem }) {
         const { item, ...sProps } = props;
         super(sProps as any);
+
+        this.item = item;
 
         this.hook(item, "notify::menu-model", () => this.bind_model(item.menuModel, null, true));
         this.hook(item, "notify::action-group", () => this.insert_action_group("dbusmenu", item.actionGroup));
         this.bind_model(item.menuModel, null, true);
         this.insert_action_group("dbusmenu", item.actionGroup);
+    }
+
+    popup_at_widget_bottom(widget: Gtk.Widget) {
+        this.item.about_to_show();
+        this.popup_at_widget(widget, Gdk.Gravity.SOUTH, Gdk.Gravity.NORTH, null);
     }
 }
 
@@ -180,10 +190,9 @@ const TrayItem = (item: AstalTray.TrayItem) => {
         <button
             onClick={(self, event) => {
                 if (event.button === Astal.MouseButton.PRIMARY) {
-                    if (item.isMenu) menu.popup_at_widget(self, Gdk.Gravity.SOUTH, Gdk.Gravity.NORTH, null);
+                    if (item.isMenu) menu.popup_at_widget_bottom(self);
                     else item.activate(0, 0);
-                } else if (event.button === Astal.MouseButton.SECONDARY)
-                    menu.popup_at_widget(self, Gdk.Gravity.SOUTH, Gdk.Gravity.NORTH, null);
+                } else if (event.button === Astal.MouseButton.SECONDARY) menu.popup_at_widget_bottom(self);
             }}
             onScroll={(_, event) => {
                 if (event.delta_x !== 0) item.scroll(event.delta_x, "horizontal");
@@ -456,13 +465,29 @@ export default ({ monitor }: { monitor: Monitor }) => (
         exclusivity={Astal.Exclusivity.EXCLUSIVE}
     >
         <centerbox className="bar" css={"min-width: " + monitor.width * 0.8 + "px;"}>
-            <box halign={Gtk.Align.START}>
+            <box>
                 <OSIcon />
                 <ActiveWindow />
                 <MediaPlaying />
+                <button
+                    hexpand
+                    onScroll={(_, event) =>
+                        event.delta_y > 0 ? (monitor.brightness -= 0.1) : (monitor.brightness += 0.1)
+                    }
+                />
             </box>
             <Workspaces />
-            <box halign={Gtk.Align.END}>
+            <box>
+                <button
+                    hexpand
+                    onScroll={(_, event) => {
+                        const speaker = AstalWp01.get_default()?.audio.defaultSpeaker;
+                        if (!speaker) return;
+                        speaker.mute = false;
+                        if (event.delta_y > 0) speaker.volume -= 0.1;
+                        else speaker.volume += 0.1;
+                    }}
+                />
                 <Tray />
                 <StatusIcons />
                 <PkgUpdates />
