@@ -36,6 +36,14 @@ const hookFocusedClientProp = (
     callback(lastClient);
 };
 
+const togglePopup = (self: JSX.Element, event: Astal.ClickEvent, name: string) => {
+    const popup = App.get_window(name) as PopupWindow | null;
+    if (popup) {
+        if (popup.visible) popup.hide();
+        else popup.popup_at_widget(self, event);
+    }
+};
+
 const OSIcon = () => <label className="module os-icon" label={osIcon} />;
 
 const ActiveWindow = () => (
@@ -315,10 +323,9 @@ const Network = () => (
 
 const Bluetooth = () => (
     <button
-        onClick={(_, event) => {
-            if (event.button === Astal.MouseButton.PRIMARY) {
-                // TODO: bluetooth panel
-            } else if (event.button === Astal.MouseButton.SECONDARY) AstalBluetooth.get_default().toggle();
+        onClick={(self, event) => {
+            if (event.button === Astal.MouseButton.PRIMARY) togglePopup(self, event, "bluetooth-devices");
+            else if (event.button === Astal.MouseButton.SECONDARY) AstalBluetooth.get_default().toggle();
             else if (event.button === Astal.MouseButton.MIDDLE)
                 execAsync("uwsm app -- blueman-manager").catch(console.error);
         }}
@@ -366,15 +373,7 @@ const StatusIcons = () => (
 
 const PkgUpdates = () => (
     <button
-        onClick={(self, event) => {
-            if (event.button === Astal.MouseButton.PRIMARY) {
-                const popup = App.get_window("updates") as PopupWindow | null;
-                if (popup) {
-                    if (popup.visible) popup.hide();
-                    else popup.popup_at_widget(self, event);
-                }
-            }
-        }}
+        onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "updates")}
         setup={self =>
             setupCustomTooltip(
                 self,
@@ -391,15 +390,9 @@ const PkgUpdates = () => (
 
 const NotifCount = () => (
     <button
-        onClick={(self, event) => {
-            if (event.button === Astal.MouseButton.PRIMARY) {
-                const popup = App.get_window("notifications") as PopupWindow | null;
-                if (popup) {
-                    if (popup.visible) popup.hide();
-                    else popup.popup_at_widget(self, event);
-                }
-            }
-        }}
+        onClick={(self, event) =>
+            event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "notifications")
+        }
         setup={self =>
             setupCustomTooltip(
                 self,

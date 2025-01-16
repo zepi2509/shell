@@ -6,8 +6,7 @@
 @use "scss/notifpopups";
 @use "scss/launcher";
 @use "scss/osds";
-@use "scss/notifications";
-@use "scss/updates";
+@use "scss/popdowns";
 
 * {
     all: unset; // Remove GTK theme styles

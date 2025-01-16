@@ -1,7 +1,7 @@
 @use "sass:color";
-@use "scheme";
-@use "lib";
-@use "font";
+@use "../scheme";
+@use "../lib";
+@use "../font";
 
 @mixin popup($accent) {
     .separator {

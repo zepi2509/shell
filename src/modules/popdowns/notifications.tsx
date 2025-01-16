@@ -51,7 +51,7 @@ export default () => (
             {
                 label: "Silence",
                 onClicked: () => (AstalNotifd.get_default().dontDisturb = !AstalNotifd.get_default().dontDisturb),
-                className: bind(AstalNotifd.get_default(), "dontDisturb").as(d => (d ? "enabled" : "")),
+                enabled: bind(AstalNotifd.get_default(), "dontDisturb"),
             },
             {
                 label: "Clear",

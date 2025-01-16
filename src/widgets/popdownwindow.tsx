@@ -5,6 +5,7 @@ import PopupWindow from "./popupwindow";
 export default ({
     name,
     count,
+    countLabel = count.as(c => `${c} ${name.slice(0, -1)}${c === 1 ? "" : "s"}`),
     headerButtons,
     emptyIcon,
     emptyLabel,
@@ -12,7 +13,8 @@ export default ({
 }: {
     name: string;
     count: Binding<number>;
-    headerButtons: { label: string; onClicked: () => void; className?: Binding<string> }[];
+    countLabel?: Binding<string>;
+    headerButtons: { label: string | Binding<string>; onClicked: () => void; enabled?: Binding<boolean> }[];
     emptyIcon: string;
     emptyLabel: string;
     list: JSX.Element;
@@ -20,10 +22,15 @@ export default ({
     <PopupWindow name={name}>
         <box vertical className={name}>
             <box className="header">
-                <label label={count.as(c => `${c} ${name.slice(0, -1)}${c === 1 ? "" : "s"}`)} />
+                <label label={countLabel} />
                 <box hexpand />
-                {headerButtons.map(({ label, onClicked, className }) => (
-                    <button cursor="pointer" onClicked={onClicked} label={label} className={className} />
+                {headerButtons.map(({ label, onClicked, enabled }) => (
+                    <button
+                        cursor="pointer"
+                        onClicked={onClicked}
+                        label={label}
+                        className={enabled?.as(d => (d ? "enabled" : ""))}
+                    />
                 ))}
             </box>
             <stack

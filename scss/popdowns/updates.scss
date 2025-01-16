@@ -1,12 +1,12 @@
 @use "sass:color";
-@use "scheme";
-@use "lib";
-@use "font";
+@use "../scheme";
+@use "../lib";
+@use "../font";
 
-$accent: scheme.$blue;
+$-accent: scheme.$blue;
 
 .updates {
-    @include lib.popdown-window($accent);
+    @include lib.popdown-window($-accent);
 
     min-width: lib.s(600);
     min-height: lib.s(400);
@@ -16,11 +16,11 @@ $accent: scheme.$blue;
 
         &:hover,
         &:focus {
-            color: color.mix($accent, scheme.$base, 80%);
+            color: color.mix($-accent, scheme.$base, 80%);
         }
 
         &:active {
-            color: color.mix($accent, scheme.$base, 60%);
+            color: color.mix($-accent, scheme.$base, 60%);
         }
     }
 
