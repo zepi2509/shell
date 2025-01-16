@@ -76,34 +76,41 @@ const MediaPlaying = () => {
     const getLabel = (fallback = "") =>
         players.lastPlayer ? `${players.lastPlayer.title} - ${players.lastPlayer.artist}` : fallback;
     return (
-        <box
-            className="module media-playing"
+        <button
+            onClick={(_, event) => {
+                if (event.button === Astal.MouseButton.PRIMARY) {
+                    // TODO: media panel
+                } else if (event.button === Astal.MouseButton.SECONDARY) players.lastPlayer?.play_pause();
+                else if (event.button === Astal.MouseButton.MIDDLE) players.lastPlayer?.raise();
+            }}
             setup={self => {
                 const label = Variable(getLabel());
                 players.hookLastPlayer(self, ["notify::title", "notify::artist"], () => label.set(getLabel()));
                 setupCustomTooltip(self, bind(label));
             }}
         >
-            <icon
-                setup={self =>
-                    players.hookLastPlayer(self, "notify::identity", () => {
-                        const icon = `caelestia-${players.lastPlayer?.identity.toLowerCase()}-symbolic`;
-                        self.icon = players.lastPlayer
-                            ? Astal.Icon.lookup_icon(icon)
-                                ? icon
-                                : "caelestia-media-generic-symbolic"
-                            : "caelestia-media-none-symbolic";
-                    })
-                }
-            />
-            <label
-                setup={self =>
-                    players.hookLastPlayer(self, ["notify::title", "notify::artist"], () => {
-                        self.label = ellipsize(getLabel("No media")); // TODO: scroll text
-                    })
-                }
-            />
-        </box>
+            <box className="module media-playing">
+                <icon
+                    setup={self =>
+                        players.hookLastPlayer(self, "notify::identity", () => {
+                            const icon = `caelestia-${players.lastPlayer?.identity.toLowerCase()}-symbolic`;
+                            self.icon = players.lastPlayer
+                                ? Astal.Icon.lookup_icon(icon)
+                                    ? icon
+                                    : "caelestia-media-generic-symbolic"
+                                : "caelestia-media-none-symbolic";
+                        })
+                    }
+                />
+                <label
+                    setup={self =>
+                        players.hookLastPlayer(self, ["notify::title", "notify::artist"], () => {
+                            self.label = ellipsize(getLabel("No media")); // TODO: scroll text
+                        })
+                    }
+                />
+            </box>
+        </button>
     );
 };
 
