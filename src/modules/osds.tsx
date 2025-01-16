@@ -5,9 +5,9 @@ import AstalWp from "gi://AstalWp";
 import Cairo from "gi://cairo";
 import Pango from "gi://Pango";
 import PangoCairo from "gi://PangoCairo";
-import { osds as config } from "../config";
+import { osds as config } from "../../config";
 import Monitors, { type Monitor } from "../services/monitors";
-import { PopupWindow } from "../utils/widgets";
+import PopupWindow from "../widgets/popupwindow";
 
 const getStyle = (context: Gtk.StyleContext, prop: string) => context.get_property(prop, Gtk.StateFlags.NORMAL);
 const getNumStyle = (context: Gtk.StyleContext, prop: string) => getStyle(context, prop) as number;

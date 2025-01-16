@@ -1,9 +1,8 @@
 import { GLib, register, timeout } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
-import { notifpopups as config } from "../config";
+import { notifpopups as config } from "../../config";
 import { desktopEntrySubs } from "../utils/icons";
-import { setupChildClickthrough } from "../utils/widgets";
 
 const urgencyToString = (urgency: AstalNotifd.Urgency) => {
     switch (urgency) {
@@ -53,17 +52,17 @@ const Image = ({ icon }: { icon: string }) => {
 };
 
 @register()
-class NotifPopup extends Widget.Box {
+export default class Notification extends Widget.Box {
     readonly #revealer;
     #destroyed = false;
 
-    constructor({ notification }: { notification: AstalNotifd.Notification }) {
+    constructor({ notification, popup }: { notification: AstalNotifd.Notification; popup?: boolean }) {
         super();
 
         this.#revealer = (
             <revealer revealChild transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN} transitionDuration={150}>
                 <box className="wrapper">
-                    <box vertical className={`popup ${urgencyToString(notification.urgency)}`}>
+                    <box vertical className={`notification ${urgencyToString(notification.urgency)}`}>
                         <box className="header">
                             <AppIcon appIcon={notification.appIcon} desktopEntry={notification.appName} />
                             <label className="app-name" label={notification.appName ?? "Unknown"} />
@@ -106,7 +105,7 @@ class NotifPopup extends Widget.Box {
         });
 
         // Close popup after timeout if transient or expire enabled in config
-        if (config.expire || notification.transient)
+        if (popup && (config.expire || notification.transient))
             timeout(
                 notification.expireTimeout > 0
                     ? notification.expireTimeout
@@ -131,47 +130,3 @@ class NotifPopup extends Widget.Box {
         });
     }
 }
-
-export default () => (
-    <window
-        namespace="caelestia-notifpopups"
-        anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.BOTTOM}
-    >
-        <box
-            vertical
-            valign={Gtk.Align.START}
-            className="notifpopups"
-            setup={self => {
-                const notifd = AstalNotifd.get_default();
-                const map = new Map<number, NotifPopup>();
-                self.hook(notifd, "notified", (self, id) => {
-                    const notification = notifd.get_notification(id);
-
-                    const popup = (<NotifPopup notification={notification} />) as NotifPopup;
-                    popup.connect("destroy", () => map.get(notification.id) === popup && map.delete(notification.id));
-                    map.get(notification.id)?.destroyWithAnims();
-                    map.set(notification.id, popup);
-
-                    self.add(
-                        <eventbox
-                            // Dismiss on middle click
-                            onClick={(_, event) => event.button === Astal.MouseButton.MIDDLE && notification.dismiss()}
-                            // Close on hover lost
-                            onHoverLost={() => popup.destroyWithAnims()}
-                        >
-                            {popup}
-                        </eventbox>
-                    );
-
-                    // Limit number of popups
-                    if (config.maxPopups > 0 && self.children.length > config.maxPopups)
-                        map.values().next().value?.destroyWithAnims();
-                });
-                self.hook(notifd, "resolved", (_, id) => map.get(id)?.destroyWithAnims());
-
-                // Change input region to child region so can click through empty space
-                setupChildClickthrough(self);
-            }}
-        />
-    </window>
-);

@@ -3,12 +3,13 @@ import { Astal, Gtk, Widget } from "astal/gtk3";
 import fuzzysort from "fuzzysort";
 import type AstalApps from "gi://AstalApps";
 import AstalHyprland from "gi://AstalHyprland";
-import { launcher as config } from "../config";
+import { launcher as config } from "../../config";
 import { Apps } from "../services/apps";
 import Math, { type HistoryItem } from "../services/math";
 import { getAppCategoryIcon } from "../utils/icons";
 import { launch } from "../utils/system";
-import { PopupWindow, setupCustomTooltip } from "../utils/widgets";
+import { setupCustomTooltip } from "../utils/widgets";
+import PopupWindow from "../widgets/popupwindow";
 
 type Mode = "apps" | "files" | "math";
 

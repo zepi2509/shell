@@ -7,7 +7,7 @@ import AstalNetwork from "gi://AstalNetwork";
 import AstalNotifd from "gi://AstalNotifd";
 import AstalTray from "gi://AstalTray";
 import AstalWp01 from "gi://AstalWp";
-import { bar as config } from "../config";
+import { bar as config } from "../../config";
 import type { Monitor } from "../services/monitors";
 import Players from "../services/players";
 import Updates from "../services/updates";

@@ -25,7 +25,7 @@
         padding-top: lib.s(10);
     }
 
-    .popup {
+    .notification {
         @include lib.rounded(8, $tr: 0, $br: 0);
         @include lib.shadow;
         @include font.main;

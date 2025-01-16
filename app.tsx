@@ -1,11 +1,11 @@
 import { execAsync, GLib, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
-import Bar from "./modules/bar";
-import Launcher from "./modules/launcher";
-import NotifPopups from "./modules/notifpopups";
-import Osds from "./modules/osds";
-import Monitors from "./services/monitors";
-import Players from "./services/players";
+import Bar from "./src/modules/bar";
+import Launcher from "./src/modules/launcher";
+import NotifPopups from "./src/modules/notifpopups";
+import Osds from "./src/modules/osds";
+import Monitors from "./src/services/monitors";
+import Players from "./src/services/players";
 
 const loadStyleAsync = async () => {
     if (!GLib.file_test(`${SRC}/scss/scheme/_index.scss`, GLib.FileTest.EXISTS))
