@@ -22,15 +22,14 @@ App.start({
 
         <Launcher />;
         <NotifPopups />;
-        Monitors.get_default().forEach(m => {
-            <Osds monitor={m} />;
-            <Bar monitor={m} />;
-        });
+        <Osds />;
+        Monitors.get_default().forEach(m => <Bar monitor={m} />);
 
         console.log("Caelestia started");
     },
     requestHandler(request, res) {
         if (request === "reload css") loadStyleAsync().catch(console.error);
+        else if (request.startsWith("show")) App.get_window(request.split(" ")[1])?.show();
         else if (request === "media play pause") Players.get_default().lastPlayer?.play_pause();
         else if (request === "media next") Players.get_default().lastPlayer?.next();
         else if (request === "media previous") Players.get_default().lastPlayer?.previous();

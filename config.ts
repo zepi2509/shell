@@ -36,6 +36,14 @@ export const osds = {
         hideDelay: 1500,
         showValue: true,
     },
+    lock: {
+        caps: {
+            hideDelay: 1000,
+        },
+        num: {
+            hideDelay: 1000,
+        },
+    },
 };
 
 // Services

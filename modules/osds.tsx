@@ -1,11 +1,12 @@
-import { timeout, Variable, type Time } from "astal";
-import { Astal, Gtk, type Widget } from "astal/gtk3";
+import { execAsync, register, timeout, Variable, type Time } from "astal";
+import { App, Astal, Gtk, Widget } from "astal/gtk3";
 import cairo from "cairo";
 import AstalWp from "gi://AstalWp";
+import Cairo from "gi://cairo";
 import Pango from "gi://Pango";
 import PangoCairo from "gi://PangoCairo";
 import { osds as config } from "../config";
-import { type Monitor } from "../services/monitors";
+import Monitors, { type Monitor } from "../services/monitors";
 import { PopupWindow } from "../utils/widgets";
 
 const getStyle = (context: Gtk.StyleContext, prop: string) => context.get_property(prop, Gtk.StateFlags.NORMAL);
@@ -40,8 +41,8 @@ const SliderOsd = ({
     drawAreaSetup,
 }: {
     fillIcons?: boolean;
-    monitor: Monitor;
-    type: keyof typeof config;
+    monitor?: Monitor;
+    type: "volume" | "brightness";
     windowSetup: (self: Widget.Window, show: () => void) => void;
     className?: string;
     initValue: number;
@@ -49,7 +50,7 @@ const SliderOsd = ({
 }) => (
     <PopupWindow
         name={type}
-        monitor={monitor.id}
+        monitor={monitor?.id}
         keymode={Astal.Keymode.NONE}
         anchor={config[type].position}
         margin={config[type].margin}
@@ -206,10 +207,9 @@ const SliderOsd = ({
     </PopupWindow>
 );
 
-const Volume = ({ monitor, audio }: { monitor: Monitor; audio: AstalWp.Audio }) => (
+const Volume = ({ audio }: { audio: AstalWp.Audio }) => (
     <SliderOsd
         fillIcons
-        monitor={monitor}
         type="volume"
         windowSetup={(self, show) => {
             self.hook(audio.defaultSpeaker, "notify::volume", show);
@@ -259,9 +259,66 @@ const Brightness = ({ monitor }: { monitor: Monitor }) => (
     />
 );
 
-export default ({ monitor }: { monitor: Monitor }) => {
-    if (AstalWp.get_default()) <Volume monitor={monitor} audio={AstalWp.get_default()!.audio} />;
-    <Brightness monitor={monitor} />;
+@register()
+class LockOsd extends Widget.Window {
+    readonly lockType: "caps" | "num";
+
+    #timeout: Time | null = null;
+
+    constructor({ type, icon, right }: { type: "caps" | "num"; icon: string; right?: boolean }) {
+        super({
+            visible: false,
+            name: `lock-${type}`,
+            application: App,
+            namespace: `caelestia-lock-${type}`,
+            anchor:
+                Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.RIGHT,
+            exclusivity: Astal.Exclusivity.IGNORE,
+        });
+
+        this.lockType = type;
+        this.#update();
+
+        this.add(
+            <box vertical halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} className={`lock ${type}`}>
+                <label vexpand className="icon" label={icon} />
+                <label vexpand className="text" label={type.slice(0, 1).toUpperCase() + type.slice(1) + "lock"} />
+            </box>
+        );
+
+        // Clickthrough
+        this.connect("size-allocate", () => this.input_shape_combine_region(new Cairo.Region()));
+
+        // Move over when other indicator opens/closes
+        this.hook(App, "window-toggled", (_, window) => {
+            if (window !== this && window instanceof LockOsd) {
+                const child = this.get_child();
+                if (!child) return;
+                this[right ? "marginLeft" : "marginRight"] = window.visible ? child.get_preferred_width()[1] + 5 : 0;
+            }
+        });
+    }
+
+    #update() {
+        execAsync(`fish -c 'cat /sys/class/leds/input*::${this.lockType}lock/brightness'`)
+            .then(out => (this.get_child() as Widget.Box | null)?.toggleClassName("enabled", out.includes("1")))
+            .catch(console.error);
+    }
+
+    show() {
+        super.show();
+        this.#update();
+        this.#timeout?.cancel();
+        this.#timeout = timeout(config.lock[this.lockType].hideDelay, () => this.hide());
+    }
+}
+
+export default () => {
+    if (AstalWp.get_default()) <Volume audio={AstalWp.get_default()!.audio} />;
+    Monitors.get_default().forEach(monitor => <Brightness monitor={monitor} />);
+
+    <LockOsd type="caps" icon="keyboard_capslock" />;
+    <LockOsd right type="num" icon="filter_1" />;
 
     return null;
 };
