@@ -221,14 +221,7 @@ const Network = () => (
                     network.wifi.scan();
                     execAsync(
                         "uwsm app -- foot -T nmtui fish -c 'sleep .1; set -e COLORTERM; TERM=xterm-old nmtui connect'"
-                    ).catch(err => {
-                        // Idk why but foot always throws this error when it opens
-                        if (
-                            err.message !==
-                            "warn: wayland.c:1619: compositor does not implement the XDG toplevel icon protocol\nwarn: terminal.c:1973: slave exited with signal 1 (Hangup)"
-                        )
-                            console.error(err);
-                    });
+                    ).catch(() => {}); // Ignore errors
                 });
         }}
         setup={self => {
@@ -372,8 +365,16 @@ const StatusIcons = () => (
 );
 
 const PkgUpdates = () => (
-    <box
-        className="module updates"
+    <button
+        onClick={(self, event) => {
+            if (event.button === Astal.MouseButton.PRIMARY) {
+                const popup = App.get_window("updates") as PopupWindow | null;
+                if (popup) {
+                    if (popup.visible) popup.hide();
+                    else popup.popup_at_widget(self, event);
+                }
+            }
+        }}
         setup={self =>
             setupCustomTooltip(
                 self,
@@ -381,9 +382,11 @@ const PkgUpdates = () => (
             )
         }
     >
-        <label className="icon" label="download" />
-        <label label={bind(Updates.get_default(), "numUpdates").as(String)} />
-    </box>
+        <box className="module pkg-updates">
+            <label className="icon" label="download" />
+            <label label={bind(Updates.get_default(), "numUpdates").as(String)} />
+        </box>
+    </button>
 );
 
 const Unread = () => {

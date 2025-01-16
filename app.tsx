@@ -5,6 +5,7 @@ import Launcher from "./src/modules/launcher";
 import Notifications from "./src/modules/notifications";
 import NotifPopups from "./src/modules/notifpopups";
 import Osds from "./src/modules/osds";
+import Updates from "./src/modules/updates";
 import Monitors from "./src/services/monitors";
 import Players from "./src/services/players";
 
@@ -26,6 +27,7 @@ App.start({
         <Osds />;
         Monitors.get_default().forEach(m => <Bar monitor={m} />);
         <Notifications />;
+        <Updates />;
 
         console.log("Caelestia started");
     },

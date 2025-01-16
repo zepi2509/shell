@@ -1,0 +1,74 @@
+@use "sass:color";
+@use "scheme";
+@use "lib";
+@use "font";
+
+.updates {
+    @include lib.rounded(8);
+    @include lib.border(scheme.$blue, 0.4, 2);
+    @include lib.shadow;
+    @include font.mono;
+
+    min-width: lib.s(600);
+    min-height: lib.s(400);
+    background-color: scheme.$base;
+    color: scheme.$blue;
+    padding: lib.s(10) lib.s(12);
+    font-size: lib.s(14);
+
+    .wrapper {
+        @include lib.element-decel;
+
+        &:hover,
+        &:focus {
+            color: color.mix(scheme.$blue, scheme.$base, 80%);
+        }
+
+        &:active {
+            color: color.mix(scheme.$blue, scheme.$base, 60%);
+        }
+    }
+
+    .header {
+        @include lib.spacing(8);
+
+        padding: 0 lib.s(5);
+        margin-bottom: lib.s(8);
+        font-size: lib.s(15);
+
+        button {
+            @include lib.rounded(5);
+            @include lib.element-decel;
+
+            padding: lib.s(3) lib.s(8);
+
+            &:hover,
+            &:focus {
+                background-color: scheme.$surface0;
+            }
+
+            &:active {
+                background-color: scheme.$surface1;
+            }
+        }
+    }
+
+    .icon {
+        font-size: lib.s(32);
+    }
+
+    .repos {
+        @include lib.spacing($vertical: true);
+
+        .repo {
+            .header {
+                font-size: lib.s(16);
+            }
+
+            .list {
+                color: scheme.$text;
+                margin-left: lib.s(12);
+            }
+        }
+    }
+}

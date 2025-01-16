@@ -1,19 +1,25 @@
 import { execAsync, GLib, GObject, property, readFileAsync, register, writeFileAsync } from "astal";
 import { updates as config } from "../../config";
 
-interface Update {
-    name: string;
+export interface Update {
     full: string;
+    name: string;
+    description: string;
+    url: string;
+    version: {
+        old: string;
+        new: string;
+    };
 }
 
-interface Repo {
+export interface Repo {
     repo?: string[];
     updates: Update[];
     icon: string;
     name: string;
 }
 
-interface Data {
+export interface Data {
     cached?: boolean;
     repos: Repo[];
     errors: string[];
@@ -40,7 +46,7 @@ export default class Updates extends GObject.Object {
     }
 
     @property(Object)
-    get data() {
+    get updateData() {
         return this.#data;
     }
 
@@ -56,13 +62,27 @@ export default class Updates extends GObject.Object {
 
     async #updateFromCache() {
         this.#data = JSON.parse(await readFileAsync(this.#cachePath));
-        this.notify("data");
+        this.notify("update-data");
         this.notify("list");
         this.notify("num-updates");
     }
 
-    async #getRepo(repo: string) {
+    async getRepo(repo: string) {
         return (await execAsync(`bash -c "comm -12 <(pacman -Qq | sort) <(pacman -Slq '${repo}' | sort)"`)).split("\n");
+    }
+
+    async constructUpdate(update: string) {
+        const info = await execAsync(`pacman -Qi ${update.split(" ")[0]}`);
+        return info.split("\n").reduce(
+            (acc, line) => {
+                let [key, value] = line.split(" : ");
+                key = key.trim().toLowerCase();
+                if (key === "name" || key === "description" || key === "url") acc[key] = value.trim();
+                else if (key === "version") acc.version.old = value.trim();
+                return acc;
+            },
+            { version: { new: update.split("->")[1].trim() } } as Update
+        );
     }
 
     getUpdates() {
@@ -80,15 +100,15 @@ export default class Updates extends GObject.Object {
                 // Pacman updates (checkupdates)
                 if (pacman.status === "fulfilled") {
                     const repos: Repo[] = [
-                        { repo: await this.#getRepo("core"), updates: [], icon: "hub", name: "Core repository" },
+                        { repo: await this.getRepo("core"), updates: [], icon: "hub", name: "Core repository" },
                         {
-                            repo: await this.#getRepo("extra"),
+                            repo: await this.getRepo("extra"),
                             updates: [],
                             icon: "add_circle",
                             name: "Extra repository",
                         },
                         {
-                            repo: await this.#getRepo("multilib"),
+                            repo: await this.getRepo("multilib"),
                             updates: [],
                             icon: "account_tree",
                             name: "Multilib repository",
@@ -98,7 +118,7 @@ export default class Updates extends GObject.Object {
                     for (const update of pacman.value.split("\n")) {
                         const pkg = update.split(" ")[0];
                         for (const repo of repos)
-                            if (repo.repo?.includes(pkg)) repo.updates.push({ name: pkg, full: update });
+                            if (repo.repo?.includes(pkg)) repo.updates.push(await this.constructUpdate(update));
                     }
 
                     for (const repo of repos) if (repo.updates.length > 0) data.repos.push(repo);
@@ -110,7 +130,7 @@ export default class Updates extends GObject.Object {
 
                     for (const update of yay.value.split("\n")) {
                         if (/^\s*->/.test(update)) data.errors.push(update); // Error
-                        else aur.updates.push({ name: update.split(" ")[0], full: update });
+                        else aur.updates.push(await this.constructUpdate(update));
                     }
 
                     if (aur.updates.length > 0) data.repos.push(aur);
@@ -122,7 +142,7 @@ export default class Updates extends GObject.Object {
                     // Cache and set
                     writeFileAsync(this.#cachePath, JSON.stringify({ cached: true, ...data })).catch(console.error);
                     this.#data = data;
-                    this.notify("data");
+                    this.notify("update-data");
                     this.notify("list");
                     this.notify("num-updates");
                 }

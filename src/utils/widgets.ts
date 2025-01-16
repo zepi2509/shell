@@ -1,5 +1,5 @@
-import { Binding } from "astal";
-import { Astal, Widget } from "astal/gtk3";
+import { Binding, register } from "astal";
+import { Astal, astalify, Gtk, Widget, type ConstructProps } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
 
 export const setupCustomTooltip = (self: any, text: string | Binding<string>) => {
@@ -43,3 +43,10 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
 
 export const setupChildClickthrough = (self: any) =>
     self.connect("size-allocate", () => self.get_window()?.set_child_input_shapes());
+
+@register()
+export class MenuItem extends astalify(Gtk.MenuItem) {
+    constructor(props: ConstructProps<MenuItem, Gtk.MenuItem.ConstructorProps, { onActivate: [] }>) {
+        super(props as any);
+    }
+}
