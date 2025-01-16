@@ -41,8 +41,12 @@ const ActiveWindow = () => (
         hasTooltip
         className="module active-window"
         setup={self => {
-            const title = Variable(hyprland.focusedClient?.title ?? "");
-            hookFocusedClientProp(self, "title", c => title.set(c?.title ?? ""));
+            const title = Variable("");
+            const updateTooltip = (c: AstalHyprland.Client | null) =>
+                title.set(c?.class && c?.title ? `${c.class}: ${c.title}` : "");
+            hookFocusedClientProp(self, "class", updateTooltip);
+            hookFocusedClientProp(self, "title", updateTooltip);
+            updateTooltip(hyprland.focusedClient);
 
             const window = setupCustomTooltip(self, bind(title));
             if (window) {
