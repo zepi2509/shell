@@ -16,7 +16,7 @@ export default ({
     countLabel?: Binding<string>;
     headerButtons: { label: string | Binding<string>; onClicked: () => void; enabled?: Binding<boolean> }[];
     emptyIcon: string;
-    emptyLabel: string;
+    emptyLabel: string | Binding<string>;
     list: JSX.Element;
 }) => (
     <PopupWindow name={name}>

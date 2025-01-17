@@ -219,10 +219,10 @@ const Tray = () => <box className="module tray">{bind(AstalTray.get_default(), "
 
 const Network = () => (
     <button
-        onClick={(_, event) => {
+        onClick={(self, event) => {
             const network = AstalNetwork.get_default();
             if (event.button === Astal.MouseButton.PRIMARY) {
-                // TODO: networks panel
+                togglePopup(self, event, "networks");
             } else if (event.button === Astal.MouseButton.SECONDARY) network.wifi.enabled = !network.wifi.enabled;
             else if (event.button === Astal.MouseButton.MIDDLE)
                 execAsync("uwsm app -- gnome-control-center wifi").catch(() => {

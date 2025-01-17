@@ -1,0 +1,43 @@
+@use "sass:color";
+@use "../scheme";
+@use "../lib";
+@use "../font";
+
+$-accent: scheme.$rosewater;
+
+.networks {
+    @include lib.popdown-window($-accent);
+
+    min-width: lib.s(500);
+    min-height: lib.s(400);
+
+    .list {
+        @include lib.spacing($vertical: true);
+
+        color: scheme.$text;
+
+        .network {
+            @include lib.spacing(8);
+
+            .icon {
+                font-size: lib.s(18);
+            }
+
+            button {
+                @include lib.rounded(5);
+                @include lib.element-decel;
+
+                padding: lib.s(3) lib.s(8);
+
+                &:hover,
+                &:focus {
+                    background-color: scheme.$surface0;
+                }
+
+                &:active {
+                    background-color: scheme.$surface1;
+                }
+            }
+        }
+    }
+}
