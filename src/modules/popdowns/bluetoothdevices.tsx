@@ -1,11 +1,16 @@
 import { bind, Variable } from "astal";
-import { Gtk } from "astal/gtk3";
+import { Astal, Gtk } from "astal/gtk3";
 import AstalBluetooth from "gi://AstalBluetooth";
 import PopdownWindow from "../../widgets/popdownwindow";
 
 const BluetoothDevice = (device: AstalBluetooth.Device) => (
     <box className="device">
-        <icon className="icon" icon={bind(device, "icon").as(i => `${i}-symbolic`)} />
+        <icon
+            className="icon"
+            icon={bind(device, "icon").as(i =>
+                Astal.Icon.lookup_icon(`${i}-symbolic`) ? `${i}-symbolic` : "bluetooth-symbolic"
+            )}
+        />
         <label
             truncate
             xalign={0}
