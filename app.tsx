@@ -35,7 +35,8 @@ App.start({
         console.log(`Caelestia started in ${Date.now() - now}ms`);
     },
     requestHandler(request, res) {
-        if (request === "reload css") loadStyleAsync().catch(console.error);
+        if (request === "quit") App.quit();
+        else if (request === "reload css") loadStyleAsync().catch(console.error);
         else if (request.startsWith("show")) App.get_window(request.split(" ")[1])?.show();
         else if (request === "media play pause") Players.get_default().lastPlayer?.play_pause();
         else if (request === "media next") Players.get_default().lastPlayer?.next();
