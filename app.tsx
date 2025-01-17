@@ -19,6 +19,7 @@ App.start({
     icons: "assets/icons",
     iconTheme: "Adwaita",
     main() {
+        const now = Date.now();
         loadStyleAsync().catch(console.error);
 
         <Launcher />;
@@ -27,7 +28,7 @@ App.start({
         Monitors.get_default().forEach(m => <Bar monitor={m} />);
         <Popdowns />;
 
-        console.log("Caelestia started");
+        console.log(`Caelestia started in ${Date.now() - now}ms`);
     },
     requestHandler(request, res) {
         if (request === "reload css") loadStyleAsync().catch(console.error);
