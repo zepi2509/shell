@@ -38,6 +38,10 @@ $-accent: scheme.$rosewater;
                     background-color: scheme.$surface1;
                 }
             }
+
+            &.active {
+                color: $-accent;
+            }
         }
     }
 }

@@ -4,7 +4,11 @@ import AstalNetwork from "gi://AstalNetwork";
 import PopdownWindow from "../../widgets/popdownwindow";
 
 const Network = (accessPoint: AstalNetwork.AccessPoint) => (
-    <box className="network">
+    <box
+        className={bind(AstalNetwork.get_default().wifi, "activeAccessPoint").as(
+            a => `network ${a === accessPoint ? "active" : ""}`
+        )}
+    >
         <icon className="icon" icon={bind(accessPoint, "iconName")} />
         <label
             truncate

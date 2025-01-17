@@ -4,7 +4,7 @@ import AstalBluetooth from "gi://AstalBluetooth";
 import PopdownWindow from "../../widgets/popdownwindow";
 
 const BluetoothDevice = (device: AstalBluetooth.Device) => (
-    <box className="device">
+    <box className={bind(device, "connected").as(c => `device ${c ? "active" : ""}`)}>
         <icon
             className="icon"
             icon={bind(device, "icon").as(i =>
