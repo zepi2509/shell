@@ -125,7 +125,9 @@ const MediaPlaying = () => {
 };
 
 const Workspace = ({ idx }: { idx: number }) => {
-    let wsId = Math.floor((hyprland.focusedWorkspace.id - 1) / config.wsPerGroup) * config.wsPerGroup + idx;
+    let wsId = hyprland.focusedWorkspace
+        ? Math.floor((hyprland.focusedWorkspace.id - 1) / config.wsPerGroup) * config.wsPerGroup + idx
+        : idx;
     return (
         <button
             halign={Gtk.Align.CENTER}
@@ -139,6 +141,7 @@ const Workspace = ({ idx }: { idx: number }) => {
                     );
 
                 self.hook(hyprland, "notify::focused-workspace", () => {
+                    if (!hyprland.focusedWorkspace) return;
                     wsId = Math.floor((hyprland.focusedWorkspace.id - 1) / config.wsPerGroup) * config.wsPerGroup + idx;
                     self.toggleClassName("focused", hyprland.focusedWorkspace.id === wsId);
                     update();
@@ -147,7 +150,7 @@ const Workspace = ({ idx }: { idx: number }) => {
                 self.hook(hyprland, "client-moved", update);
                 self.hook(hyprland, "client-removed", update);
 
-                self.toggleClassName("focused", hyprland.focusedWorkspace.id === wsId);
+                self.toggleClassName("focused", hyprland.focusedWorkspace?.id === wsId);
                 update();
             }}
         />
@@ -159,7 +162,7 @@ const Workspaces = () => (
         onScroll={(_, event) => {
             const activeWs = hyprland.focusedClient?.workspace.name;
             if (activeWs?.startsWith("special:")) hyprland.dispatch("togglespecialworkspace", activeWs.slice(8));
-            else if (event.delta_y > 0 || hyprland.focusedWorkspace.id > 1)
+            else if (event.delta_y > 0 || hyprland.focusedWorkspace?.id > 1)
                 hyprland.dispatch("workspace", (event.delta_y < 0 ? "-" : "+") + 1);
         }}
     >
