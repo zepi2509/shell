@@ -8,8 +8,8 @@ $-accent: scheme.$blue;
 .updates {
     @include lib.popdown-window($-accent);
 
-    min-width: lib.s(600);
-    min-height: lib.s(400);
+    min-width: lib.s(550);
+    min-height: lib.s(450);
 
     .wrapper {
         @include lib.element-decel;

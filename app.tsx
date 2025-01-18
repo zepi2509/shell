@@ -12,7 +12,7 @@ const loadStyleAsync = async () => {
     let scheme = "mocha";
     if (GLib.file_test(`${CACHE}/scheme/current.txt`, GLib.FileTest.EXISTS)) {
         const currentScheme = await readFileAsync(`${CACHE}/scheme/current.txt`);
-        if (GLib.file_test(`${SRC}/scss/scheme/${scheme}.scss`, GLib.FileTest.EXISTS)) scheme = currentScheme;
+        if (GLib.file_test(`${SRC}/scss/scheme/_${currentScheme}.scss`, GLib.FileTest.EXISTS)) scheme = currentScheme;
     }
     await writeFileAsync(`${SRC}/scss/scheme/_index.scss`, `@forward "${scheme}";`);
     App.apply_css(await execAsync(`sass ${SRC}/style.scss`), true);

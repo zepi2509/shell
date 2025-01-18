@@ -437,10 +437,10 @@ export default ({ monitor }: { monitor: Monitor }) => (
     <window
         namespace="caelestia-bar"
         monitor={monitor.id}
-        anchor={Astal.WindowAnchor.TOP}
+        anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT}
         exclusivity={Astal.Exclusivity.EXCLUSIVE}
     >
-        <centerbox className="bar" css={"min-width: " + monitor.width * 0.8 + "px;"}>
+        <centerbox className="bar">
             <box>
                 <OSIcon />
                 <ActiveWindow />
