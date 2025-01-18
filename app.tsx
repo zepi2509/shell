@@ -37,9 +37,9 @@ App.start({
     },
     requestHandler(request, res) {
         if (request === "quit") App.quit();
-        else if (request === "reload css") loadStyleAsync().catch(console.error);
+        else if (request === "reload-css") loadStyleAsync().catch(console.error);
         else if (request.startsWith("show")) App.get_window(request.split(" ")[1])?.show();
-        else if (request === "media play pause") Players.get_default().lastPlayer?.play_pause();
+        else if (request === "media play-pause") Players.get_default().lastPlayer?.play_pause();
         else if (request === "media next") Players.get_default().lastPlayer?.next();
         else if (request === "media previous") Players.get_default().lastPlayer?.previous();
         else if (request === "media stop") Players.get_default().lastPlayer?.stop();
