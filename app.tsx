@@ -1,4 +1,4 @@
-import { execAsync, GLib, readFileAsync, writeFileAsync } from "astal";
+import { execAsync, GLib, monitorFile, readFileAsync, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
 import Bar from "./src/modules/bar";
 import Launcher from "./src/modules/launcher";
@@ -25,6 +25,7 @@ App.start({
     main() {
         const now = Date.now();
         loadStyleAsync().catch(console.error);
+        monitorFile(`${CACHE}/scheme/current.txt`, () => loadStyleAsync().catch(console.error));
 
         <Launcher />;
         <NotifPopups />;
