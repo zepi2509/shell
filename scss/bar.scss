@@ -84,6 +84,15 @@
 
     .status-icons {
         color: scheme.$rosewater;
+
+        .bluetooth {
+            @include lib.spacing(10);
+
+            // The spacing doesn't look right for some reason so this
+            & > :first-child:not(:last-child) {
+                margin-right: lib.s(5);
+            }
+        }
     }
 
     .pkg-updates {

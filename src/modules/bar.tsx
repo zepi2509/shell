@@ -324,47 +324,70 @@ const Network = () => (
     </button>
 );
 
-const Bluetooth = () => (
+const BluetoothDevice = (device: AstalBluetooth.Device) => (
     <button
+        visible={bind(device, "connected")}
         onClick={(self, event) => {
             if (event.button === Astal.MouseButton.PRIMARY) togglePopup(self, event, "bluetooth-devices");
-            else if (event.button === Astal.MouseButton.SECONDARY) AstalBluetooth.get_default().toggle();
+            else if (event.button === Astal.MouseButton.SECONDARY)
+                device.disconnect_device((_, res) => device.disconnect_device_finish(res));
             else if (event.button === Astal.MouseButton.MIDDLE)
                 execAsync("uwsm app -- blueman-manager").catch(console.error);
         }}
-        setup={self => {
-            const bluetooth = AstalBluetooth.get_default();
-            const tooltipText = Variable("");
-            const update = () => {
-                const devices = bluetooth.get_devices().filter(d => d.connected);
-                tooltipText.set(
-                    devices.length > 0
-                        ? `Connected devices: ${devices.map(d => d.alias).join(", ")}`
-                        : "No connected devices"
-                );
-            };
-            const hookDevice = (device: AstalBluetooth.Device) => {
-                self.hook(device, "notify::connected", update);
-                self.hook(device, "notify::alias", update);
-            };
-            bluetooth.get_devices().forEach(hookDevice);
-            self.hook(bluetooth, "device-added", (_, device) => {
-                hookDevice(device);
-                update();
-            });
-            update();
-            setupCustomTooltip(self, bind(tooltipText));
-        }}
+        setup={self => setupCustomTooltip(self, bind(device, "alias"))}
     >
-        <stack
-            transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
-            transitionDuration={120}
-            shown={bind(AstalBluetooth.get_default(), "isPowered").as(p => (p ? "enabled" : "disabled"))}
-        >
-            <label className="icon" label="bluetooth" name="enabled" />
-            <label className="icon" label="bluetooth_disabled" name="disabled" />
-        </stack>
+        <icon
+            icon={bind(device, "icon").as(i =>
+                Astal.Icon.lookup_icon(`${i}-symbolic`) ? `${i}-symbolic` : "caelestia-bluetooth-device-symbolic"
+            )}
+        />
     </button>
+);
+
+const Bluetooth = () => (
+    <box className="bluetooth">
+        <button
+            onClick={(self, event) => {
+                if (event.button === Astal.MouseButton.PRIMARY) togglePopup(self, event, "bluetooth-devices");
+                else if (event.button === Astal.MouseButton.SECONDARY) AstalBluetooth.get_default().toggle();
+                else if (event.button === Astal.MouseButton.MIDDLE)
+                    execAsync("uwsm app -- blueman-manager").catch(console.error);
+            }}
+            setup={self => {
+                const bluetooth = AstalBluetooth.get_default();
+                const tooltipText = Variable("");
+                const update = () => {
+                    const devices = bluetooth.get_devices().filter(d => d.connected);
+                    tooltipText.set(
+                        devices.length > 0
+                            ? `Connected devices: ${devices.map(d => d.alias).join(", ")}`
+                            : "No connected devices"
+                    );
+                };
+                const hookDevice = (device: AstalBluetooth.Device) => {
+                    self.hook(device, "notify::connected", update);
+                    self.hook(device, "notify::alias", update);
+                };
+                bluetooth.get_devices().forEach(hookDevice);
+                self.hook(bluetooth, "device-added", (_, device) => {
+                    hookDevice(device);
+                    update();
+                });
+                update();
+                setupCustomTooltip(self, bind(tooltipText));
+            }}
+        >
+            <stack
+                transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
+                transitionDuration={120}
+                shown={bind(AstalBluetooth.get_default(), "isPowered").as(p => (p ? "enabled" : "disabled"))}
+            >
+                <label className="icon" label="bluetooth" name="enabled" />
+                <label className="icon" label="bluetooth_disabled" name="disabled" />
+            </stack>
+        </button>
+        {bind(AstalBluetooth.get_default(), "devices").as(d => d.map(BluetoothDevice))}
+    </box>
 );
 
 const StatusIcons = () => (
