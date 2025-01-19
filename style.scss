@@ -7,6 +7,7 @@
 @use "scss/launcher";
 @use "scss/osds";
 @use "scss/popdowns";
+@use "scss/session";
 
 * {
     all: unset; // Remove GTK theme styles

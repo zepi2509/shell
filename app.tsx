@@ -5,6 +5,7 @@ import Launcher from "./src/modules/launcher";
 import NotifPopups from "./src/modules/notifpopups";
 import Osds from "./src/modules/osds";
 import Popdowns from "./src/modules/popdowns";
+import Session from "./src/modules/session";
 import Monitors from "./src/services/monitors";
 import Players from "./src/services/players";
 
@@ -30,6 +31,7 @@ App.start({
         <Launcher />;
         <NotifPopups />;
         <Osds />;
+        <Session />;
         Monitors.get_default().forEach(m => <Bar monitor={m} />);
         <Popdowns />;
 

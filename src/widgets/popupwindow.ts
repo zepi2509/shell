@@ -13,6 +13,7 @@ export default class PopupWindow extends Widget.Window {
         super({
             keymode: Astal.Keymode.ON_DEMAND,
             exclusivity: Astal.Exclusivity.IGNORE,
+            borderWidth: 20, // To allow shadow, cause if not it gets cut off
             ...props,
             visible: false,
             application: App,
@@ -24,7 +25,6 @@ export default class PopupWindow extends Widget.Window {
 
                 return props.onKeyPressEvent?.(self, event);
             },
-            borderWidth: 20, // To allow shadow, cause if not it gets cut off
         });
     }
 

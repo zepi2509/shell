@@ -452,11 +452,7 @@ const DateTime = () => (
 );
 
 const Power = () => (
-    <button
-        className="module power"
-        label="power_settings_new"
-        onClicked={() => execAsync("fish -c 'pkill wlogout || wlogout -p layer-shell'").catch(console.error)}
-    />
+    <button className="module power" label="power_settings_new" onClicked={() => App.toggle_window("session")} />
 );
 
 export default ({ monitor }: { monitor: Monitor }) => (
