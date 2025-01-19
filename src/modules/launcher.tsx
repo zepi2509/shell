@@ -244,6 +244,12 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                                 // TODO: todo service or maybe use external app
                             },
                         },
+                        reload: {
+                            icon: "refresh",
+                            name: "Reload",
+                            description: "Reload app list",
+                            command: () => Apps.reload(),
+                        },
                     };
                     const subcommandList = Object.keys(subcommands);
 
