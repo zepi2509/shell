@@ -17,6 +17,7 @@ const Update = (update: IUpdate) => {
     const menu = new Gtk.Menu();
     menu.append(constructItem("Open info in browser", `xdg-open '${update.url}'`, false));
     menu.append(constructItem("Open info in terminal", `uwsm app -- foot -H pacman -Qi ${update.name}`));
+    menu.append(new Gtk.SeparatorMenuItem({ visible: true }));
     menu.append(constructItem("Reinstall", `uwsm app -T -- yay -S ${update.name}`));
     menu.append(constructItem("Remove with dependencies", `uwsm app -T -- yay -Rns ${update.name}`));
 

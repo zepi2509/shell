@@ -116,18 +116,19 @@ separator,
 
 menu {
     @include -appear;
-    @include lib.rounded(5);
-    @include lib.border(scheme.$blue, 0.7);
-    @include font.main;
+    @include lib.rounded(10);
+    @include lib.border(scheme.$blue, 0.4);
+    @include font.mono;
 
-    padding: lib.s(10);
+    padding: lib.s(8);
     background-color: scheme.$surface0;
     color: scheme.$text;
+    font-size: lib.s(14);
 
     & > menuitem {
         @include lib.rounded(8);
 
-        padding: lib.s(8) lib.s(16);
+        padding: lib.s(5) lib.s(8);
         background: transparent;
         transition: 0.2s ease background-color;
 
@@ -162,8 +163,8 @@ menu {
     }
 
     & > separator {
-        background-color: scheme.$blue;
-        margin: lib.s(8) 0;
+        background-color: color.mix(scheme.$blue, scheme.$surface0, 70%);
+        margin: lib.s(5) 0;
     }
 }
 
@@ -171,7 +172,7 @@ tooltip,
 .tooltip {
     @include lib.rounded(5);
     @include lib.border(scheme.$teal, 0.7);
-    @include font.reading;
+    @include font.mono;
 
     background-color: scheme.$surface0;
     color: scheme.$text;
