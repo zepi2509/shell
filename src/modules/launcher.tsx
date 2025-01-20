@@ -8,7 +8,7 @@ import { Apps } from "../services/apps";
 import Math, { type HistoryItem } from "../services/math";
 import { getAppCategoryIcon } from "../utils/icons";
 import { launch } from "../utils/system";
-import { setupCustomTooltip } from "../utils/widgets";
+import { MenuItem, setupCustomTooltip } from "../utils/widgets";
 import PopupWindow from "../widgets/popupwindow";
 
 type Mode = "apps" | "files" | "math";
@@ -73,18 +73,40 @@ const PinnedApp = (names: string[]) => {
         }
     }
 
-    if (!app) console.error(`Launcher - Unable to find app for "${names.join(", ")}"`);
+    if (!app) {
+        console.error(`Launcher - Unable to find app for "${names.join(", ")}"`);
+        return null;
+    }
 
-    return app ? (
+    const menu = new Gtk.Menu();
+    menu.append(new MenuItem({ label: "Launch", onActivate: () => launchAndClose(widget, astalApp!) }));
+
+    if (app.list_actions().length > 0) menu.append(new Gtk.SeparatorMenuItem({ visible: true }));
+    app.list_actions().forEach(action => {
+        menu.append(
+            new MenuItem({
+                label: app.get_action_name(action),
+                onActivate: () => {
+                    close(widget); // Pass result cause menu is its own toplevel
+                    app.launch_action(action, null);
+                },
+            })
+        );
+    });
+
+    const widget = (
         <button
             className="pinned-app result"
             cursor="pointer"
             onClicked={self => launchAndClose(self, astalApp!)}
+            onClick={(_, event) => event.button === Astal.MouseButton.SECONDARY && menu.popup_at_pointer(null)}
             setup={self => setupCustomTooltip(self, app.get_display_name())}
+            onDestroy={() => menu.destroy()}
         >
             <icon gicon={app.get_icon()!} />
         </button>
-    ) : null;
+    );
+    return widget;
 };
 
 const PinnedApps = () => <box homogeneous>{config.pins.map(PinnedApp)}</box>;
@@ -112,14 +134,24 @@ const Result = ({
     label,
     sublabel,
     onClicked,
+    onSecondaryClick,
+    onDestroy,
 }: {
     icon?: string;
     materialIcon?: string;
     label: string;
     sublabel?: string;
     onClicked: (self: Widget.Button) => void;
+    onSecondaryClick?: (self: Widget.Button) => void;
+    onDestroy?: () => void;
 }) => (
-    <button className="result" cursor="pointer" onClicked={onClicked}>
+    <button
+        className="result"
+        cursor="pointer"
+        onClicked={onClicked}
+        onClick={(self, event) => event.button === Astal.MouseButton.SECONDARY && onSecondaryClick?.(self)}
+        onDestroy={onDestroy}
+    >
         <box>
             {icon && Astal.Icon.lookup_icon(icon) ? (
                 <icon valign={Gtk.Align.START} className="icon" icon={icon} />
@@ -158,15 +190,37 @@ const SubcommandResult = ({
     />
 );
 
-const AppResult = ({ app }: { app: AstalApps.Application }) => (
-    <Result
-        icon={app.iconName}
-        materialIcon={getAppCategoryIcon(app)}
-        label={app.name}
-        sublabel={app.description}
-        onClicked={self => launchAndClose(self, app)}
-    />
-);
+const AppResult = ({ app }: { app: AstalApps.Application }) => {
+    const menu = new Gtk.Menu();
+    menu.append(new MenuItem({ label: "Launch", onActivate: () => launchAndClose(result, app) }));
+
+    const appInfo = app.app as Gio.DesktopAppInfo;
+    if (appInfo.list_actions().length > 0) menu.append(new Gtk.SeparatorMenuItem({ visible: true }));
+    appInfo.list_actions().forEach(action => {
+        menu.append(
+            new MenuItem({
+                label: appInfo.get_action_name(action),
+                onActivate: () => {
+                    close(result); // Pass result cause menu is its own toplevel
+                    appInfo.launch_action(action, null);
+                },
+            })
+        );
+    });
+
+    const result = (
+        <Result
+            icon={app.iconName}
+            materialIcon={getAppCategoryIcon(app)}
+            label={app.name}
+            sublabel={app.description}
+            onClicked={self => launchAndClose(self, app)}
+            onSecondaryClick={() => menu.popup_at_pointer(null)}
+            onDestroy={() => menu.destroy()}
+        />
+    );
+    return result;
+};
 
 const MathResult = ({ math, isHistory, entry }: { math: HistoryItem; isHistory?: boolean; entry: Widget.Entry }) => (
     <Result
