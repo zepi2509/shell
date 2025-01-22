@@ -22,7 +22,6 @@ const loadStyleAsync = async () => {
 App.start({
     instanceName: "caelestia",
     icons: "assets/icons",
-    iconTheme: "Adwaita",
     main() {
         const now = Date.now();
         loadStyleAsync().catch(console.error);
