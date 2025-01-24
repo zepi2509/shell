@@ -7,21 +7,33 @@ export const bar = {
 };
 
 export const launcher = {
-    maxResults: 15,
-    fdOpts: ["-a", "-t", "f"],
-    pins: [
-        ["firefox", "waterfox", "google-chrome", "chromium", "brave-browser", "vivaldi-stable", "vivaldi-snapshot"],
-        ["foot", "alacritty", "kitty", "wezterm"],
-        ["thunar", "nemo", "nautilus"],
-        ["codium", "code", "clion", "intellij-idea-ultimate-edition"],
-        ["spotify-adblock", "spotify", "audacious", "elisa"],
-    ],
+    maxResults: 15, // Max shown results at one time (i.e. max height of the launcher)
+    apps: {
+        maxResults: 30, // Actual max results, -1 for infinite
+        pins: [
+            ["firefox", "waterfox", "google-chrome", "chromium", "brave-browser", "vivaldi-stable", "vivaldi-snapshot"],
+            ["foot", "alacritty", "kitty", "wezterm"],
+            ["thunar", "nemo", "nautilus"],
+            ["codium", "code", "clion", "intellij-idea-ultimate-edition"],
+            ["spotify-adblock", "spotify", "audacious", "elisa"],
+        ],
+    },
+    files: {
+        maxResults: 40, // Actual max results, -1 for infinite
+        fdOpts: ["-a", "-t", "f"], // Options to pass to `fd`
+    },
+    math: {
+        maxResults: 40, // Actual max results, -1 for infinite
+    },
     windows: {
-        // Weights for fuzzysort
-        title: 1,
-        class: 1,
-        initialTitle: 0.5,
-        initialClass: 0.5,
+        maxResults: -1, // Actual max results, -1 for infinite
+        weights: {
+            // Weights for fuzzy sort
+            title: 1,
+            class: 1,
+            initialTitle: 0.5,
+            initialClass: 0.5,
+        },
     },
 };
 
@@ -55,6 +67,10 @@ export const osds = {
 };
 
 // Services
+export const math = {
+    maxHistory: 100,
+};
+
 export const updates = {
     interval: 900000,
 };

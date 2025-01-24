@@ -47,6 +47,9 @@ const getEmptyTextFromMode = (mode: Mode) => {
     }
 };
 
+const limitLength = <T,>(arr: T[], cfg: { maxResults: number }) =>
+    cfg.maxResults > 0 && arr.length > cfg.maxResults ? arr.slice(0, cfg.maxResults) : arr;
+
 const close = (self: JSX.Element) => {
     const toplevel = self.get_toplevel();
     if (toplevel instanceof Widget.Window) toplevel.hide();
@@ -114,7 +117,7 @@ const PinnedApp = (names: string[]) => {
     return widget;
 };
 
-const PinnedApps = () => <box homogeneous>{config.pins.map(PinnedApp)}</box>;
+const PinnedApps = () => <box homogeneous>{config.apps.pins.map(PinnedApp)}</box>;
 
 const SearchEntry = ({ entry }: { entry: Widget.Entry }) => (
     <stack
@@ -141,6 +144,7 @@ const Result = ({
     tooltip,
     onClicked,
     onSecondaryClick,
+    onMiddleClick,
     onDestroy,
 }: {
     icon?: string | Gio.Icon | null;
@@ -150,6 +154,7 @@ const Result = ({
     tooltip?: string;
     onClicked: (self: Widget.Button) => void;
     onSecondaryClick?: (self: Widget.Button) => void;
+    onMiddleClick?: (self: Widget.Button) => void;
     onDestroy?: () => void;
 }) => (
     <button
@@ -157,7 +162,10 @@ const Result = ({
         cursor="pointer"
         tooltipText={tooltip}
         onClicked={onClicked}
-        onClick={(self, event) => event.button === Astal.MouseButton.SECONDARY && onSecondaryClick?.(self)}
+        onClick={(self, event) => {
+            if (event.button === Astal.MouseButton.SECONDARY) onSecondaryClick?.(self);
+            else if (event.button === Astal.MouseButton.MIDDLE) onMiddleClick?.(self);
+        }}
         onDestroy={onDestroy}
     >
         <box>
@@ -167,14 +175,16 @@ const Result = ({
                 ) : (
                     <icon valign={Gtk.Align.START} className="icon" gicon={icon} />
                 ))}
-            {!icon && materialIcon && <label valign={Gtk.Align.START} className="icon" label={materialIcon} />}
+            {materialIcon && (!icon || (typeof icon === "string" && !Astal.Icon.lookup_icon(icon))) && (
+                <label valign={Gtk.Align.START} className="icon" label={materialIcon} />
+            )}
             {sublabel ? (
                 <box vertical valign={Gtk.Align.CENTER} className="has-sublabel">
                     <label hexpand truncate maxWidthChars={1} xalign={0} label={label} />
                     <label hexpand truncate maxWidthChars={1} className="sublabel" xalign={0} label={sublabel} />
                 </box>
             ) : (
-                <label xalign={0} label={label} />
+                <label hexpand truncate maxWidthChars={1} xalign={0} label={label} />
             )}
         </box>
     </button>
@@ -388,18 +398,43 @@ const WindowResult = ({ client, reload }: { client: Client; reload: () => void }
         })
     );
 
+    const classOrTitle = (prop: "Class" | "Title", header = true) => {
+        const lower = prop.toLowerCase() as "class" | "title";
+        return (
+            (header ? `${prop}: ` : "") +
+            (client[lower] || (client[`initial${prop}`] ? `${client[`initial${prop}`]} (initial)` : `No ${lower}`))
+        );
+    };
+    const workspace = (header = false) =>
+        (header ? "Workspace: " : "") + `${client.workspace.name} (${client.workspace.id})`;
+    const prop = (prop: keyof typeof client, header?: string) =>
+        `${header ?? prop.slice(0, 1).toUpperCase() + prop.slice(1)}: ${client[prop]}`;
+
     const result = (
         <Result
             icon={app.iconName}
             materialIcon={getAppCategoryIcon(app)}
-            label={client.title || (client.initialTitle ? `${client.initialTitle} (initial)` : "No title")}
-            sublabel={client.class || (client.initialClass ? `${client.initialClass} (initial)` : "No class")}
-            tooltip={`Address: ${client.address}\nWorkspace: ${client.workspace.name} (${client.workspace.id})\nProcess ID: ${client.pid}\nFloating: ${client.floating}\nInhibiting idle: ${client.inhibitingIdle}`}
+            label={
+                classOrTitle("Title", false).length < 5
+                    ? `${classOrTitle("Class", false)}: ${classOrTitle("Title", false)}`
+                    : classOrTitle("Title", false)
+            }
+            sublabel={`Workspace ${workspace()} on ${hyprland.get_monitor(client.monitor).name}`}
+            tooltip={`${classOrTitle("Title")}\n${classOrTitle("Class")}\n${prop("address")}\n${workspace(
+                true
+            )}\n${prop("pid", "Process ID")}\n${prop("floating")}\n${prop("inhibitingIdle", "Inhibiting idle")}`}
             onClicked={self => {
                 close(self);
                 astalClient?.focus();
             }}
             onSecondaryClick={() => menu.popup_at_pointer(null)}
+            onMiddleClick={() => {
+                astalClient?.kill();
+                const id = hyprland.connect("client-removed", () => {
+                    hyprland.disconnect(id);
+                    reload();
+                });
+            }}
             onDestroy={() => menu.destroy()}
         />
     );
@@ -409,24 +444,10 @@ const WindowResult = ({ client, reload }: { client: Client; reload: () => void }
 const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> }) => {
     const empty = Variable(true);
 
-    return (
-        <stack
-            className="results"
-            transitionType={Gtk.StackTransitionType.CROSSFADE}
-            transitionDuration={150}
-            shown={bind(empty).as(t => (t ? "empty" : "list"))}
-        >
-            <box name="empty" className="empty" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
-                <label className="icon" label="bug_report" />
-                <label
-                    label={bind(entry, "text").as(t =>
-                        t.startsWith(">") ? "No matching subcommands" : getEmptyTextFromMode(mode.get())
-                    )}
-                />
-            </box>
+    const scrollable = (
+        <scrollable name="list" hscroll={Gtk.PolicyType.NEVER}>
             <box
                 vertical
-                name="list"
                 setup={self => {
                     const subcommands: Record<string, Subcommand> = {
                         apps: {
@@ -470,11 +491,16 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                     };
                     const subcommandList = Object.keys(subcommands);
 
-                    const updateEmpty = () => empty.set(self.get_children().length === 0);
+                    const afterUpdate = () => {
+                        empty.set(self.get_children().length === 0);
+
+                        const children = limitLength(self.get_children(), config);
+                        const height = children.reduce((a, b) => a + b.get_preferred_height()[1], 0);
+                        scrollable.css = `min-height: ${height}px;`;
+                    };
 
                     const appSearch = () => {
-                        const apps = Apps.fuzzy_query(entry.text);
-                        if (apps.length > config.maxResults) apps.length = config.maxResults;
+                        const apps = limitLength(Apps.fuzzy_query(entry.text), config.apps);
                         for (const app of apps) self.add(<AppResult app={app} />);
                     };
 
@@ -485,23 +511,23 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                             );
                             self.add(<box className="separator" />);
                         }
-                        for (const item of MathService.get_default().history)
+                        for (const item of limitLength(MathService.get_default().history, config.math))
                             self.add(<MathResult isHistory math={item} entry={entry} />);
                     };
 
                     const fileSearch = () =>
-                        execAsync(["fd", ...config.fdOpts, entry.text, HOME])
+                        execAsync(["fd", ...config.files.fdOpts, entry.text, HOME])
                             .then(out => {
                                 const paths = out.split("\n").filter(path => path);
-                                if (paths.length > config.maxResults) paths.length = config.maxResults;
                                 self.foreach(ch => ch.destroy());
-                                for (const path of paths) self.add(<FileResult path={path} />);
+                                for (const path of limitLength(paths, config.files))
+                                    self.add(<FileResult path={path} />);
                             })
                             .catch(e => {
                                 // Ignore execAsync error
                                 if (!(e instanceof Gio.IOErrorEnum || e instanceof GLib.SpawnError)) console.error(e);
                             })
-                            .finally(updateEmpty);
+                            .finally(afterUpdate);
 
                     const listWindows = () => {
                         const hyprland = AstalHyprland.get_default();
@@ -512,13 +538,13 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                                 if (entry.text) {
                                     const clients = fuzzysort.go(entry.text, unsortedClients, {
                                         all: true,
-                                        limit: config.maxResults,
+                                        limit: config.windows.maxResults,
                                         keys: ["title", "class", "initialTitle", "initialClass"],
                                         scoreFn: r =>
-                                            r[0].score * config.windows.title +
-                                            r[1].score * config.windows.class +
-                                            r[2].score * config.windows.initialTitle +
-                                            r[3].score * config.windows.initialClass,
+                                            r[0].score * config.windows.weights.title +
+                                            r[1].score * config.windows.weights.class +
+                                            r[2].score * config.windows.weights.initialTitle +
+                                            r[3].score * config.windows.weights.initialClass,
                                     });
                                     self.foreach(ch => ch.destroy());
                                     for (const { obj } of clients)
@@ -526,13 +552,13 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                                 } else {
                                     const clients = unsortedClients.sort((a, b) => a.focusHistoryID - b.focusHistoryID);
                                     self.foreach(ch => ch.destroy());
-                                    for (const client of clients)
+                                    for (const client of limitLength(clients, config.windows))
                                         self.add(<WindowResult reload={listWindows} client={client} />);
                                 }
                             } catch (e) {
                                 console.error(e);
                             } finally {
-                                updateEmpty();
+                                afterUpdate();
                             }
                         });
                     };
@@ -572,10 +598,29 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                         else if (mode.get() === "files") fileSearch();
                         else if (mode.get() === "windows") listWindows();
 
-                        if (ignoreFileAsync) updateEmpty();
+                        if (ignoreFileAsync) afterUpdate();
                     });
                 }}
             />
+        </scrollable>
+    ) as Widget.Scrollable;
+
+    return (
+        <stack
+            className="results"
+            transitionType={Gtk.StackTransitionType.CROSSFADE}
+            transitionDuration={150}
+            shown={bind(empty).as(t => (t ? "empty" : "list"))}
+        >
+            <box name="empty" className="empty" halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
+                <label className="icon" label="bug_report" />
+                <label
+                    label={bind(entry, "text").as(t =>
+                        t.startsWith(">") ? "No matching subcommands" : getEmptyTextFromMode(mode.get())
+                    )}
+                />
+            </box>
+            {scrollable}
         </stack>
     );
 };
