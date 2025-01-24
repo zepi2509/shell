@@ -36,7 +36,10 @@
                 min-height: lib.s(100);
                 font-size: lib.s(32);
 
-                &:hover,
+                &:hover {
+                    background-color: scheme.$surface0;
+                }
+
                 &:focus {
                     background-color: color.mix(scheme.$flamingo, scheme.$base, 70%);
                     color: scheme.$base;
