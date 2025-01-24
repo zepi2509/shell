@@ -103,7 +103,9 @@ const MediaPlaying = () => {
                 <icon
                     setup={self =>
                         players.hookLastPlayer(self, "notify::identity", () => {
-                            const icon = `caelestia-${players.lastPlayer?.identity.toLowerCase()}-symbolic`;
+                            const icon = `caelestia-${players.lastPlayer?.identity
+                                .toLowerCase()
+                                .replaceAll(" ", "-")}-symbolic`;
                             self.icon = players.lastPlayer
                                 ? Astal.Icon.lookup_icon(icon)
                                     ? icon
