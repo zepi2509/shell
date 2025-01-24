@@ -1,17 +1,18 @@
 import { bind, execAsync, Gio, GLib, register, timeout, Variable } from "astal";
-import { Astal, Gtk, Widget } from "astal/gtk3";
+import { App, Astal, Gtk, Widget } from "astal/gtk3";
 import fuzzysort from "fuzzysort";
 import type AstalApps from "gi://AstalApps";
 import AstalHyprland from "gi://AstalHyprland";
 import { launcher as config } from "../../config";
 import { Apps } from "../services/apps";
-import Math, { type HistoryItem } from "../services/math";
+import MathService, { type HistoryItem } from "../services/math";
 import { getAppCategoryIcon } from "../utils/icons";
 import { launch } from "../utils/system";
+import type { Client } from "../utils/types";
 import { MenuItem, setupCustomTooltip } from "../utils/widgets";
 import PopupWindow from "../widgets/popupwindow";
 
-type Mode = "apps" | "files" | "math";
+type Mode = "apps" | "files" | "math" | "windows";
 
 interface Subcommand {
     icon: string;
@@ -28,6 +29,8 @@ const getIconFromMode = (mode: Mode) => {
             return "folder";
         case "math":
             return "calculate";
+        case "windows":
+            return "select_window_2";
     }
 };
 
@@ -39,6 +42,8 @@ const getEmptyTextFromMode = (mode: Mode) => {
             return GLib.find_program_in_path("fd") === null ? "File search requires `fd`" : "No files found";
         case "math":
             return "Type an expression";
+        case "windows":
+            return "No windows found";
     }
 };
 
@@ -133,14 +138,16 @@ const Result = ({
     materialIcon,
     label,
     sublabel,
+    tooltip,
     onClicked,
     onSecondaryClick,
     onDestroy,
 }: {
-    icon?: string;
+    icon?: string | Gio.Icon | null;
     materialIcon?: string;
     label: string;
     sublabel?: string;
+    tooltip?: string;
     onClicked: (self: Widget.Button) => void;
     onSecondaryClick?: (self: Widget.Button) => void;
     onDestroy?: () => void;
@@ -148,16 +155,19 @@ const Result = ({
     <button
         className="result"
         cursor="pointer"
+        tooltipText={tooltip}
         onClicked={onClicked}
         onClick={(self, event) => event.button === Astal.MouseButton.SECONDARY && onSecondaryClick?.(self)}
         onDestroy={onDestroy}
     >
         <box>
-            {icon && Astal.Icon.lookup_icon(icon) ? (
-                <icon valign={Gtk.Align.START} className="icon" icon={icon} />
-            ) : (
-                <label valign={Gtk.Align.START} className="icon" label={materialIcon} />
-            )}
+            {icon &&
+                (typeof icon === "string" ? (
+                    Astal.Icon.lookup_icon(icon) && <icon valign={Gtk.Align.START} className="icon" icon={icon} />
+                ) : (
+                    <icon valign={Gtk.Align.START} className="icon" gicon={icon} />
+                ))}
+            {!icon && materialIcon && <label valign={Gtk.Align.START} className="icon" label={materialIcon} />}
             {sublabel ? (
                 <box vertical valign={Gtk.Align.CENTER} className="has-sublabel">
                     <label hexpand truncate maxWidthChars={1} xalign={0} label={label} />
@@ -229,7 +239,7 @@ const MathResult = ({ math, isHistory, entry }: { math: HistoryItem; isHistory?:
         sublabel={math.result}
         onClicked={() => {
             if (isHistory) {
-                Math.get_default().select(math);
+                MathService.get_default().select(math);
                 entry.set_text(math.equation);
                 entry.grab_focus();
                 entry.set_position(-1);
@@ -243,11 +253,158 @@ const MathResult = ({ math, isHistory, entry }: { math: HistoryItem; isHistory?:
 
 const FileResult = ({ path }: { path: string }) => (
     <Result
+        icon={Gio.File.new_for_path(path)
+            .query_info(Gio.FILE_ATTRIBUTE_STANDARD_ICON, Gio.FileQueryInfoFlags.NONE, null)
+            .get_icon()}
         label={path.split("/").pop()!}
         sublabel={path.startsWith(HOME) ? "~" + path.slice(HOME.length) : path}
         onClicked={self => openFileAndClose(self, path)}
     />
 );
+
+const WindowResult = ({ client, reload }: { client: Client; reload: () => void }) => {
+    const hyprland = AstalHyprland.get_default();
+    const app = Apps.fuzzy_query(client.class)[0];
+    const astalClient = hyprland.get_client(client.address);
+
+    const menu = new Gtk.Menu();
+    menu.append(
+        new MenuItem({
+            label: "Focus",
+            onActivate: () => {
+                close(result);
+                astalClient?.focus();
+            },
+        })
+    );
+    menu.append(new Gtk.SeparatorMenuItem({ visible: true }));
+
+    const addSubmenus = (silent: boolean) => {
+        menu.append(
+            new MenuItem({
+                label: `Move to workspace${silent ? " (silent)" : ""}`,
+                setup: self => {
+                    const submenu = new Gtk.Menu();
+                    const start = Math.floor((hyprland.focusedWorkspace.id - 1) / 10) * 10;
+                    for (let i = 1; i <= 10; i++)
+                        submenu.append(
+                            new MenuItem({
+                                label: `Workspace ${start + i}`,
+                                onActivate: () => {
+                                    if (!silent) close(result);
+                                    hyprland.dispatch(
+                                        `movetoworkspace${silent ? "silent" : ""}`,
+                                        `${start + i},address:${client.address}`
+                                    );
+                                },
+                            })
+                        );
+                    self.set_submenu(submenu);
+                },
+            })
+        );
+        menu.append(
+            new MenuItem({
+                label: `Move to special workspace${silent ? " (silent)" : ""}`,
+                setup: self => {
+                    const submenu = new Gtk.Menu();
+                    submenu.append(
+                        new MenuItem({
+                            label: "special",
+                            onActivate: () => {
+                                if (!silent) close(result);
+                                hyprland.dispatch(
+                                    `movetoworkspace${silent ? "silent" : ""}`,
+                                    `special,address:${client.address}`
+                                );
+                            },
+                        })
+                    );
+                    hyprland.message_async("j/workspaces", (_, res) => {
+                        const workspaces = JSON.parse(hyprland.message_finish(res));
+                        for (const workspace of workspaces)
+                            if (workspace.name.startsWith("special:"))
+                                submenu.append(
+                                    new MenuItem({
+                                        label: workspace.name.slice(8),
+                                        onActivate: () => {
+                                            if (!silent) close(result);
+                                            hyprland.dispatch(
+                                                `movetoworkspace${silent ? "silent" : ""}`,
+                                                `${workspace.name},address:${client.address}`
+                                            );
+                                        },
+                                    })
+                                );
+                    });
+                    self.set_submenu(submenu);
+                },
+            })
+        );
+    };
+    addSubmenus(false);
+    addSubmenus(true);
+
+    menu.append(
+        new MenuItem({
+            label: "Copy property",
+            setup: self => {
+                const addSubmenu = (self: MenuItem, obj: object) => {
+                    const submenu = new Gtk.Menu();
+
+                    for (const [key, value] of Object.entries(obj))
+                        if (typeof value === "object") submenu.append(addSubmenu(new MenuItem({ label: key }), value));
+                        else
+                            submenu.append(
+                                new MenuItem({
+                                    label: key,
+                                    onActivate: () => {
+                                        close(result);
+                                        execAsync(`wl-copy -- ${value}`).catch(console.error);
+                                    },
+                                    tooltipText: String(value),
+                                })
+                            );
+
+                    self.set_submenu(submenu);
+                    return self;
+                };
+                addSubmenu(self, client);
+            },
+        })
+    );
+
+    menu.append(new Gtk.SeparatorMenuItem({ visible: true }));
+    menu.append(
+        new MenuItem({
+            label: "Kill",
+            onActivate: () => {
+                astalClient?.kill();
+                const id = hyprland.connect("client-removed", () => {
+                    hyprland.disconnect(id);
+                    reload();
+                });
+            },
+        })
+    );
+
+    const result = (
+        <Result
+            icon={app.iconName}
+            materialIcon={getAppCategoryIcon(app)}
+            label={client.title || (client.initialTitle ? `${client.initialTitle} (initial)` : "No title")}
+            sublabel={client.class || (client.initialClass ? `${client.initialClass} (initial)` : "No class")}
+            tooltip={`Address: ${client.address}\nWorkspace: ${client.workspace.name} (${client.workspace.id})\nProcess ID: ${client.pid}\nFloating: ${client.floating}\nInhibiting idle: ${client.inhibitingIdle}`}
+            onClicked={self => {
+                close(self);
+                astalClient?.focus();
+            }}
+            onSecondaryClick={() => menu.popup_at_pointer(null)}
+            onDestroy={() => menu.destroy()}
+        />
+    );
+    return result;
+};
 
 const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> }) => {
     const empty = Variable(true);
@@ -290,6 +447,12 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                             description: "Do math calculations",
                             command: () => mode.set("math"),
                         },
+                        windows: {
+                            icon: "select_window_2",
+                            name: "Windows",
+                            description: "Manage open windows",
+                            command: () => mode.set("windows"),
+                        },
                         todo: {
                             icon: "checklist",
                             name: "Todo",
@@ -317,10 +480,12 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
 
                     const calculate = () => {
                         if (entry.text) {
-                            self.add(<MathResult math={Math.get_default().evaluate(entry.text)} entry={entry} />);
+                            self.add(
+                                <MathResult math={MathService.get_default().evaluate(entry.text)} entry={entry} />
+                            );
                             self.add(<box className="separator" />);
                         }
-                        for (const item of Math.get_default().history)
+                        for (const item of MathService.get_default().history)
                             self.add(<MathResult isHistory math={item} entry={entry} />);
                     };
 
@@ -338,18 +503,58 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                             })
                             .finally(updateEmpty);
 
+                    const listWindows = () => {
+                        const hyprland = AstalHyprland.get_default();
+                        // Use message cause AstalHyprland is buggy (inconsistent prop updating)
+                        hyprland.message_async("j/clients", (_, res) => {
+                            try {
+                                const unsortedClients: Client[] = JSON.parse(hyprland.message_finish(res));
+                                if (entry.text) {
+                                    const clients = fuzzysort.go(entry.text, unsortedClients, {
+                                        all: true,
+                                        limit: config.maxResults,
+                                        keys: ["title", "class", "initialTitle", "initialClass"],
+                                        scoreFn: r =>
+                                            r[0].score * config.windows.title +
+                                            r[1].score * config.windows.class +
+                                            r[2].score * config.windows.initialTitle +
+                                            r[3].score * config.windows.initialClass,
+                                    });
+                                    self.foreach(ch => ch.destroy());
+                                    for (const { obj } of clients)
+                                        self.add(<WindowResult reload={listWindows} client={obj} />);
+                                } else {
+                                    const clients = unsortedClients.sort((a, b) => a.focusHistoryID - b.focusHistoryID);
+                                    self.foreach(ch => ch.destroy());
+                                    for (const client of clients)
+                                        self.add(<WindowResult reload={listWindows} client={client} />);
+                                }
+                            } catch (e) {
+                                console.error(e);
+                            } finally {
+                                updateEmpty();
+                            }
+                        });
+                    };
+
+                    // Update windows on open
+                    self.hook(App, "window-toggled", (_, window) => {
+                        if (window.name === "launcher" && window.visible && mode.get() === "windows") listWindows();
+                    });
+
                     self.hook(entry, "activate", () => {
                         if (mode.get() === "math") {
-                            if (entry.text.startsWith("clear")) Math.get_default().clear();
-                            else Math.get_default().commit();
+                            if (entry.text.startsWith("clear")) MathService.get_default().clear();
+                            else MathService.get_default().commit();
                         }
                         self.get_children()[0]?.activate();
                     });
                     self.hook(entry, "changed", () => {
                         if (!entry.text && mode.get() === "apps") return;
 
-                        // Files has delay cause async so it does some stuff by itself
-                        const ignoreFileAsync = entry.text.startsWith(">") || mode.get() !== "files";
+                        // Files and windows have delay cause async so they do some stuff by themselves
+                        const ignoreFileAsync =
+                            entry.text.startsWith(">") || (mode.get() !== "files" && mode.get() !== "windows");
                         if (ignoreFileAsync) self.foreach(ch => ch.destroy());
 
                         if (entry.text.startsWith(">")) {
@@ -365,6 +570,7 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                         } else if (mode.get() === "apps") appSearch();
                         else if (mode.get() === "math") calculate();
                         else if (mode.get() === "files") fileSearch();
+                        else if (mode.get() === "windows") listWindows();
 
                         if (ignoreFileAsync) updateEmpty();
                     });

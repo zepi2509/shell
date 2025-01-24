@@ -16,6 +16,13 @@ export const launcher = {
         ["codium", "code", "clion", "intellij-idea-ultimate-edition"],
         ["spotify-adblock", "spotify", "audacious", "elisa"],
     ],
+    windows: {
+        // Weights for fuzzysort
+        title: 1,
+        class: 1,
+        initialTitle: 0.5,
+        initialClass: 0.5,
+    },
 };
 
 export const notifpopups = {
