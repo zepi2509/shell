@@ -30,7 +30,7 @@ const getIconFromMode = (mode: Mode) => {
         case "math":
             return "calculate";
         case "windows":
-            return "select_window_2";
+            return "select_window";
     }
 };
 
@@ -469,7 +469,7 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                             command: () => mode.set("math"),
                         },
                         windows: {
-                            icon: "select_window_2",
+                            icon: "select_window",
                             name: "Windows",
                             description: "Manage open windows",
                             command: () => mode.set("windows"),
