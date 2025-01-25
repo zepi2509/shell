@@ -1,11 +1,33 @@
-import { execAsync, GLib } from "astal";
+import { execAsync, GLib, type Gio } from "astal";
 import type AstalApps from "gi://AstalApps";
 import { osIcons } from "./icons";
 
+/**
+ * See https://specifications.freedesktop.org/desktop-entry-spec/latest/exec-variables.html
+ * @param exec The exec field in a desktop file
+ */
+const execToCmd = (app: AstalApps.Application) => {
+    let exec = app.executable.replace(/%[fFuUdDnNvm]/g, ""); // Remove useless field codes
+    exec = exec.replace(/%i/g, app.iconName ? `--icon ${app.iconName}` : ""); // Replace %i app icon
+    exec = exec.replace(/%c/g, app.name); // Replace %c with app name
+    exec = exec.replace(/%k/g, (app.app as Gio.DesktopAppInfo).get_filename() ?? ""); // Replace %k with desktop file path
+    return exec;
+};
+
 export const launch = (app: AstalApps.Application) => {
+    let now = Date.now();
     execAsync(["uwsm", "app", "--", app.entry]).catch(() => {
-        app.frequency--; // Decrement frequency cause launch also increments it
-        app.launch();
+        // Try manual exec if launch fails (exits with error within 1 second)
+        if (Date.now() - now < 1000) {
+            now = Date.now();
+            execAsync(["uwsm", "app", "--", execToCmd(app)]).catch(() => {
+                // Fallback to regular launch
+                if (Date.now() - now < 1000) {
+                    app.frequency--; // Decrement frequency cause launch also increments it
+                    app.launch();
+                }
+            });
+        }
     });
     app.frequency++;
 };

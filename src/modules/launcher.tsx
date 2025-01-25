@@ -527,7 +527,7 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                                                     c => c.class === "Todoist"
                                                 );
                                                 if (client) client.focus();
-                                                else Gio.DesktopAppInfo.new("todoist.desktop")?.launch([], null);
+                                                else execAsync("uwsm app -- todoist").catch(console.error);
                                             },
                                         },
                                     });
