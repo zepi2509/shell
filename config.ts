@@ -35,6 +35,9 @@ export const launcher = {
             initialClass: 0.5,
         },
     },
+    todo: {
+        notify: true,
+    },
 };
 
 export const notifpopups = {

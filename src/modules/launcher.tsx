@@ -1,4 +1,4 @@
-import { bind, execAsync, Gio, GLib, register, timeout, Variable } from "astal";
+import { bind, execAsync, Gio, GLib, readFile, register, timeout, Variable } from "astal";
 import { App, Astal, Gtk, Widget } from "astal/gtk3";
 import fuzzysort from "fuzzysort";
 import type AstalApps from "gi://AstalApps";
@@ -7,7 +7,7 @@ import { launcher as config } from "../../config";
 import { Apps } from "../services/apps";
 import MathService, { type HistoryItem } from "../services/math";
 import { getAppCategoryIcon } from "../utils/icons";
-import { launch } from "../utils/system";
+import { launch, notify } from "../utils/system";
 import type { Client } from "../utils/types";
 import { MenuItem, setupCustomTooltip } from "../utils/widgets";
 import PopupWindow from "../widgets/popupwindow";
@@ -18,7 +18,7 @@ interface Subcommand {
     icon: string;
     name: string;
     description: string;
-    command: (...args: string[]) => void;
+    command: (...args: string[]) => boolean | void;
 }
 
 const getIconFromMode = (mode: Mode) => {
@@ -204,8 +204,7 @@ const SubcommandResult = ({
         label={subcommand.name}
         sublabel={subcommand.description}
         onClicked={() => {
-            subcommand.command(...args);
-            entry.set_text("");
+            if (!subcommand.command(...args)) entry.set_text("");
         }}
     />
 );
@@ -477,9 +476,62 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                         todo: {
                             icon: "checklist",
                             name: "Todo",
-                            description: "Create a todo in <INSERT_TODO_APP>",
+                            description: "Create a todo in Todoist",
                             command: (...args) => {
-                                // TODO: todo service or maybe use external app
+                                // If no args, autocomplete cmd
+                                if (args.length === 0) {
+                                    entry.set_text(">todo ");
+                                    entry.set_position(-1);
+                                    return true;
+                                }
+
+                                if (!GLib.find_program_in_path("tod")) {
+                                    notify({
+                                        summary: "Tod not installed",
+                                        body: "The launcher todo subcommand requires `tod`. Install it with `yay -S tod-bin`",
+                                        icon: "dialog-warning-symbolic",
+                                        urgency: "critical",
+                                    });
+                                    return;
+                                }
+
+                                // If tod not configured, notify and exit
+                                let token = null;
+                                try {
+                                    token = JSON.parse(readFile(GLib.get_user_config_dir() + "/tod.cfg")).token;
+                                } catch {} // Ignore
+                                if (!token) {
+                                    notify({
+                                        summary: "Tod not configured",
+                                        body: "You need to configure tod first. Run any tod command to do this.",
+                                        icon: "dialog-warning-symbolic",
+                                        urgency: "critical",
+                                    });
+                                    return;
+                                }
+
+                                // Create todo, notify and close
+                                execAsync(`tod t q -c ${args.join(" ")}`).catch(console.error);
+                                if (config.todo.notify)
+                                    notify({
+                                        summary: "Todo created",
+                                        body: `Created todo with content: ${args.join(" ")}`,
+                                        icon: "view-list-bullet-symbolic",
+                                        urgency: "low",
+                                        transient: true,
+                                        actions: {
+                                            "Copy content": () =>
+                                                execAsync(`wl-copy -- ${args.join(" ")}`).catch(console.error),
+                                            View: () => {
+                                                const client = AstalHyprland.get_default().clients.find(
+                                                    c => c.class === "Todoist"
+                                                );
+                                                if (client) client.focus();
+                                                else Gio.DesktopAppInfo.new("todoist.desktop")?.launch([], null);
+                                            },
+                                        },
+                                    });
+                                close(self);
                             },
                         },
                         reload: {
@@ -689,8 +741,8 @@ export default class Launcher extends PopupWindow {
 
         this.connect("show", () => (this.marginTop = AstalHyprland.get_default().focusedMonitor.height / 4));
 
-        // Clear search on hide if not in math mode
-        this.connect("hide", () => mode.get() !== "math" && entry.set_text(""));
+        // Clear search on hide if not in math mode or creating a todo
+        this.connect("hide", () => mode.get() !== "math" && !entry.text.startsWith(">todo") && entry.set_text(""));
 
         this.connect("destroy", () => showResults.drop());
     }
