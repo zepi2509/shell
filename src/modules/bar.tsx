@@ -87,9 +87,9 @@ const MediaPlaying = () => {
         players.lastPlayer ? `${players.lastPlayer.title} - ${players.lastPlayer.artist}` : fallback;
     return (
         <button
-            onClick={(_, event) => {
+            onClick={(self, event) => {
                 if (event.button === Astal.MouseButton.PRIMARY) {
-                    // TODO: media panel
+                    togglePopup(self, event, "media");
                 } else if (event.button === Astal.MouseButton.SECONDARY) players.lastPlayer?.play_pause();
                 else if (event.button === Astal.MouseButton.MIDDLE) players.lastPlayer?.raise();
             }}
