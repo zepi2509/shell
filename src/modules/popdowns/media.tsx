@@ -43,19 +43,31 @@ const Player = ({ player }: { player: AstalMpris.Player }) => {
                     <label className="artist" label={bind(player, "artist").as(a => a ?? "")} />
                     <label className="album" label={bind(player, "album").as(a => a ?? "")} />
                     <box className="controls" halign={Gtk.Align.CENTER}>
-                        <button cursor="pointer" onClicked={() => player.shuffle()} sensitive={player.canControl}>
+                        <button
+                            cursor="pointer"
+                            onClicked={() => player.shuffle()}
+                            sensitive={bind(player, "canControl")}
+                        >
                             <icon icon={bind(player, "shuffleStatus").as(shuffleToIcon)} />
                         </button>
-                        <button cursor="pointer" onClicked={() => player.previous()} sensitive={player.canGoPrevious}>
+                        <button
+                            cursor="pointer"
+                            onClicked={() => player.previous()}
+                            sensitive={bind(player, "canGoPrevious")}
+                        >
                             <icon icon="caelestia-skip-previous-symbolic" />
                         </button>
-                        <button cursor="pointer" onClicked={() => player.play_pause()} sensitive={player.canControl}>
+                        <button
+                            cursor="pointer"
+                            onClicked={() => player.play_pause()}
+                            sensitive={bind(player, "canControl")}
+                        >
                             <icon icon={bind(player, "playbackStatus").as(playbackToIcon)} />
                         </button>
-                        <button cursor="pointer" onClicked={() => player.next()} sensitive={player.canGoNext}>
+                        <button cursor="pointer" onClicked={() => player.next()} sensitive={bind(player, "canGoNext")}>
                             <icon icon="caelestia-skip-next-symbolic" />
                         </button>
-                        <button cursor="pointer" onClicked={() => player.loop()} sensitive={player.canControl}>
+                        <button cursor="pointer" onClicked={() => player.loop()} sensitive={bind(player, "canControl")}>
                             <icon icon={bind(player, "loopStatus").as(loopToIcon)} />
                         </button>
                     </box>
