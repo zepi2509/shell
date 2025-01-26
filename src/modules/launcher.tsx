@@ -590,7 +590,7 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                                 if (entry.text) {
                                     const clients = fuzzysort.go(entry.text, unsortedClients, {
                                         all: true,
-                                        limit: config.windows.maxResults,
+                                        limit: config.windows.maxResults < 0 ? undefined : config.windows.maxResults,
                                         keys: ["title", "class", "initialTitle", "initialClass"],
                                         scoreFn: r =>
                                             r[0].score * config.windows.weights.title +
