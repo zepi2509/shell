@@ -473,6 +473,22 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                             description: "Manage open windows",
                             command: () => mode.set("windows"),
                         },
+                        scheme: {
+                            icon: "palette",
+                            name: "Scheme",
+                            description: "Change the current colour scheme",
+                            command: (...args) => {
+                                // If no args, autocomplete cmd
+                                if (args.length === 0) {
+                                    entry.set_text(">scheme ");
+                                    entry.set_position(-1);
+                                    return true;
+                                }
+
+                                execAsync(`caelestia scheme ${args[0]}`).catch(console.error);
+                                close(self);
+                            },
+                        },
                         todo: {
                             icon: "checklist",
                             name: "Todo",
