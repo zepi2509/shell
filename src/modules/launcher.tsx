@@ -260,16 +260,44 @@ const MathResult = ({ math, isHistory, entry }: { math: HistoryItem; isHistory?:
     />
 );
 
-const FileResult = ({ path }: { path: string }) => (
-    <Result
-        icon={Gio.File.new_for_path(path)
-            .query_info(Gio.FILE_ATTRIBUTE_STANDARD_ICON, Gio.FileQueryInfoFlags.NONE, null)
-            .get_icon()}
-        label={path.split("/").pop()!}
-        sublabel={path.startsWith(HOME) ? "~" + path.slice(HOME.length) : path}
-        onClicked={self => openFileAndClose(self, path)}
-    />
-);
+const FileResult = ({ path }: { path: string }) => {
+    const menu = new Gtk.Menu();
+
+    menu.append(
+        new MenuItem({
+            label: "Open",
+            onActivate: () => {
+                execAsync(["xdg-open", path]).catch(console.error);
+                close(result);
+            },
+        })
+    );
+    menu.append(new Gtk.SeparatorMenuItem({ visible: true }));
+    menu.append(new MenuItem({ label: "Open in file manager", onActivate: () => openFileAndClose(result, path) }));
+    menu.append(
+        new MenuItem({
+            label: "Open containing folder in terminal",
+            onActivate: () => {
+                execAsync(`uwsm app -- foot -D ${path.slice(0, path.lastIndexOf("/"))}`).catch(console.error);
+                close(result);
+            },
+        })
+    );
+
+    const result = (
+        <Result
+            icon={Gio.File.new_for_path(path)
+                .query_info(Gio.FILE_ATTRIBUTE_STANDARD_ICON, Gio.FileQueryInfoFlags.NONE, null)
+                .get_icon()}
+            label={path.split("/").pop()!}
+            sublabel={path.startsWith(HOME) ? "~" + path.slice(HOME.length) : path}
+            onClicked={self => openFileAndClose(self, path)}
+            onSecondaryClick={() => menu.popup_at_pointer(null)}
+            onDestroy={() => menu.destroy()}
+        />
+    );
+    return result;
+};
 
 const WindowResult = ({ client, reload }: { client: Client; reload: () => void }) => {
     const hyprland = AstalHyprland.get_default();
