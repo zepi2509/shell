@@ -12,7 +12,7 @@ $-accent2: scheme.$pink;
     @include lib.shadow;
     @include font.mono;
 
-    background-color: scheme.$base;
+    background-color: scheme.$mantle;
     color: $-accent;
     padding: lib.s(12);
     font-size: lib.s(14);
@@ -26,7 +26,7 @@ $-accent2: scheme.$pink;
     .overlay {
         @include lib.rounded(5);
 
-        background-color: color.change(scheme.$base, $alpha: 0.8);
+        background-color: color.change(scheme.$mantle, $alpha: 0.8);
     }
 
     .background {

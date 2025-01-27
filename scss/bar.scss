@@ -6,8 +6,7 @@
 .bar {
     @include font.mono;
 
-    border-top: none;
-    background-color: scheme.$base;
+    background-color: scheme.$crust;
     padding: lib.s(8) lib.s(20);
     font-size: lib.s(14);
 
@@ -21,7 +20,7 @@
         @include lib.rounded(5);
 
         padding: lib.s(3) lib.s(8);
-        background-color: scheme.$surface0;
+        background-color: scheme.$base;
 
         @include lib.spacing;
     }
