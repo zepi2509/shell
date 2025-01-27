@@ -1,3 +1,6 @@
+@use "sass:color";
+@use "scss/scheme";
+
 // Common widgets
 @use "scss/widgets";
 
@@ -11,4 +14,9 @@
 
 * {
     all: unset; // Remove GTK theme styles
+    caret-color: scheme.$rosewater;
+
+    selection {
+        background-color: color.change(scheme.$overlay2, $alpha: 0.3);
+    }
 }

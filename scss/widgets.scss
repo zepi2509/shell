@@ -3,16 +3,6 @@
 @use "lib";
 @use "font";
 
-* {
-    selection {
-        background-color: color.change(scheme.$overlay2, $alpha: 0.3);
-    }
-
-    & {
-        caret-color: scheme.$rosewater;
-    }
-}
-
 label.icon {
     @include font.icon;
 }
