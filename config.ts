@@ -82,5 +82,5 @@ export const weather = {
     interval: 600000,
     key: "assets/weather-api-key.txt", // Path to file containing api key relative to the base directory. To get a key, visit https://weatherapi.com/
     location: "", // Location as a string or empty to autodetect
-    // TODO: imperial
+    imperial: false,
 };

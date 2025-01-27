@@ -102,37 +102,41 @@ export interface WeatherData {
     location: WeatherLocation;
 }
 
+const DEFAULT_STATE: _WeatherState = {
+    temp_c: 0,
+    temp_f: 0,
+    is_day: 0,
+    condition: { text: "", icon: "", code: 0 },
+    wind_mph: 0,
+    wind_kph: 0,
+    wind_degree: 0,
+    wind_dir: "N",
+    pressure_mb: 0,
+    pressure_in: 0,
+    precip_mm: 0,
+    precip_in: 0,
+    humidity: 0,
+    cloud: 0,
+    feelslike_c: 0,
+    feelslike_f: 0,
+    windchill_c: 0,
+    windchill_f: 0,
+    heatindex_c: 0,
+    heatindex_f: 0,
+    dewpoint_c: 0,
+    dewpoint_f: 0,
+    vis_km: 0,
+    vis_miles: 0,
+    uv: 0,
+    gust_mph: 0,
+    gust_kph: 0,
+};
+
 const DEFAULT: WeatherData = {
     current: {
         last_updated_epoch: 0,
         last_updated: "",
-        temp_c: 0,
-        temp_f: 0,
-        is_day: 0,
-        condition: { text: "", icon: "", code: 0 },
-        wind_mph: 0,
-        wind_kph: 0,
-        wind_degree: 0,
-        wind_dir: "N",
-        pressure_mb: 0,
-        pressure_in: 0,
-        precip_mm: 0,
-        precip_in: 0,
-        humidity: 0,
-        cloud: 0,
-        feelslike_c: 0,
-        feelslike_f: 0,
-        windchill_c: 0,
-        windchill_f: 0,
-        heatindex_c: 0,
-        heatindex_f: 0,
-        dewpoint_c: 0,
-        dewpoint_f: 0,
-        vis_km: 0,
-        vis_miles: 0,
-        uv: 0,
-        gust_mph: 0,
-        gust_kph: 0,
+        ...DEFAULT_STATE,
     },
     forecast: {
         forecastday: [
@@ -171,7 +175,11 @@ const DEFAULT: WeatherData = {
                     is_moon_up: 0,
                     is_sun_up: 0,
                 },
-                hour: [],
+                hour: Array.from({ length: 24 }, () => ({
+                    time_epoch: 0,
+                    time: "",
+                    ...DEFAULT_STATE,
+                })),
             },
         ],
     },
@@ -243,8 +251,6 @@ const STATUS_ICONS: Record<string, string> = {
     moderate_or_heavy_snow_with_thunder: "󰼶",
 };
 
-const TEMP_ICONS: Record<string, string> = {};
-
 @register({ GTypeName: "Weather" })
 export default class Weather extends GObject.Object {
     static instance: Weather;
@@ -284,19 +290,21 @@ export default class Weather extends GObject.Object {
         return this.#data.current.condition.text;
     }
 
-    @property(Number)
+    @property(String)
     get temperature() {
-        return this.#data.current.temp_c;
+        return this.getTemp(this.#data.current);
     }
 
-    @property(Number)
+    @property(String)
     get wind() {
-        return this.#data.current.wind_kph;
+        return `${Math.round(this.#data.current[`wind_${config.imperial ? "m" : "k"}ph`])} ${
+            config.imperial ? "m" : "k"
+        }ph`;
     }
 
-    @property(Number)
+    @property(String)
     get rainChance() {
-        return this.#data.forecast.forecastday[0].day.daily_chance_of_rain;
+        return this.#data.forecast.forecastday[0].day.daily_chance_of_rain + "%";
     }
 
     @property(String)
@@ -318,6 +326,10 @@ export default class Weather extends GObject.Object {
         let query = status.trim().toLowerCase().replaceAll(" ", "_");
         if (!this.#data.current.is_day && query + "_night" in STATUS_ICONS) query += "_night";
         return STATUS_ICONS[query] ?? STATUS_ICONS.warning;
+    }
+
+    getTemp(data: _WeatherState) {
+        return `${Math.round(data[`temp_${config.imperial ? "f" : "c"}`])}°${config.imperial ? "F" : "C"}`;
     }
 
     getTempIcon(temp: number) {

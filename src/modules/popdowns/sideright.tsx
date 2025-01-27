@@ -75,7 +75,7 @@ const Weather = () => {
                 />
                 <box vertical halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} className="status">
                     <box halign={Gtk.Align.CENTER} className="temperature">
-                        <label label={bind(weather, "temperature").as(t => `${Math.round(t)}°C`)} />
+                        <label label={bind(weather, "temperature")} />
                         <label
                             className={bind(weather, "tempColour").as(c => `temp-icon ${c}`)}
                             label={bind(weather, "tempIcon")}
@@ -84,8 +84,8 @@ const Weather = () => {
                     <label label={bind(weather, "condition").as(c => ellipsize(c, 16))} />
                 </box>
                 <box vertical halign={Gtk.Align.END} valign={Gtk.Align.CENTER} className="other-data">
-                    <label xalign={0} label={bind(weather, "wind").as(w => ` ${Math.round(w)} kph`)} />
-                    <label xalign={0} label={bind(weather, "rainChance").as(r => ` ${r}%`)} />
+                    <label xalign={0} label={bind(weather, "wind").as(w => ` ${w}`)} />
+                    <label xalign={0} label={bind(weather, "rainChance").as(r => ` ${r}`)} />
                 </box>
             </centerbox>
             <box className="separator" />
@@ -101,12 +101,12 @@ const Weather = () => {
                         <label
                             className="icon"
                             label={bind(weather, "raw").as(r =>
-                                weather.getIcon(weather.forecast[getHoursFromUpdate(r, i + 1)]?.condition.text ?? "")
+                                weather.getIcon(weather.forecast[getHoursFromUpdate(r, i + 1)].condition.text)
                             )}
                         />
                         <label
-                            label={bind(weather, "raw").as(
-                                r => `${Math.round(weather.forecast[getHoursFromUpdate(r, i + 1)]?.temp_c) ?? "-"}°C`
+                            label={bind(weather, "raw").as(r =>
+                                weather.getTemp(weather.forecast[getHoursFromUpdate(r, i + 1)])
                             )}
                         />
                     </box>
