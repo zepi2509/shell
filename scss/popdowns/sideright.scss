@@ -1,0 +1,147 @@
+@use "sass:color";
+@use "../scheme";
+@use "../lib";
+@use "../font";
+
+$-accent: scheme.$peach;
+$-accent2: scheme.$blue;
+
+.sideright {
+    @include lib.rounded(8);
+    @include lib.border($-accent, 0.4, 2);
+    @include lib.shadow;
+    @include font.mono;
+
+    background-color: scheme.$crust;
+    color: $-accent;
+    padding: lib.s(12);
+    font-size: lib.s(14);
+
+    @include lib.spacing(10, true);
+
+    & > * {
+        @include lib.rounded(5);
+
+        background-color: scheme.$base;
+    }
+
+    .time {
+        padding: lib.s(12) lib.s(8);
+        font-size: lib.s(48);
+        font-weight: bold;
+
+        & > * {
+            @include lib.spacing(3);
+        }
+
+        .ampm {
+            font-size: lib.s(24);
+            font-weight: normal;
+            margin-top: lib.s(18);
+            color: $-accent2;
+        }
+    }
+
+    .calendar {
+        padding: lib.s(5) lib.s(8) 0 lib.s(8);
+        min-width: lib.s(350);
+        color: scheme.$text;
+
+        calendar {
+            padding: lib.s(8); // Padding for each day
+
+            // Month and year
+            &.header {
+                color: $-accent2;
+            }
+
+            // Change month/year buttons
+            &.button {
+                &:hover {
+                    color: scheme.$subtext0;
+                }
+
+                &:disabled {
+                    color: color.mix(scheme.$text, scheme.$base, 65%);
+                }
+            }
+
+            // Weekday labels
+            &.highlight {
+                color: $-accent;
+            }
+
+            // Days in other month
+            &:indeterminate {
+                color: color.mix(scheme.$text, scheme.$base, 65%);
+            }
+
+            // Current day
+            &:selected {
+                box-shadow: inset 0 lib.s(-12) 0 0 $-accent, inset 0 lib.s(-9) 0 0 scheme.$base,
+                    inset lib.s(-10) lib.s(-3) 0 0 scheme.$base, inset lib.s(10) 0 0 lib.s(0.1) scheme.$base;
+                color: $-accent;
+            }
+        }
+    }
+
+    .weather {
+        padding: lib.s(5) lib.s(15);
+
+        @include lib.spacing(10, true);
+
+        .current {
+            @include lib.spacing(20);
+
+            .status-icon {
+                font-size: lib.s(64);
+                padding: lib.s(10) lib.s(20) 0 0;
+            }
+
+            .status {
+                color: $-accent2;
+                font-size: lib.s(16);
+
+                @include lib.spacing($vertical: true);
+
+                .temperature {
+                    font-size: lib.s(28);
+                    font-weight: bold;
+                    color: scheme.$text;
+
+                    @include lib.spacing;
+
+                    .temp-icon {
+                        font-size: lib.s(30);
+
+                        $-temps: freezing, cold, normal, hot, burning;
+                        $-colours: scheme.$sky, scheme.$blue, scheme.$green, scheme.$yellow, scheme.$red;
+                        @for $i from 1 through length($-temps) {
+                            &.#{nth($-temps, $i)} {
+                                color: nth($-colours, $i);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .separator {
+            background-color: scheme.$surface0;
+        }
+
+        .forecast {
+            padding: lib.s(10) 0 lib.s(15) 0;
+
+            @include lib.spacing(10);
+
+            .hour {
+                @include lib.spacing($vertical: true);
+
+                .icon {
+                    font-size: lib.s(32);
+                }
+            }
+        }
+    }
+}

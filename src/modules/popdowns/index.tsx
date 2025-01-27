@@ -2,6 +2,7 @@ import BluetoothDevices from "./bluetoothdevices";
 import Media from "./media";
 import Networks from "./networks";
 import Notifications from "./notifications";
+import SideRight from "./sideright";
 import Updates from "./updates";
 
 export default () => {
@@ -10,6 +11,7 @@ export default () => {
     <BluetoothDevices />;
     <Networks />;
     <Media />;
+    <SideRight />;
 
     return null;
 };

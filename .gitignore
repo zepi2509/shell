@@ -2,3 +2,4 @@
 node_modules/
 scss/scheme/_index.scss
 scss/scheme/_dynamic.scss
+assets/weather-api-key.txt

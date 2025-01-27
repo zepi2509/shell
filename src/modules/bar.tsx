@@ -1,4 +1,4 @@
-import { execAsync, GLib, register, Variable } from "astal";
+import { execAsync, register, Variable } from "astal";
 import { bind, kebabify } from "astal/binding";
 import { App, Astal, astalify, Gdk, Gtk, type ConstructProps } from "astal/gtk3";
 import AstalBluetooth from "gi://AstalBluetooth";
@@ -13,7 +13,7 @@ import Players from "../services/players";
 import Updates from "../services/updates";
 import { getAppCategoryIcon } from "../utils/icons";
 import { ellipsize } from "../utils/strings";
-import { osIcon } from "../utils/system";
+import { bindCurrentTime, osIcon } from "../utils/system";
 import { setupCustomTooltip } from "../utils/widgets";
 import type PopupWindow from "../widgets/popupwindow";
 
@@ -438,19 +438,14 @@ const NotifCount = () => (
 );
 
 const DateTime = () => (
-    <box className="module date-time">
-        <label className="icon" label="calendar_month" />
-        <label
-            setup={self => {
-                const pollVar = Variable(null).poll(5000, () => {
-                    self.label =
-                        GLib.DateTime.new_now_local().format(config.dateTimeFormat) ?? new Date().toLocaleString();
-                    return null;
-                });
-                self.connect("destroy", () => pollVar.drop());
-            }}
-        />
-    </box>
+    <button
+        onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
+    >
+        <box className="module date-time">
+            <label className="icon" label="calendar_month" />
+            <label label={bindCurrentTime(config.dateTimeFormat)} />
+        </box>
+    </button>
 );
 
 const Power = () => (

@@ -1,4 +1,4 @@
-import { execAsync, GLib, type Gio } from "astal";
+import { bind, execAsync, GLib, Variable, type Gio } from "astal";
 import type AstalApps from "gi://AstalApps";
 import { osIcons } from "./icons";
 
@@ -63,3 +63,7 @@ export const osIcon = String.fromCodePoint(
         return 0xf31a;
     })()
 );
+
+export const currentTime = Variable(GLib.DateTime.new_now_local()).poll(1000, () => GLib.DateTime.new_now_local());
+export const bindCurrentTime = (format: string, fallback?: (time: GLib.DateTime) => string) =>
+    bind(currentTime).as(c => c.format(format) ?? fallback?.(c) ?? new Date().toLocaleString());
