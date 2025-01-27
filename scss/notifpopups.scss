@@ -18,12 +18,18 @@
 }
 
 .notifpopups {
-    min-width: lib.s(410);
+    min-width: lib.s(425);
     padding-left: lib.s(10); // So notifications can overshoot for init animation
+
+    // For shadow
+    & > :last-child .wrapper {
+        padding-bottom: lib.s(15);
+    }
 
     .notification {
         .wrapper {
             padding-top: lib.s(10);
+            padding-left: lib.s(15); // For shadow
         }
 
         .inner {
