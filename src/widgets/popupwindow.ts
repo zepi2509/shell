@@ -30,11 +30,19 @@ export default class PopupWindow extends Widget.Window {
 
     popup_at_widget(widget: JSX.Element, event: Gdk.Event | Astal.ClickEvent) {
         const { width, height } = widget.get_allocation();
+        const mWidth = AstalHyprland.get_default().get_focused_monitor().get_width();
+        const pWidth = this.get_preferred_width()[1];
         const [, x, y] = event instanceof Gdk.Event ? event.get_coords() : [null, event.x, event.y];
         const { x: cx, y: cy } = AstalHyprland.get_default().get_cursor_position();
+
+        let marginLeft = cx + ((width - pWidth) / 2 - x);
+        if (marginLeft < 0) marginLeft = 0;
+        else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
+
         this.anchor = Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT;
-        this.marginLeft = cx + ((width - this.get_preferred_width()[1]) / 2 - x);
+        this.marginLeft = marginLeft;
         this.marginTop = cy + (height - y);
+
         this.show();
     }
 }
