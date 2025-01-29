@@ -3,8 +3,8 @@
 @use "lib";
 @use "font";
 
-@mixin popup($colour) {
-    @include lib.border($colour, 0.5);
+@mixin popup($colour, $alpha) {
+    @include lib.border($colour, $alpha);
 
     border-right: none;
 
@@ -35,14 +35,17 @@
         .inner {
             @include lib.rounded(8, $tr: 0, $br: 0);
             @include lib.shadow;
-            @include popup(scheme.$lavender);
 
             &.low {
-                @include popup(scheme.$overlay0);
+                @include popup(scheme.$overlay0, 0.3);
+            }
+
+            &.normal {
+                @include popup(scheme.$lavender, 0.3);
             }
 
             &.critical {
-                @include popup(scheme.$red);
+                @include popup(scheme.$red, 0.8);
             }
         }
     }
