@@ -220,7 +220,11 @@ const TrayItem = (item: AstalTray.TrayItem) => {
     );
 };
 
-const Tray = () => <box className="module tray">{bind(AstalTray.get_default(), "items").as(i => i.map(TrayItem))}</box>;
+const Tray = () => (
+    <box className="module tray" visible={bind(AstalTray.get_default(), "items").as(i => i.length > 0)}>
+        {bind(AstalTray.get_default(), "items").as(i => i.map(TrayItem))}
+    </box>
+);
 
 const Network = () => (
     <button
