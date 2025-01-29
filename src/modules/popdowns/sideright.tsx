@@ -1,4 +1,4 @@
-import { bind } from "astal";
+import { bind, timeout } from "astal";
 import { Astal, Gtk, type Gdk } from "astal/gtk3";
 import SWeather, { type WeatherData } from "../../services/weather";
 import { ellipsize } from "../../utils/strings";
@@ -42,13 +42,14 @@ const Calendar = () => (
             <WCal
                 hexpand
                 showDetails={false}
-                day={0}
                 setup={self => {
-                    const update = () => {
-                        const now = new Date();
-                        if (self.month === now.getMonth() && self.year === now.getFullYear()) self.day = now.getDate();
-                        else self.day = 0;
-                    };
+                    const update = () =>
+                        timeout(0.1, () => {
+                            const now = new Date();
+                            if (self.month === now.getMonth() && self.year === now.getFullYear())
+                                self.day = now.getDate();
+                            else self.day = 0;
+                        });
                     self.connect("month-changed", update);
                     self.connect("next-month", update);
                     self.connect("prev-month", update);
