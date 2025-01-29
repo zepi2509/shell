@@ -1,5 +1,6 @@
 import { execAsync, GLib, GObject, interval, property, readFileAsync, register, writeFileAsync } from "astal";
 import { weather as config } from "../../config";
+import { notify } from "../utils/system";
 
 export interface WeatherCondition {
     text: string;
@@ -399,12 +400,23 @@ export default class Weather extends GObject.Object {
     constructor() {
         super();
 
-        readFileAsync(config.key)
-            .then(k => {
-                this.#key = k;
-                this.updateWeather().catch(console.error);
-                interval(config.interval, () => this.updateWeather().catch(console.error));
-            })
-            .catch(console.error);
+        if (GLib.file_test(config.key, GLib.FileTest.EXISTS))
+            readFileAsync(config.key)
+                .then(k => {
+                    this.#key = k.trim();
+                    this.updateWeather().catch(console.error);
+                    interval(config.interval, () => this.updateWeather().catch(console.error));
+                })
+                .catch(console.error);
+        else
+            notify({
+                summary: "Weather API key required",
+                body: `A weather API key is required to get weather data. Get one from https://www.weatherapi.com and put it in ${config.key}.`,
+                icon: "dialog-warning-symbolic",
+                urgency: "critical",
+                actions: {
+                    "Get API key": () => execAsync(["xdg-open", "https://www.weatherapi.com"]).catch(print),
+                },
+            });
     }
 }
