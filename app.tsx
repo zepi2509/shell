@@ -6,6 +6,7 @@ import Popdowns from "@/modules/popdowns";
 import Session from "@/modules/session";
 import Monitors from "@/services/monitors";
 import Players from "@/services/players";
+import type PopupWindow from "@/widgets/popupwindow";
 import { execAsync, GLib, monitorFile, readFileAsync, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
 
@@ -40,7 +41,19 @@ App.start({
         if (request === "quit") App.quit();
         else if (request === "reload-css") loadStyleAsync().catch(console.error);
         else if (request.startsWith("show")) App.get_window(request.split(" ")[1])?.show();
-        else if (request === "media play-pause") Players.get_default().lastPlayer?.play_pause();
+        else if (request === "toggle sideleft") {
+            const window = App.get_window("sideleft") as PopupWindow | null;
+            if (window) {
+                if (window.visible) window.hide();
+                else window.popup_at_corner("top left");
+            }
+        } else if (request === "toggle sideright") {
+            const window = App.get_window("sideright") as PopupWindow | null;
+            if (window) {
+                if (window.visible) window.hide();
+                else window.popup_at_corner("top right");
+            }
+        } else if (request === "media play-pause") Players.get_default().lastPlayer?.play_pause();
         else if (request === "media next") Players.get_default().lastPlayer?.next();
         else if (request === "media previous") Players.get_default().lastPlayer?.previous();
         else if (request === "media stop") Players.get_default().lastPlayer?.stop();

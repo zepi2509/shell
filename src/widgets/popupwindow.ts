@@ -12,7 +12,6 @@ export default class PopupWindow extends Widget.Window {
     constructor(props: Widget.WindowProps) {
         super({
             keymode: Astal.Keymode.ON_DEMAND,
-            exclusivity: Astal.Exclusivity.IGNORE,
             borderWidth: 20, // To allow shadow, cause if not it gets cut off
             ...props,
             visible: false,
@@ -40,8 +39,24 @@ export default class PopupWindow extends Widget.Window {
         else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
 
         this.anchor = Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT;
+        this.exclusivity = Astal.Exclusivity.IGNORE;
         this.marginLeft = marginLeft;
         this.marginTop = cy + (height - y);
+
+        this.show();
+    }
+
+    popup_at_corner(corner: `${"top" | "bottom"} ${"left" | "right"}`) {
+        let anchor = 0;
+        if (corner.includes("top")) anchor |= Astal.WindowAnchor.TOP;
+        else anchor |= Astal.WindowAnchor.BOTTOM;
+        if (corner.includes("left")) anchor |= Astal.WindowAnchor.LEFT;
+        else anchor |= Astal.WindowAnchor.RIGHT;
+
+        this.anchor = anchor;
+        this.exclusivity = Astal.Exclusivity.NORMAL;
+        this.marginLeft = 0;
+        this.marginTop = 0;
 
         this.show();
     }
