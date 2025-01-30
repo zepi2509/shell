@@ -1,13 +1,13 @@
+import Bar from "@/modules/bar";
+import Launcher from "@/modules/launcher";
+import NotifPopups from "@/modules/notifpopups";
+import Osds from "@/modules/osds";
+import Popdowns from "@/modules/popdowns";
+import Session from "@/modules/session";
+import Monitors from "@/services/monitors";
+import Players from "@/services/players";
 import { execAsync, GLib, monitorFile, readFileAsync, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
-import Bar from "./src/modules/bar";
-import Launcher from "./src/modules/launcher";
-import NotifPopups from "./src/modules/notifpopups";
-import Osds from "./src/modules/osds";
-import Popdowns from "./src/modules/popdowns";
-import Session from "./src/modules/session";
-import Monitors from "./src/services/monitors";
-import Players from "./src/services/players";
 
 const loadStyleAsync = async () => {
     let scheme = "mocha";

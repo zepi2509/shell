@@ -1,8 +1,8 @@
+import Updates, { Repo as IRepo, Update as IUpdate } from "@/services/updates";
+import { MenuItem } from "@/utils/widgets";
+import PopdownWindow from "@/widgets/popdownwindow";
 import { bind, execAsync, Variable } from "astal";
 import { App, Astal, Gtk } from "astal/gtk3";
-import Updates, { Repo as IRepo, Update as IUpdate } from "../../services/updates";
-import { MenuItem } from "../../utils/widgets";
-import PopdownWindow from "../../widgets/popdownwindow";
 
 const constructItem = (label: string, exec: string, quiet = true) =>
     new MenuItem({

@@ -1,6 +1,6 @@
 import { GLib, GObject, property, readFile, register, writeFileAsync } from "astal";
+import { math as config } from "config";
 import { derivative, evaluate, rationalize, simplify } from "mathjs/number";
-import { math as config } from "../../config";
 
 export interface HistoryItem {
     equation: string;

@@ -1,10 +1,10 @@
+import SWeather, { type WeatherData } from "@/services/weather";
+import { ellipsize } from "@/utils/strings";
+import { bindCurrentTime } from "@/utils/system";
+import { Calendar as WCal } from "@/utils/widgets";
+import PopupWindow from "@/widgets/popupwindow";
 import { bind, timeout } from "astal";
 import { Astal, Gtk, type Gdk } from "astal/gtk3";
-import SWeather, { type WeatherData } from "../../services/weather";
-import { ellipsize } from "../../utils/strings";
-import { bindCurrentTime } from "../../utils/system";
-import { Calendar as WCal } from "../../utils/widgets";
-import PopupWindow from "../../widgets/popupwindow";
 
 const getHoursFromUpdate = (data: WeatherData, hours: number) => {
     const updateTime = data.location.localtime_epoch;

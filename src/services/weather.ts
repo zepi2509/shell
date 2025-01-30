@@ -1,6 +1,6 @@
+import { notify } from "@/utils/system";
 import { execAsync, GLib, GObject, interval, property, readFileAsync, register, writeFileAsync } from "astal";
-import { weather as config } from "../../config";
-import { notify } from "../utils/system";
+import { weather as config } from "config";
 
 export interface WeatherCondition {
     text: string;

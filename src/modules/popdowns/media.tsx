@@ -1,9 +1,9 @@
+import Players from "@/services/players";
+import { isRealPlayer } from "@/utils/mpris";
+import PopupWindow from "@/widgets/popupwindow";
 import { bind, Variable } from "astal";
 import { Astal, Gtk } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
-import Players from "../../services/players";
-import { isRealPlayer } from "../../utils/mpris";
-import PopupWindow from "../../widgets/popupwindow";
 
 const shuffleToIcon = (s: AstalMpris.Shuffle) =>
     `caelestia-${s === AstalMpris.Shuffle.ON ? "shuffle" : "consecutive"}-symbolic`;

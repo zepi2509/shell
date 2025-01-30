@@ -1,6 +1,6 @@
+import { Apps } from "@/services/apps";
 import { Gio } from "astal";
 import type AstalApps from "gi://AstalApps";
-import { Apps } from "../services/apps";
 
 // Code points from https://www.github.com/lukas-w/font-logos
 export const osIcons: Record<string, number> = {

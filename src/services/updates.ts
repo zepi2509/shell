@@ -1,5 +1,5 @@
 import { execAsync, GLib, GObject, property, readFileAsync, register, writeFileAsync } from "astal";
-import { updates as config } from "../../config";
+import { updates as config } from "config";
 
 export interface Update {
     full: string;

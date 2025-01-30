@@ -1,8 +1,8 @@
+import { desktopEntrySubs } from "@/utils/icons";
 import { GLib, register, timeout } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
+import { notifpopups as config } from "config";
 import AstalNotifd from "gi://AstalNotifd";
-import { notifpopups as config } from "../../config";
-import { desktopEntrySubs } from "../utils/icons";
 
 const urgencyToString = (urgency: AstalNotifd.Urgency) => {
     switch (urgency) {

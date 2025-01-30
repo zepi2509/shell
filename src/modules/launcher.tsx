@@ -1,16 +1,16 @@
+import { Apps } from "@/services/apps";
+import MathService, { type HistoryItem } from "@/services/math";
+import { getAppCategoryIcon } from "@/utils/icons";
+import { launch, notify } from "@/utils/system";
+import type { Client } from "@/utils/types";
+import { MenuItem, setupCustomTooltip } from "@/utils/widgets";
+import PopupWindow from "@/widgets/popupwindow";
 import { bind, execAsync, Gio, GLib, readFile, register, timeout, Variable } from "astal";
 import { App, Astal, Gtk, Widget } from "astal/gtk3";
+import { launcher as config } from "config";
 import fuzzysort from "fuzzysort";
 import type AstalApps from "gi://AstalApps";
 import AstalHyprland from "gi://AstalHyprland";
-import { launcher as config } from "../../config";
-import { Apps } from "../services/apps";
-import MathService, { type HistoryItem } from "../services/math";
-import { getAppCategoryIcon } from "../utils/icons";
-import { launch, notify } from "../utils/system";
-import type { Client } from "../utils/types";
-import { MenuItem, setupCustomTooltip } from "../utils/widgets";
-import PopupWindow from "../widgets/popupwindow";
 
 type Mode = "apps" | "files" | "math" | "windows";
 
