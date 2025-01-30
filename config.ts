@@ -84,3 +84,19 @@ export const weather = {
     location: "", // Location as a string or empty to autodetect
     imperial: false,
 };
+
+export const cpu = {
+    interval: 2000,
+};
+
+export const gpu = {
+    interval: 2000,
+};
+
+export const memory = {
+    interval: 5000,
+};
+
+export const storage = {
+    interval: 5000,
+};

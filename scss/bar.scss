@@ -114,14 +114,5 @@
         color: scheme.$red;
         font-weight: bold;
         font-size: lib.s(16);
-
-        &:hover,
-        &:focus {
-            background-color: scheme.$surface1;
-        }
-
-        &:active {
-            background-color: scheme.$surface2;
-        }
     }
 }

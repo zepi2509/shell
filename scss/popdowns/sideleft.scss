@@ -1,0 +1,131 @@
+@use "sass:color";
+@use "../scheme";
+@use "../lib";
+@use "../font";
+
+$-accent: scheme.$yellow;
+
+.sideleft {
+    @include lib.rounded(8);
+    @include lib.border($-accent, 0.4, 2);
+    @include lib.shadow;
+    @include font.mono;
+
+    background-color: scheme.$crust;
+    color: $-accent;
+    padding: lib.s(12);
+    font-size: lib.s(14);
+
+    @include lib.spacing(10, true);
+
+    & > * {
+        @include lib.rounded(5);
+
+        background-color: scheme.$base;
+        padding: lib.s(16) lib.s(20);
+    }
+
+    .user {
+        @include lib.spacing(15);
+
+        .face {
+            @include lib.rounded(1000);
+
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-width: lib.s(48);
+            min-height: lib.s(48);
+            font-size: lib.s(24);
+        }
+
+        .details {
+            font-size: lib.s(14);
+
+            @include lib.spacing(3, true);
+
+            .name {
+                font-size: lib.s(18);
+                color: scheme.$text;
+            }
+        }
+
+        .power {
+            @include lib.element-decel;
+            @include font.icon;
+
+            font-size: lib.s(24);
+            color: scheme.$red;
+
+            &:hover,
+            &:focus {
+                color: color.mix(scheme.$red, scheme.$base, 80%);
+            }
+
+            &:active {
+                color: color.mix(scheme.$red, scheme.$base, 60%);
+            }
+        }
+    }
+
+    .locations {
+        @include lib.spacing(30);
+
+        & > * {
+            @include lib.spacing(8, true);
+        }
+
+        $-colours: scheme.$pink, scheme.$yellow, scheme.$maroon, scheme.$green, scheme.$mauve, scheme.$lavender;
+        @for $i from 1 through 6 {
+            .loc#{$i} {
+                @include lib.element-decel;
+
+                color: nth($-colours, $i);
+
+                &:hover,
+                &:focus {
+                    color: color.mix(nth($-colours, $i), scheme.$base, 80%);
+                }
+
+                &:active {
+                    color: color.mix(nth($-colours, $i), scheme.$base, 60%);
+                }
+            }
+        }
+    }
+
+    .hw-resources {
+        @include lib.spacing(10, true);
+
+        .resource {
+            font-size: lib.s(13);
+
+            .inner {
+                font-size: lib.s(16);
+
+                @include lib.spacing(20);
+            }
+
+            .slider {
+                @include lib.rounded(5);
+                @include lib.fluent-decel(1000ms);
+
+                min-height: lib.s(10);
+                background-color: scheme.$surface0;
+                color: scheme.$red;
+            }
+
+            $-names: gpu, cpu, memory, storage;
+            $-colours: scheme.$green, scheme.$maroon, scheme.$yellow, scheme.$pink;
+            @for $i from 1 through length($-names) {
+                &.#{nth($-names, $i)} {
+                    color: nth($-colours, $i);
+
+                    .slider {
+                        color: nth($-colours, $i);
+                    }
+                }
+            }
+        }
+    }
+}

@@ -12,7 +12,9 @@
         "jsxImportSource": "/usr/share/astal/gjs/gtk3",
         "paths": {
             "astal": ["/usr/share/astal/gjs"],
-            "astal/*": ["/usr/share/astal/gjs/*"]
+            "astal/*": ["/usr/share/astal/gjs/*"],
+            "config": ["./config"],
+            "@/*": ["./src/*"]
         }
     }
 }

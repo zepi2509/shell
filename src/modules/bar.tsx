@@ -1,21 +1,21 @@
+import type { Monitor } from "@/services/monitors";
+import Players from "@/services/players";
+import Updates from "@/services/updates";
+import { getAppCategoryIcon } from "@/utils/icons";
+import { ellipsize } from "@/utils/strings";
+import { bindCurrentTime, osIcon } from "@/utils/system";
+import { setupCustomTooltip } from "@/utils/widgets";
+import type PopupWindow from "@/widgets/popupwindow";
 import { execAsync, register, Variable } from "astal";
 import { bind, kebabify } from "astal/binding";
 import { App, Astal, astalify, Gdk, Gtk, type ConstructProps } from "astal/gtk3";
+import { bar as config } from "config";
 import AstalBluetooth from "gi://AstalBluetooth";
 import AstalHyprland from "gi://AstalHyprland";
 import AstalNetwork from "gi://AstalNetwork";
 import AstalNotifd from "gi://AstalNotifd";
 import AstalTray from "gi://AstalTray";
 import AstalWp01 from "gi://AstalWp";
-import { bar as config } from "../../config";
-import type { Monitor } from "../services/monitors";
-import Players from "../services/players";
-import Updates from "../services/updates";
-import { getAppCategoryIcon } from "../utils/icons";
-import { ellipsize } from "../utils/strings";
-import { bindCurrentTime, osIcon } from "../utils/system";
-import { setupCustomTooltip } from "../utils/widgets";
-import type PopupWindow from "../widgets/popupwindow";
 
 const hyprland = AstalHyprland.get_default();
 
@@ -44,7 +44,13 @@ const togglePopup = (self: JSX.Element, event: Astal.ClickEvent, name: string) =
     }
 };
 
-const OSIcon = () => <label className="module os-icon" label={osIcon} />;
+const OSIcon = () => (
+    <button
+        className="module os-icon"
+        label={osIcon}
+        onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideleft")}
+    />
+);
 
 const ActiveWindow = () => (
     <box
@@ -453,7 +459,11 @@ const DateTime = () => (
 );
 
 const Power = () => (
-    <button className="module power" label="power_settings_new" onClicked={() => App.toggle_window("session")} />
+    <button
+        className="module power"
+        label="power_settings_new"
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && App.toggle_window("session")}
+    />
 );
 
 export default ({ monitor }: { monitor: Monitor }) => (
