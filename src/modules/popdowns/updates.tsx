@@ -80,7 +80,11 @@ export default () => (
                         // Ignore errors
                         .catch(() => {}),
             },
-            { label: "Reload", onClicked: () => Updates.get_default().getUpdates() },
+            {
+                label: bind(Updates.get_default(), "loading").as(l => (l ? "Loading" : "Reload")),
+                onClicked: () => Updates.get_default().getUpdates(),
+                enabled: bind(Updates.get_default(), "loading"),
+            },
         ]}
         emptyIcon="deployed_code_history"
         emptyLabel="All packages up to date!"

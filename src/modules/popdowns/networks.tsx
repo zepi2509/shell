@@ -84,11 +84,11 @@ export default () => {
             countLabel={bind(label)}
             headerButtons={[
                 {
-                    label: bind(network.wifi, "enabled").as(p => (p ? "Disable" : "Enable")),
+                    label: bind(network.wifi, "enabled").as(e => (e ? "Disable" : "Enable")),
                     onClicked: () => (network.wifi.enabled = !network.wifi.enabled),
                 },
                 {
-                    label: "Scan",
+                    label: bind(network.wifi, "scanning").as(s => (s ? "Scanning" : "Scan")),
                     onClicked: () => network.wifi.scan(),
                     enabled: bind(network.wifi, "scanning"),
                 },
