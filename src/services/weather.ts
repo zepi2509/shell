@@ -1,3 +1,4 @@
+import { weatherIcons } from "@/utils/icons";
 import { notify } from "@/utils/system";
 import { execAsync, GLib, GObject, interval, property, readFileAsync, register, writeFileAsync } from "astal";
 import { weather as config } from "config";
@@ -196,62 +197,6 @@ const DEFAULT: WeatherData = {
     },
 };
 
-const STATUS_ICONS: Record<string, string> = {
-    warning: "󰼯",
-    sunny: "󰖙",
-    clear: "󰖔",
-    partly_cloudy: "󰖕",
-    partly_cloudy_night: "󰼱",
-    cloudy: "󰖐",
-    overcast: "󰖕",
-    mist: "󰖑",
-    patchy_rain_nearby: "󰼳",
-    patchy_rain_possible: "󰼳",
-    patchy_snow_possible: "󰼴",
-    patchy_sleet_possible: "󰙿",
-    patchy_freezing_drizzle_possible: "󰙿",
-    thundery_outbreaks_possible: "󰙾",
-    blowing_snow: "󰼶",
-    blizzard: "󰼶",
-    fog: "󰖑",
-    freezing_fog: "󰖑",
-    patchy_light_drizzle: "󰼳",
-    light_drizzle: "󰼳",
-    freezing_drizzle: "󰙿",
-    heavy_freezing_drizzle: "󰙿",
-    patchy_light_rain: "󰼳",
-    light_rain: "󰼳",
-    moderate_rain_at_times: "󰖗",
-    moderate_rain: "󰼳",
-    heavy_rain_at_times: "󰖖",
-    heavy_rain: "󰖖",
-    light_freezing_rain: "󰙿",
-    moderate_or_heavy_freezing_rain: "󰙿",
-    light_sleet: "󰙿",
-    moderate_or_heavy_sleet: "󰙿",
-    patchy_light_snow: "󰼴",
-    light_snow: "󰼴",
-    patchy_moderate_snow: "󰼴",
-    moderate_snow: "󰼶",
-    patchy_heavy_snow: "󰼶",
-    heavy_snow: "󰼶",
-    ice_pellets: "󰖒",
-    light_rain_shower: "󰖖",
-    moderate_or_heavy_rain_shower: "󰖖",
-    torrential_rain_shower: "󰖖",
-    light_sleet_showers: "󰼵",
-    moderate_or_heavy_sleet_showers: "󰼵",
-    light_snow_showers: "󰼵",
-    moderate_or_heavy_snow_showers: "󰼵",
-    light_showers_of_ice_pellets: "󰖒",
-    moderate_or_heavy_showers_of_ice_pellets: "󰖒",
-    patchy_light_rain_with_thunder: "󰙾",
-    moderate_or_heavy_rain_with_thunder: "󰙾",
-    moderate_or_heavy_rain_in_area_with_thunder: "󰙾",
-    patchy_light_snow_with_thunder: "󰼶",
-    moderate_or_heavy_snow_with_thunder: "󰼶",
-};
-
 @register({ GTypeName: "Weather" })
 export default class Weather extends GObject.Object {
     static instance: Weather;
@@ -325,8 +270,8 @@ export default class Weather extends GObject.Object {
 
     getIcon(status: string) {
         let query = status.trim().toLowerCase().replaceAll(" ", "_");
-        if (!this.#data.current.is_day && query + "_night" in STATUS_ICONS) query += "_night";
-        return STATUS_ICONS[query] ?? STATUS_ICONS.warning;
+        if (!this.#data.current.is_day && query + "_night" in weatherIcons) query += "_night";
+        return weatherIcons[query] ?? weatherIcons.warning;
     }
 
     getTemp(data: _WeatherState) {
