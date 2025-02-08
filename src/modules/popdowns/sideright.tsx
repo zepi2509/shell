@@ -85,8 +85,16 @@ const Weather = () => {
                     <label label={bind(weather, "condition").as(c => ellipsize(c, 16))} />
                 </box>
                 <box vertical halign={Gtk.Align.END} valign={Gtk.Align.CENTER} className="other-data">
-                    <label xalign={0} label={bind(weather, "wind").as(w => ` ${w}`)} />
-                    <label xalign={0} label={bind(weather, "rainChance").as(r => ` ${r}`)} />
+                    <label
+                        xalign={0}
+                        label={bind(weather, "wind").as(w => ` ${w}`)}
+                        tooltipText={bind(weather, "wind").as(w => `${w} wind speed`)}
+                    />
+                    <label
+                        xalign={0}
+                        label={bind(weather, "rainChance").as(r => ` ${r}`)}
+                        tooltipText={bind(weather, "rainChance").as(r => `${r} chance of rain`)}
+                    />
                 </box>
             </centerbox>
             <box className="separator" />
