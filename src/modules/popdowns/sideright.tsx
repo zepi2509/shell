@@ -1,7 +1,7 @@
 import SWeather, { type WeatherData } from "@/services/weather";
 import { ellipsize } from "@/utils/strings";
 import { bindCurrentTime } from "@/utils/system";
-import { Calendar as WCal } from "@/utils/widgets";
+import { setupCustomTooltip, Calendar as WCal } from "@/utils/widgets";
 import PopupWindow from "@/widgets/popupwindow";
 import { bind, timeout } from "astal";
 import { Astal, Gtk, type Gdk } from "astal/gtk3";
@@ -88,12 +88,22 @@ const Weather = () => {
                     <label
                         xalign={0}
                         label={bind(weather, "wind").as(w => ` ${w}`)}
-                        tooltipText={bind(weather, "wind").as(w => `${w} wind speed`)}
+                        setup={self =>
+                            setupCustomTooltip(
+                                self,
+                                bind(weather, "wind").as(w => `${w} wind speed`)
+                            )
+                        }
                     />
                     <label
                         xalign={0}
                         label={bind(weather, "rainChance").as(r => ` ${r}`)}
-                        tooltipText={bind(weather, "rainChance").as(r => `${r} chance of rain`)}
+                        setup={self =>
+                            setupCustomTooltip(
+                                self,
+                                bind(weather, "rainChance").as(r => `${r} chance of rain`)
+                            )
+                        }
                     />
                 </box>
             </centerbox>

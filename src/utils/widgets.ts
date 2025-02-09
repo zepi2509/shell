@@ -8,6 +8,7 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
     const window = new Widget.Window({
         visible: false,
         namespace: "caelestia-tooltip",
+        layer: Astal.Layer.OVERLAY,
         keymode: Astal.Keymode.NONE,
         exclusivity: Astal.Exclusivity.IGNORE,
         anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT,
@@ -19,7 +20,14 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
     let lastX = 0;
     self.connect("size-allocate", () => (dirty = true));
     window.connect("size-allocate", () => {
-        window.marginLeft = lastX + (self.get_allocated_width() - window.get_preferred_width()[1]) / 2;
+        const mWidth = AstalHyprland.get_default().get_focused_monitor().get_width();
+        const pWidth = window.get_preferred_width()[1];
+
+        let marginLeft = lastX + (self.get_allocated_width() - pWidth) / 2;
+        if (marginLeft < 0) marginLeft = 0;
+        else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
+
+        window.marginLeft = marginLeft;
     });
     if (text instanceof Binding) self.hook(text, (_: any, v: string) => !v && window.hide());
 
@@ -27,10 +35,18 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
         if (text instanceof Binding && !text.get()) return false;
         if (dirty) {
             const { width, height } = self.get_allocation();
+            const mWidth = AstalHyprland.get_default().get_focused_monitor().get_width();
+            const pWidth = window.get_preferred_width()[1];
             const { x: cx, y: cy } = AstalHyprland.get_default().get_cursor_position();
-            window.marginLeft = cx + ((width - window.get_preferred_width()[1]) / 2 - x);
+
+            let marginLeft = cx + ((width - pWidth) / 2 - x);
+            if (marginLeft < 0) marginLeft = 0;
+            else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
+
+            window.marginLeft = marginLeft;
             window.marginTop = cy + (height - y);
             lastX = cx - x;
+
             dirty = false;
         }
         return true;
