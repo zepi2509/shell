@@ -160,13 +160,13 @@ const Result = ({
     <button
         className="result"
         cursor="pointer"
-        tooltipText={tooltip}
         onClicked={onClicked}
         onClick={(self, event) => {
             if (event.button === Astal.MouseButton.SECONDARY) onSecondaryClick?.(self);
             else if (event.button === Astal.MouseButton.MIDDLE) onMiddleClick?.(self);
         }}
         onDestroy={onDestroy}
+        setup={self => tooltip && setupCustomTooltip(self, tooltip)}
     >
         <box>
             {icon &&
@@ -399,7 +399,7 @@ const WindowResult = ({ client, reload }: { client: Client; reload: () => void }
                                         close(result);
                                         execAsync(`wl-copy -- ${value}`).catch(console.error);
                                     },
-                                    tooltipText: String(value),
+                                    tooltipText: String(value), // Cannot use custom tooltip cause it'll be below menu
                                 })
                             );
 

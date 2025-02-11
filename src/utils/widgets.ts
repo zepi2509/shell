@@ -16,14 +16,12 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
     });
     self.set_tooltip_window(window);
 
-    let dirty = true;
     let lastX = 0;
-    self.connect("size-allocate", () => (dirty = true));
     window.connect("size-allocate", () => {
         const mWidth = AstalHyprland.get_default().get_focused_monitor().get_width();
         const pWidth = window.get_preferred_width()[1];
 
-        let marginLeft = lastX + (self.get_allocated_width() - pWidth) / 2;
+        let marginLeft = lastX - pWidth / 2;
         if (marginLeft < 0) marginLeft = 0;
         else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
 
@@ -31,24 +29,23 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
     });
     if (text instanceof Binding) self.hook(text, (_: any, v: string) => !v && window.hide());
 
-    self.connect("query-tooltip", (_: any, x: number, y: number) => {
+    self.connect("query-tooltip", () => {
         if (text instanceof Binding && !text.get()) return false;
-        if (dirty) {
-            const { width, height } = self.get_allocation();
-            const mWidth = AstalHyprland.get_default().get_focused_monitor().get_width();
-            const pWidth = window.get_preferred_width()[1];
-            const { x: cx, y: cy } = AstalHyprland.get_default().get_cursor_position();
+        if (window.visible) return true;
 
-            let marginLeft = cx + ((width - pWidth) / 2 - x);
-            if (marginLeft < 0) marginLeft = 0;
-            else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
+        const mWidth = AstalHyprland.get_default().get_focused_monitor().get_width();
+        const pWidth = window.get_preferred_width()[1];
+        const { x, y } = AstalHyprland.get_default().get_cursor_position();
+        const cursorSize = Gtk.Settings.get_default()?.gtkCursorThemeSize ?? 0;
 
-            window.marginLeft = marginLeft;
-            window.marginTop = cy + (height - y);
-            lastX = cx - x;
+        let marginLeft = x - pWidth / 2;
+        if (marginLeft < 0) marginLeft = 0;
+        else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
 
-            dirty = false;
-        }
+        window.marginLeft = marginLeft;
+        window.marginTop = y + cursorSize;
+        lastX = x;
+
         return true;
     });
 
