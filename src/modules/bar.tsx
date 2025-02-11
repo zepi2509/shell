@@ -4,6 +4,7 @@ import Updates from "@/services/updates";
 import { getAppCategoryIcon } from "@/utils/icons";
 import { ellipsize } from "@/utils/strings";
 import { bindCurrentTime, osIcon } from "@/utils/system";
+import type { AstalWidget } from "@/utils/types";
 import { setupCustomTooltip } from "@/utils/widgets";
 import type PopupWindow from "@/widgets/popupwindow";
 import { execAsync, register, Variable } from "astal";
@@ -20,7 +21,7 @@ import AstalWp01 from "gi://AstalWp";
 const hyprland = AstalHyprland.get_default();
 
 const hookFocusedClientProp = (
-    self: any, // Ugh why is there no base Widget type
+    self: AstalWidget,
     prop: keyof AstalHyprland.Client,
     callback: (c: AstalHyprland.Client | null) => void
 ) => {

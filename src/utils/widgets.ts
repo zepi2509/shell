@@ -1,8 +1,9 @@
 import { Binding, register } from "astal";
 import { Astal, astalify, Gtk, Widget, type ConstructProps } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
+import type { AstalWidget } from "./types";
 
-export const setupCustomTooltip = (self: any, text: string | Binding<string>) => {
+export const setupCustomTooltip = (self: AstalWidget, text: string | Binding<string>) => {
     if (!text) return null;
 
     const window = new Widget.Window({
@@ -27,7 +28,7 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
 
         window.marginLeft = marginLeft;
     });
-    if (text instanceof Binding) self.hook(text, (_: any, v: string) => !v && window.hide());
+    if (text instanceof Binding) self.hook(text, (_, v) => !v && window.hide());
 
     self.connect("query-tooltip", () => {
         if (text instanceof Binding && !text.get()) return false;
@@ -54,7 +55,7 @@ export const setupCustomTooltip = (self: any, text: string | Binding<string>) =>
     return window;
 };
 
-export const setupChildClickthrough = (self: any) =>
+export const setupChildClickthrough = (self: AstalWidget) =>
     self.connect("size-allocate", () => self.get_window()?.set_child_input_shapes());
 
 @register()
