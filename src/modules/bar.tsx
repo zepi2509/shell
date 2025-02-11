@@ -146,7 +146,7 @@ const Workspace = ({ idx }: { idx: number }) => {
                 const update = () =>
                     self.toggleClassName(
                         "occupied",
-                        hyprland.clients.some(c => c.workspace.id === wsId)
+                        hyprland.clients.some(c => c.workspace?.id === wsId)
                     );
 
                 self.hook(hyprland, "notify::focused-workspace", () => {
