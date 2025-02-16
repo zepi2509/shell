@@ -535,6 +535,10 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                                         body: "The launcher todo subcommand requires `tod`. Install it with `yay -S tod-bin`",
                                         icon: "dialog-warning-symbolic",
                                         urgency: "critical",
+                                        actions: {
+                                            Install: () =>
+                                                execAsync("uwsm app -T -- yay -S tod-bin").catch(console.error),
+                                        },
                                     });
                                     return;
                                 }
