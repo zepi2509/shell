@@ -6,8 +6,7 @@
 .bar {
     @include font.mono;
 
-    background-color: scheme.$crust;
-    padding: lib.s(8) lib.s(20);
+    margin: 10px 10px 0 10px;
     font-size: lib.s(14);
 
     @include lib.spacing(10);
@@ -17,7 +16,7 @@
     }
 
     .module {
-        @include lib.rounded(5);
+        @include lib.rounded(8);
 
         padding: lib.s(3) lib.s(8);
         background-color: scheme.$base;
@@ -52,20 +51,20 @@
     }
 
     .workspaces {
-        @include lib.border(scheme.$maroon);
-
         padding: lib.s(3) lib.s(18);
 
+        @include lib.spacing(10);
+
         & > * {
-            @include lib.rounded(2);
+            @include lib.rounded(100);
             @include lib.element-decel;
 
-            min-width: lib.s(20);
-            min-height: lib.s(4);
+            min-width: lib.s(8);
+            min-height: lib.s(8);
             background-color: scheme.$surface1;
 
             &.occupied {
-                background-color: scheme.$sky;
+                background-color: scheme.$overlay1;
             }
 
             &.focused {
