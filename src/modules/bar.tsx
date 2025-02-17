@@ -468,20 +468,35 @@ const NotifCount = () => (
     </button>
 );
 
-const Battery = () => (
-    <box
-        className={bind(AstalBattery.get_default(), "percentage").as(p => `module battery ${p < 0.2 ? "low" : ""}`)}
-        setup={self =>
-            setupCustomTooltip(
-                self,
-                bind(AstalBattery.get_default(), "timeToEmpty").as(p => `${formatSeconds(p)} remaining`)
-            )
-        }
-    >
-        <label className="icon" label={bind(AstalBattery.get_default(), "percentage").as(getBatteryIcon)} />
-        <label label={bind(AstalBattery.get_default(), "percentage").as(p => `${Math.round(p * 100)}%`)} />
-    </box>
-);
+const Battery = () => {
+    const className = Variable.derive(
+        [bind(AstalBattery.get_default(), "percentage"), bind(AstalBattery.get_default(), "charging")],
+        (p, c) => `module battery ${p < 0.2 && !c ? "low" : ""}`
+    );
+
+    return (
+        <box
+            className={bind(className)}
+            setup={self =>
+                setupCustomTooltip(
+                    self,
+                    bind(AstalBattery.get_default(), "timeToEmpty").as(p => `${formatSeconds(p)} remaining`)
+                )
+            }
+            onDestroy={() => className.drop()}
+        >
+            <revealer
+                transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+                transitionDuration={150}
+                revealChild={bind(AstalBattery.get_default(), "charging")}
+            >
+                <label className="icon" label="" />
+            </revealer>
+            <label className="icon" label={bind(AstalBattery.get_default(), "percentage").as(getBatteryIcon)} />
+            <label label={bind(AstalBattery.get_default(), "percentage").as(p => `${Math.round(p * 100)}%`)} />
+        </box>
+    );
+};
 
 const DateTime = () => (
     <button
@@ -537,7 +552,7 @@ export default ({ monitor }: { monitor: Monitor }) => (
                 <StatusIcons />
                 <PkgUpdates />
                 <NotifCount />
-                {bind(AstalBattery.get_default(), "isBattery").as(b => b && <Battery />)}
+                {AstalBattery.get_default().isBattery && <Battery />}
                 <DateTime />
                 <Power />
             </box>
