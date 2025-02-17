@@ -11,6 +11,7 @@ import { execAsync, register, Variable } from "astal";
 import { bind, kebabify } from "astal/binding";
 import { App, Astal, astalify, Gdk, Gtk, type ConstructProps } from "astal/gtk3";
 import { bar as config } from "config";
+import AstalBattery from "gi://AstalBattery";
 import AstalBluetooth from "gi://AstalBluetooth";
 import AstalHyprland from "gi://AstalHyprland";
 import AstalNetwork from "gi://AstalNetwork";
@@ -19,6 +20,19 @@ import AstalTray from "gi://AstalTray";
 import AstalWp01 from "gi://AstalWp";
 
 const hyprland = AstalHyprland.get_default();
+
+const getBatteryIcon = (perc: number) => {
+    if (perc < 0.1) return "󰁺";
+    if (perc < 0.2) return "󰁻";
+    if (perc < 0.3) return "󰁼";
+    if (perc < 0.4) return "󰁽";
+    if (perc < 0.5) return "󰁾";
+    if (perc < 0.6) return "󰁿";
+    if (perc < 0.7) return "󰂀";
+    if (perc < 0.8) return "󰂁";
+    if (perc < 0.9) return "󰂂";
+    return "󰁹";
+};
 
 const hookFocusedClientProp = (
     self: AstalWidget,
@@ -448,6 +462,13 @@ const NotifCount = () => (
     </button>
 );
 
+const Battery = () => (
+    <box className={bind(AstalBattery.get_default(), "percentage").as(p => `module battery ${p < 0.2 ? "low" : ""}`)}>
+        <label className="icon" label={bind(AstalBattery.get_default(), "percentage").as(getBatteryIcon)} />
+        <label label={bind(AstalBattery.get_default(), "percentage").as(p => `${p * 100}%`)} />
+    </box>
+);
+
 const DateTime = () => (
     <button
         onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
@@ -502,6 +523,7 @@ export default ({ monitor }: { monitor: Monitor }) => (
                 <StatusIcons />
                 <PkgUpdates />
                 <NotifCount />
+                {bind(AstalBattery.get_default(), "isBattery").as(b => b && <Battery />)}
                 <DateTime />
                 <Power />
             </box>

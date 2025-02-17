@@ -103,6 +103,14 @@
         color: scheme.$mauve;
     }
 
+    .battery {
+        color: scheme.$teal;
+
+        .low {
+            color: scheme.$red;
+        }
+    }
+
     .date-time {
         color: scheme.$peach;
     }
