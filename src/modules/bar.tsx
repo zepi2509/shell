@@ -34,6 +34,12 @@ const getBatteryIcon = (perc: number) => {
     return "󰁹";
 };
 
+const formatSeconds = (sec: number) => {
+    if (sec >= 3600) return `${Math.floor(sec / 3600)} hour${sec % 3600 === 0 ? "" : "s"}`;
+    if (sec >= 60) return `${Math.floor(sec / 60)} minute${sec % 60 === 0 ? "" : "s"}`;
+    return `${sec} second${sec === 1 ? "" : "s"}`;
+};
+
 const hookFocusedClientProp = (
     self: AstalWidget,
     prop: keyof AstalHyprland.Client,
@@ -463,9 +469,17 @@ const NotifCount = () => (
 );
 
 const Battery = () => (
-    <box className={bind(AstalBattery.get_default(), "percentage").as(p => `module battery ${p < 0.2 ? "low" : ""}`)}>
+    <box
+        className={bind(AstalBattery.get_default(), "percentage").as(p => `module battery ${p < 0.2 ? "low" : ""}`)}
+        setup={self =>
+            setupCustomTooltip(
+                self,
+                bind(AstalBattery.get_default(), "timeToEmpty").as(p => `${formatSeconds(p)} remaining`)
+            )
+        }
+    >
         <label className="icon" label={bind(AstalBattery.get_default(), "percentage").as(getBatteryIcon)} />
-        <label label={bind(AstalBattery.get_default(), "percentage").as(p => `${p * 100}%`)} />
+        <label label={bind(AstalBattery.get_default(), "percentage").as(p => `${Math.round(p * 100)}%`)} />
     </box>
 );
 
