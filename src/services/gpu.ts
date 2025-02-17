@@ -1,4 +1,4 @@
-import { execAsync, Gio, GObject, interval, property, register } from "astal";
+import { execAsync, Gio, GLib, GObject, interval, property, register } from "astal";
 import { gpu as config } from "config";
 
 @register({ GTypeName: "Gpu" })
@@ -24,10 +24,12 @@ export default class Gpu extends GObject.Object {
     }
 
     update() {
-        this.calculateUsage().then(usage => {
-            this.#usage = usage;
-            this.notify("usage");
-        });
+        this.calculateUsage()
+            .then(usage => {
+                this.#usage = usage;
+                this.notify("usage");
+            })
+            .catch(console.error);
     }
 
     constructor() {
@@ -44,7 +46,7 @@ export default class Gpu extends GObject.Object {
 
         let info: Gio.FileInfo | undefined | null;
         while ((info = enumerator?.next_file(null))) {
-            if (/card[0-9]+/.test(info.get_name())) {
+            if (GLib.file_test(`/sys/class/drm/${info.get_name()}/device/gpu_busy_percent`, GLib.FileTest.EXISTS)) {
                 this.available = true;
                 break;
             }
