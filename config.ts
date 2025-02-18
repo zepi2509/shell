@@ -2,7 +2,8 @@ import { Astal } from "astal/gtk3";
 
 // Modules
 export const bar = {
-    wsPerGroup: 10,
+    vertical: true,
+    wsPerGroup: 5,
     dateTimeFormat: "%d/%m/%y %R",
 };
 

@@ -68,14 +68,15 @@ const togglePopup = (self: JSX.Element, event: Astal.ClickEvent, name: string) =
 const OSIcon = () => (
     <button
         className="module os-icon"
-        label={osIcon}
         onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideleft")}
-    />
+    >
+        {osIcon}
+    </button>
 );
 
 const ActiveWindow = () => (
     <box
-        hasTooltip
+        vertical={config.vertical}
         className="module active-window"
         setup={self => {
             const title = Variable("");
@@ -101,8 +102,13 @@ const ActiveWindow = () => (
             }
         />
         <label
+            angle={config.vertical ? 270 : 0}
             setup={self =>
-                hookFocusedClientProp(self, "title", c => (self.label = c?.title ? ellipsize(c.title) : "Desktop"))
+                hookFocusedClientProp(
+                    self,
+                    "title",
+                    c => (self.label = c?.title ? ellipsize(c.title, config.vertical ? 30 : 40) : "Desktop")
+                )
             }
         />
     </box>
@@ -126,7 +132,7 @@ const MediaPlaying = () => {
                 setupCustomTooltip(self, bind(label));
             }}
         >
-            <box className="module media-playing">
+            <box vertical={config.vertical} className="module media-playing">
                 <icon
                     setup={self =>
                         players.hookLastPlayer(self, "notify::identity", () => {
@@ -142,6 +148,7 @@ const MediaPlaying = () => {
                     }
                 />
                 <label
+                    angle={config.vertical ? 270 : 0}
                     setup={self =>
                         players.hookLastPlayer(self, ["notify::title", "notify::artist"], () => {
                             self.label = ellipsize(getLabel("No media")); // TODO: scroll text
@@ -195,7 +202,7 @@ const Workspaces = () => (
                 hyprland.dispatch("workspace", (event.delta_y < 0 ? "-" : "+") + 1);
         }}
     >
-        <box className="module workspaces">
+        <box vertical={config.vertical} className="module workspaces">
             {Array.from({ length: config.wsPerGroup }).map((_, idx) => (
                 <Workspace idx={idx + 1} /> // Start from 1
             ))}
@@ -248,7 +255,11 @@ const TrayItem = (item: AstalTray.TrayItem) => {
 };
 
 const Tray = () => (
-    <box className="module tray" visible={bind(AstalTray.get_default(), "items").as(i => i.length > 0)}>
+    <box
+        vertical={config.vertical}
+        className="module tray"
+        visible={bind(AstalTray.get_default(), "items").as(i => i.length > 0)}
+    >
         {bind(AstalTray.get_default(), "items").as(i => i.map(TrayItem))}
     </box>
 );
@@ -378,7 +389,7 @@ const BluetoothDevice = (device: AstalBluetooth.Device) => (
 );
 
 const Bluetooth = () => (
-    <box className="bluetooth">
+    <box vertical={config.vertical} className="bluetooth">
         <button
             onClick={(self, event) => {
                 if (event.button === Astal.MouseButton.PRIMARY) togglePopup(self, event, "bluetooth-devices");
@@ -424,7 +435,7 @@ const Bluetooth = () => (
 );
 
 const StatusIcons = () => (
-    <box className="module status-icons">
+    <box vertical={config.vertical} className="module status-icons">
         <Network />
         <Bluetooth />
     </box>
@@ -440,7 +451,7 @@ const PkgUpdates = () => (
             )
         }
     >
-        <box className="module pkg-updates">
+        <box vertical={config.vertical} className="module pkg-updates">
             <label className="icon" label="download" />
             <label label={bind(Updates.get_default(), "numUpdates").as(String)} />
         </box>
@@ -461,7 +472,7 @@ const NotifCount = () => (
             )
         }
     >
-        <box className="module notif-count">
+        <box vertical={config.vertical} className="module notif-count">
             <label className="icon" label="info" />
             <label label={bind(AstalNotifd.get_default(), "notifications").as(n => String(n.length))} />
         </box>
@@ -476,6 +487,7 @@ const Battery = () => {
 
     return (
         <box
+            vertical={config.vertical}
             className={bind(className)}
             setup={self =>
                 setupCustomTooltip(
@@ -486,7 +498,9 @@ const Battery = () => {
             onDestroy={() => className.drop()}
         >
             <revealer
-                transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+                transitionType={
+                    config.vertical ? Gtk.RevealerTransitionType.SLIDE_UP : Gtk.RevealerTransitionType.SLIDE_LEFT
+                }
                 transitionDuration={150}
                 revealChild={bind(AstalBattery.get_default(), "charging")}
             >
@@ -502,9 +516,9 @@ const DateTime = () => (
     <button
         onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
     >
-        <box className="module date-time">
+        <box vertical={config.vertical} className="module date-time">
             <label className="icon" label="calendar_month" />
-            <label label={bindCurrentTime(config.dateTimeFormat)} />
+            <label angle={config.vertical ? 270 : 0} label={bindCurrentTime(config.dateTimeFormat)} />
         </box>
     </button>
 );
@@ -521,25 +535,29 @@ export default ({ monitor }: { monitor: Monitor }) => (
     <window
         namespace="caelestia-bar"
         monitor={monitor.id}
-        anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT}
+        anchor={
+            Astal.WindowAnchor.TOP |
+            Astal.WindowAnchor.LEFT |
+            (config.vertical ? Astal.WindowAnchor.BOTTOM : Astal.WindowAnchor.RIGHT)
+        }
         exclusivity={Astal.Exclusivity.EXCLUSIVE}
     >
-        <centerbox className="bar">
-            <box>
+        <centerbox vertical={config.vertical} className={`bar ${config.vertical ? "vertical" : " horizontal"}`}>
+            <box vertical={config.vertical}>
                 <OSIcon />
                 <ActiveWindow />
                 <MediaPlaying />
                 <button
-                    hexpand
+                    expand
                     onScroll={(_, event) =>
                         event.delta_y > 0 ? (monitor.brightness -= 0.1) : (monitor.brightness += 0.1)
                     }
                 />
             </box>
             <Workspaces />
-            <box>
+            <box vertical={config.vertical}>
                 <button
-                    hexpand
+                    expand
                     onScroll={(_, event) => {
                         const speaker = AstalWp01.get_default()?.audio.defaultSpeaker;
                         if (!speaker) return;

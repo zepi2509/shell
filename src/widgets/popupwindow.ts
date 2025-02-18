@@ -1,5 +1,6 @@
 import { Binding, register } from "astal";
 import { App, Astal, Gdk, Widget } from "astal/gtk3";
+import { bar } from "config";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
 
 const extendProp = <T>(
@@ -29,19 +30,30 @@ export default class PopupWindow extends Widget.Window {
 
     popup_at_widget(widget: JSX.Element, event: Gdk.Event | Astal.ClickEvent) {
         const { width, height } = widget.get_allocation();
-        const mWidth = AstalHyprland.get_default().get_focused_monitor().get_width();
+        const { width: mWidth, height: mHeight } = AstalHyprland.get_default().get_focused_monitor();
         const pWidth = this.get_preferred_width()[1];
+        const pHeight = this.get_preferred_height()[1];
         const [, x, y] = event instanceof Gdk.Event ? event.get_coords() : [null, event.x, event.y];
         const { x: cx, y: cy } = AstalHyprland.get_default().get_cursor_position();
 
-        let marginLeft = cx + ((width - pWidth) / 2 - x);
-        if (marginLeft < 0) marginLeft = 0;
-        else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
+        let marginLeft = 0;
+        let marginTop = 0;
+        if (bar.vertical) {
+            marginLeft = cx + (width - x);
+            marginTop = cy + ((height - pHeight) / 2 - y);
+            if (marginTop < 0) marginTop = 0;
+            else if (marginTop + pHeight > mHeight) marginTop = mHeight - pHeight;
+        } else {
+            marginLeft = cx + ((width - pWidth) / 2 - x);
+            if (marginLeft < 0) marginLeft = 0;
+            else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
+            marginTop = cy + (height - y);
+        }
 
         this.anchor = Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT;
         this.exclusivity = Astal.Exclusivity.IGNORE;
         this.marginLeft = marginLeft;
-        this.marginTop = cy + (height - y);
+        this.marginTop = marginTop;
 
         this.show();
     }

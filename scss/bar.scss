@@ -6,22 +6,12 @@
 .bar {
     @include font.mono;
 
-    margin: 10px 10px 0 10px;
     font-size: lib.s(14);
-
-    @include lib.spacing(10);
-
-    & > * {
-        @include lib.spacing(10);
-    }
 
     .module {
         @include lib.rounded(8);
 
-        padding: lib.s(3) lib.s(8);
         background-color: scheme.$base;
-
-        @include lib.spacing;
     }
 
     label.icon {
@@ -33,7 +23,6 @@
 
         color: scheme.$yellow;
         font-size: lib.s(14);
-        padding-right: lib.s(12);
     }
 
     .active-window {
@@ -43,55 +32,35 @@
     .media-playing {
         color: scheme.$lavender;
 
-        @include lib.spacing(8);
-
         icon {
             font-size: lib.s(16);
         }
     }
 
-    .workspaces {
-        padding: lib.s(3) lib.s(18);
+    .workspaces > * {
+        @include lib.rounded(100);
+        @include lib.element-decel;
 
-        @include lib.spacing(10);
+        min-width: lib.s(8);
+        min-height: lib.s(8);
+        background-color: scheme.$surface1;
 
-        & > * {
-            @include lib.rounded(100);
-            @include lib.element-decel;
+        &.occupied {
+            background-color: scheme.$overlay1;
+        }
 
-            min-width: lib.s(8);
-            min-height: lib.s(8);
-            background-color: scheme.$surface1;
-
-            &.occupied {
-                background-color: scheme.$overlay1;
-            }
-
-            &.focused {
-                min-width: lib.s(30);
-                background-color: scheme.$mauve;
-            }
+        &.focused {
+            background-color: scheme.$mauve;
         }
     }
 
     .tray {
         font-size: lib.s(15);
         color: scheme.$text;
-
-        @include lib.spacing(10);
     }
 
     .status-icons {
         color: scheme.$rosewater;
-
-        .bluetooth {
-            @include lib.spacing(10);
-
-            // The spacing doesn't look right for some reason so this
-            & > :first-child:not(:last-child) {
-                margin-right: lib.s(5);
-            }
-        }
     }
 
     .pkg-updates {
@@ -122,5 +91,99 @@
         color: scheme.$red;
         font-weight: bold;
         font-size: lib.s(16);
+    }
+
+    &.horizontal {
+        margin: 10px 10px 0 10px;
+
+        @include lib.spacing(10);
+
+        & > * {
+            @include lib.spacing(10);
+        }
+
+        .module {
+            padding: lib.s(3) lib.s(8);
+
+            @include lib.spacing;
+        }
+
+        .os-icon {
+            padding-right: lib.s(12);
+        }
+
+        .media-playing {
+            @include lib.spacing(8);
+        }
+
+        .workspaces {
+            padding: lib.s(3) lib.s(18);
+
+            @include lib.spacing(10);
+
+            & > .focused {
+                min-width: lib.s(30);
+            }
+        }
+
+        .tray {
+            @include lib.spacing(10);
+        }
+
+        .status-icons .bluetooth {
+            @include lib.spacing(10);
+
+            // The spacing doesn't look right for some reason so this
+            & > :first-child:not(:last-child) {
+                margin-right: lib.s(5);
+            }
+        }
+    }
+
+    &.vertical {
+        margin: 10px 0 10px 10px;
+
+        @include lib.spacing(10, true);
+
+        & > * {
+            @include lib.spacing(10, true);
+        }
+
+        .module {
+            padding: lib.s(8);
+
+            @include lib.spacing($vertical: true);
+        }
+
+        .os-icon > * {
+            margin-left: lib.s(-5);
+        }
+
+        .media-playing {
+            @include lib.spacing(8, true);
+        }
+
+        .workspaces {
+            padding: lib.s(18) lib.s(3);
+
+            @include lib.spacing(10, true);
+
+            & > .focused {
+                min-height: lib.s(30);
+            }
+        }
+
+        .tray {
+            @include lib.spacing(10, true);
+        }
+
+        .status-icons .bluetooth {
+            @include lib.spacing(10, true);
+
+            // The spacing doesn't look right for some reason so this
+            & > :first-child:not(:last-child) {
+                margin-bottom: lib.s(5);
+            }
+        }
     }
 }

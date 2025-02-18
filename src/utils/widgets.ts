@@ -6,6 +6,8 @@ import type { AstalWidget } from "./types";
 export const setupCustomTooltip = (self: AstalWidget, text: string | Binding<string>) => {
     if (!text) return null;
 
+    self.set_has_tooltip(true);
+
     const window = new Widget.Window({
         visible: false,
         namespace: "caelestia-tooltip",
