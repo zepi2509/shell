@@ -1,5 +1,5 @@
 import { desktopEntrySubs } from "@/utils/icons";
-import { GLib, register, timeout } from "astal";
+import { bind, GLib, register, timeout, Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
 import { notifpopups as config } from "config";
 import AstalNotifd from "gi://AstalNotifd";
@@ -17,12 +17,27 @@ const urgencyToString = (urgency: AstalNotifd.Urgency) => {
 
 const getTime = (time: number) => {
     const messageTime = GLib.DateTime.new_from_unix_local(time);
-    const todayDay = GLib.DateTime.new_now_local().get_day_of_year();
-    if (messageTime.get_day_of_year() === todayDay) {
+    const now = GLib.DateTime.new_now_local();
+    const todayDay = now.get_day_of_year();
+
+    if (config.agoTime) {
+        const diff = now.difference(messageTime) / 1e6;
+        if (diff < 60) return "Now";
+        if (diff < 3600) {
+            const d = Math.floor(diff / 60);
+            return `${d} min${d === 1 ? "" : "s"} ago`;
+        }
+        if (diff < 86400) {
+            const d = Math.floor(diff / 3600);
+            return `${d} hour${d === 1 ? "" : "s"} ago`;
+        }
+    } else if (messageTime.get_day_of_year() === todayDay) {
         const aMinuteAgo = GLib.DateTime.new_now_local().add_seconds(-60);
-        return aMinuteAgo !== null && messageTime.compare(aMinuteAgo) > 0 ? "Now" : messageTime.format("%H:%M");
-    } else if (messageTime.get_day_of_year() === todayDay - 1) return "Yesterday";
-    return messageTime.format("%d/%m");
+        return aMinuteAgo !== null && messageTime.compare(aMinuteAgo) > 0 ? "Now" : messageTime.format("%H:%M")!;
+    }
+
+    if (messageTime.get_day_of_year() === todayDay - 1) return "Yesterday";
+    return messageTime.format("%d/%m")!;
 };
 
 const AppIcon = ({ appIcon, desktopEntry }: { appIcon: string; desktopEntry: string }) => {
@@ -59,6 +74,8 @@ export default class Notification extends Widget.Box {
     constructor({ notification, popup }: { notification: AstalNotifd.Notification; popup?: boolean }) {
         super({ className: "notification" });
 
+        const time = Variable(getTime(notification.time)).poll(60000, () => getTime(notification.time));
+
         this.#revealer = (
             <revealer
                 revealChild={popup}
@@ -71,13 +88,7 @@ export default class Notification extends Widget.Box {
                             <AppIcon appIcon={notification.appIcon} desktopEntry={notification.appName} />
                             <label className="app-name" label={notification.appName ?? "Unknown"} />
                             <box hexpand />
-                            <label
-                                className="time"
-                                label={getTime(notification.time)!}
-                                setup={self =>
-                                    timeout(60000, () => !this.#destroyed && (self.label = getTime(notification.time)!))
-                                }
-                            />
+                            <label className="time" label={bind(time)} onDestroy={() => time.drop()} />
                         </box>
                         <box hexpand className="separator" />
                         <box className="content">

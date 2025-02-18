@@ -44,6 +44,7 @@ export const launcher = {
 export const notifpopups = {
     maxPopups: -1,
     expire: false,
+    agoTime: true, // Whether to show time in ago format, e.g. 10 mins ago, or raw time, e.g. 10:42
 };
 
 export const osds = {
