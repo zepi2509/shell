@@ -516,9 +516,22 @@ const DateTime = () => (
     <button
         onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
     >
-        <box vertical={config.vertical} className="module date-time">
+        <box className="module date-time">
             <label className="icon" label="calendar_month" />
-            <label angle={config.vertical ? 270 : 0} label={bindCurrentTime(config.dateTimeFormat)} />
+            <label label={bindCurrentTime(config.dateTimeFormat)} />
+        </box>
+    </button>
+);
+
+const DateTimeVertical = () => (
+    <button
+        onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
+        setup={self => setupCustomTooltip(self, bindCurrentTime(config.dateTimeFormat))}
+    >
+        <box vertical className="module date-time">
+            <label className="icon" label="calendar_month" />
+            <label label={bindCurrentTime("%H")} />
+            <label label={bindCurrentTime("%M")} />
         </box>
     </button>
 );
@@ -571,7 +584,7 @@ export default ({ monitor }: { monitor: Monitor }) => (
                 <PkgUpdates />
                 <NotifCount />
                 {AstalBattery.get_default().isBattery && <Battery />}
-                <DateTime />
+                {config.vertical ? <DateTimeVertical /> : <DateTime />}
                 <Power />
             </box>
         </centerbox>
