@@ -84,17 +84,34 @@ export default class Notification extends Widget.Box {
                             {notification.image && <Image icon={notification.image} />}
                             <box vertical>
                                 <label className="summary" xalign={0} label={notification.summary} truncate />
-                                <label className="body" xalign={0} label={notification.body} wrap useMarkup />
+                                {notification.body && (
+                                    <label
+                                        className="body"
+                                        xalign={0}
+                                        label={popup ? notification.body.split("\n")[0] : notification.body}
+                                        wrap
+                                        useMarkup
+                                        lines={popup ? 1 : -1}
+                                        truncate={popup}
+                                    />
+                                )}
                             </box>
                         </box>
-                        <box className="actions">
-                            <button hexpand cursor="pointer" onClicked={() => notification.dismiss()} label="Close" />
-                            {notification.actions.map(a => (
-                                <button hexpand cursor="pointer" onClicked={() => notification.invoke(a.id)}>
-                                    {notification.actionIcons ? <icon icon={a.label} /> : a.label}
-                                </button>
-                            ))}
-                        </box>
+                        {!popup && (
+                            <box className="actions">
+                                <button
+                                    hexpand
+                                    cursor="pointer"
+                                    onClicked={() => notification.dismiss()}
+                                    label="Close"
+                                />
+                                {notification.actions.map(a => (
+                                    <button hexpand cursor="pointer" onClicked={() => notification.invoke(a.id)}>
+                                        {notification.actionIcons ? <icon icon={a.label} /> : a.label}
+                                    </button>
+                                ))}
+                            </box>
+                        )}
                     </box>
                 </box>
             </revealer>

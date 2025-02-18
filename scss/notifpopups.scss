@@ -4,10 +4,6 @@
 @use "font";
 
 @mixin popup($colour, $alpha) {
-    @include lib.border($colour, $alpha);
-
-    border-right: none;
-
     .separator {
         background-color: $colour;
     }
@@ -20,21 +16,17 @@
 .notifpopups {
     min-width: lib.s(425);
     padding-left: lib.s(10); // So notifications can overshoot for init animation
-
-    // For shadow
-    & > :last-child .wrapper {
-        padding-bottom: lib.s(15);
-    }
+    padding-right: lib.s(10);
+    padding-top: lib.s(5);
 
     .notification {
         .wrapper {
-            padding-top: lib.s(10);
-            padding-left: lib.s(15); // For shadow
+            padding: lib.s(5); // For shadow
         }
 
         .inner {
-            @include lib.rounded(8, $tr: 0, $br: 0);
-            @include lib.shadow;
+            @include lib.rounded(8);
+            @include lib.shadow(black, 0.64, 0, 0, 3);
 
             &.low {
                 @include popup(scheme.$overlay0, 0.3);
