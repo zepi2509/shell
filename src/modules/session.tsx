@@ -25,6 +25,7 @@ export default () => (
         className="session"
         name="session"
         anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.RIGHT}
+        exclusivity={Astal.Exclusivity.IGNORE}
         keymode={Astal.Keymode.EXCLUSIVE}
         layer={Astal.Layer.OVERLAY}
         borderWidth={0} // Don't need border width cause takes up entire screen
