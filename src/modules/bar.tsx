@@ -151,7 +151,7 @@ const MediaPlaying = () => {
                     angle={config.vertical ? 270 : 0}
                     setup={self =>
                         players.hookLastPlayer(self, ["notify::title", "notify::artist"], () => {
-                            self.label = ellipsize(getLabel("No media")); // TODO: scroll text
+                            self.label = ellipsize(getLabel("No media"), config.vertical ? 30 : 40); // TODO: scroll text
                         })
                     }
                 />
