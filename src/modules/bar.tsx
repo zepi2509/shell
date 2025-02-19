@@ -7,9 +7,9 @@ import { bindCurrentTime, osIcon } from "@/utils/system";
 import type { AstalWidget } from "@/utils/types";
 import { setupCustomTooltip } from "@/utils/widgets";
 import type PopupWindow from "@/widgets/popupwindow";
-import { execAsync, register, Variable } from "astal";
+import { execAsync, Variable } from "astal";
 import { bind, kebabify } from "astal/binding";
-import { App, Astal, astalify, Gdk, Gtk, type ConstructProps } from "astal/gtk3";
+import { App, Astal, Gtk } from "astal/gtk3";
 import { bar as config } from "config";
 import AstalBattery from "gi://AstalBattery";
 import AstalBluetooth from "gi://AstalBluetooth";
@@ -210,49 +210,18 @@ const Workspaces = () => (
     </eventbox>
 );
 
-@register()
-class TrayItemMenu extends astalify(Gtk.Menu) {
-    readonly item: AstalTray.TrayItem;
-
-    constructor(props: ConstructProps<TrayItemMenu, Gtk.Menu.ConstructorProps> & { item: AstalTray.TrayItem }) {
-        const { item, ...sProps } = props;
-        super(sProps as any);
-
-        this.item = item;
-
-        this.hook(item, "notify::menu-model", () => this.bind_model(item.menuModel, null, true));
-        this.hook(item, "notify::action-group", () => this.insert_action_group("dbusmenu", item.actionGroup));
-        this.bind_model(item.menuModel, null, true);
-        this.insert_action_group("dbusmenu", item.actionGroup);
-    }
-
-    popup_at_widget_bottom(widget: Gtk.Widget) {
-        this.item.about_to_show();
-        this.popup_at_widget(widget, Gdk.Gravity.SOUTH, Gdk.Gravity.NORTH, null);
-    }
-}
-
-const TrayItem = (item: AstalTray.TrayItem) => {
-    const menu = (<TrayItemMenu item={item} />) as TrayItemMenu;
-    return (
-        <button
-            onClick={(self, event) => {
-                if (event.button === Astal.MouseButton.PRIMARY) {
-                    if (item.isMenu) menu.popup_at_widget_bottom(self);
-                    else item.activate(0, 0);
-                } else if (event.button === Astal.MouseButton.SECONDARY) menu.popup_at_widget_bottom(self);
-            }}
-            onScroll={(_, event) => {
-                if (event.delta_x !== 0) item.scroll(event.delta_x, "horizontal");
-                if (event.delta_y !== 0) item.scroll(event.delta_y, "vertical");
-            }}
-            onDestroy={() => menu.destroy()}
-            setup={self => setupCustomTooltip(self, bind(item, "tooltipMarkup"))}
-        >
-            <icon halign={Gtk.Align.CENTER} gicon={bind(item, "gicon")} />
-        </button>
-    );
-};
+const TrayItem = (item: AstalTray.TrayItem) => (
+    <menubutton
+        onButtonPressEvent={(_, event) => event.get_button()[1] === Astal.MouseButton.SECONDARY && item.activate(0, 0)}
+        usePopover={false}
+        direction={config.vertical ? Gtk.ArrowType.RIGHT : Gtk.ArrowType.DOWN}
+        menuModel={bind(item, "menuModel")}
+        actionGroup={bind(item, "actionGroup").as(a => ["dbusmenu", a])}
+        setup={self => setupCustomTooltip(self, bind(item, "tooltipMarkup"))}
+    >
+        <icon halign={Gtk.Align.CENTER} gicon={bind(item, "gicon")} />
+    </menubutton>
+);
 
 const Tray = () => (
     <box
