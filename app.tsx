@@ -11,12 +11,18 @@ import { execAsync, GLib, monitorFile, readFileAsync, writeFileAsync } from "ast
 import { App } from "astal/gtk3";
 
 const loadStyleAsync = async () => {
-    let scheme = "mocha";
+    let schemeColours;
     if (GLib.file_test(`${CACHE}/scheme/current.txt`, GLib.FileTest.EXISTS)) {
         const currentScheme = await readFileAsync(`${CACHE}/scheme/current.txt`);
-        if (GLib.file_test(`${SRC}/scss/scheme/_${currentScheme}.scss`, GLib.FileTest.EXISTS)) scheme = currentScheme;
-    }
-    await writeFileAsync(`${SRC}/scss/scheme/_index.scss`, `@forward "${scheme}";`);
+        schemeColours = currentScheme
+            .split("\n")
+            .map(l => {
+                const [name, hex] = l.split(" ");
+                return `$${name}: #${hex};`;
+            })
+            .join("\n");
+    } else schemeColours = await readFileAsync(`${SRC}/scss/scheme/_default.scss`);
+    await writeFileAsync(`${SRC}/scss/scheme/_index.scss`, schemeColours);
     App.apply_css(await execAsync(`sass ${SRC}/style.scss`), true);
 };
 
