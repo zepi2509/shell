@@ -484,10 +484,11 @@ const Battery = () => {
 const DateTime = () => (
     <button
         onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
+        setup={self => setupCustomTooltip(self, bindCurrentTime(config.dateTime.detailed))}
     >
         <box className="module date-time">
             <label className="icon" label="calendar_month" />
-            <label label={bindCurrentTime(config.dateTimeFormat)} />
+            <label label={bindCurrentTime(config.dateTime.format)} />
         </box>
     </button>
 );
@@ -495,7 +496,7 @@ const DateTime = () => (
 const DateTimeVertical = () => (
     <button
         onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
-        setup={self => setupCustomTooltip(self, bindCurrentTime(config.dateTimeFormat))}
+        setup={self => setupCustomTooltip(self, bindCurrentTime(config.dateTime.detailed))}
     >
         <box vertical className="module date-time">
             <label className="icon" label="calendar_month" />

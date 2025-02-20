@@ -4,7 +4,7 @@ import { Astal } from "astal/gtk3";
 export const bar = {
     vertical: true,
     wsPerGroup: 5,
-    dateTimeFormat: "%d/%m/%y %R",
+    dateTime: { format: "%d/%m/%y %R", detailed: "%c" },
 };
 
 export const launcher = {
