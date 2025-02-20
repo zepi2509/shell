@@ -35,9 +35,16 @@ const getBatteryIcon = (perc: number) => {
 };
 
 const formatSeconds = (sec: number) => {
-    if (sec >= 3600) return `${Math.floor(sec / 3600)} hour${sec % 3600 === 0 ? "" : "s"}`;
-    if (sec >= 60) return `${Math.floor(sec / 60)} minute${sec % 60 === 0 ? "" : "s"}`;
-    return `${sec} second${sec === 1 ? "" : "s"}`;
+    if (sec >= 3600) {
+        const hours = Math.floor(sec / 3600);
+        let str = `${hours} hour${hours === 1 ? "" : "s"}`;
+        const mins = Math.floor((sec % 3600) / 60);
+        if (mins > 0) str += ` ${mins} minute${mins === 1 ? "" : "s"}`;
+        return str;
+    } else if (sec >= 60) {
+        const mins = Math.floor(sec / 60);
+        return `${mins} minute${mins === 1 ? "" : "s"}`;
+    } else return `${sec} second${sec === 1 ? "" : "s"}`;
 };
 
 const hookFocusedClientProp = (
@@ -451,30 +458,23 @@ const NotifCount = () => (
 const Battery = () => {
     const className = Variable.derive(
         [bind(AstalBattery.get_default(), "percentage"), bind(AstalBattery.get_default(), "charging")],
-        (p, c) => `module battery ${p < 0.2 && !c ? "low" : ""}`
+        (p, c) => `module battery ${c ? "charging" : p < 0.2 ? "low" : ""}`
+    );
+    const tooltip = Variable.derive(
+        [bind(AstalBattery.get_default(), "timeToEmpty"), bind(AstalBattery.get_default(), "timeToFull")],
+        (e, f) => (f > 0 ? `${formatSeconds(f)} until full` : `${formatSeconds(e)} remaining`)
     );
 
     return (
         <box
             vertical={config.vertical}
             className={bind(className)}
-            setup={self =>
-                setupCustomTooltip(
-                    self,
-                    bind(AstalBattery.get_default(), "timeToEmpty").as(p => `${formatSeconds(p)} remaining`)
-                )
-            }
-            onDestroy={() => className.drop()}
+            setup={self => setupCustomTooltip(self, bind(tooltip))}
+            onDestroy={() => {
+                className.drop();
+                tooltip.drop();
+            }}
         >
-            <revealer
-                transitionType={
-                    config.vertical ? Gtk.RevealerTransitionType.SLIDE_UP : Gtk.RevealerTransitionType.SLIDE_LEFT
-                }
-                transitionDuration={150}
-                revealChild={bind(AstalBattery.get_default(), "charging")}
-            >
-                <label className="icon" label="" />
-            </revealer>
             <label className="icon" label={bind(AstalBattery.get_default(), "percentage").as(getBatteryIcon)} />
             <label label={bind(AstalBattery.get_default(), "percentage").as(p => `${Math.round(p * 100)}%`)} />
         </box>
