@@ -3,8 +3,44 @@ import { Astal } from "astal/gtk3";
 // Modules
 export const bar = {
     vertical: true,
-    wsPerGroup: 5,
-    dateTime: { format: "%d/%m/%y %R", detailed: "%c" },
+    modules: {
+        osIcon: {
+            enabled: true,
+        },
+        activeWindow: {
+            enabled: true,
+        },
+        mediaPlaying: {
+            enabled: true,
+        },
+        workspaces: {
+            enabled: true,
+            shown: 5,
+        },
+        tray: {
+            enabled: true,
+        },
+        statusIcons: {
+            enabled: true,
+        },
+        pkgUpdates: {
+            enabled: true,
+        },
+        notifCount: {
+            enabled: true,
+        },
+        battery: {
+            enabled: true,
+        },
+        dateTime: {
+            enabled: true,
+            format: "%d/%m/%y %R",
+            detailedFormat: "%c",
+        },
+        power: {
+            enabled: true,
+        },
+    },
 };
 
 export const launcher = {

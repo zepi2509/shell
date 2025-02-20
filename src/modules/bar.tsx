@@ -169,7 +169,9 @@ const MediaPlaying = () => {
 
 const Workspace = ({ idx }: { idx: number }) => {
     let wsId = hyprland.focusedWorkspace
-        ? Math.floor((hyprland.focusedWorkspace.id - 1) / config.wsPerGroup) * config.wsPerGroup + idx
+        ? Math.floor((hyprland.focusedWorkspace.id - 1) / config.modules.workspaces.shown) *
+              config.modules.workspaces.shown +
+          idx
         : idx;
     return (
         <button
@@ -185,7 +187,10 @@ const Workspace = ({ idx }: { idx: number }) => {
 
                 self.hook(hyprland, "notify::focused-workspace", () => {
                     if (!hyprland.focusedWorkspace) return;
-                    wsId = Math.floor((hyprland.focusedWorkspace.id - 1) / config.wsPerGroup) * config.wsPerGroup + idx;
+                    wsId =
+                        Math.floor((hyprland.focusedWorkspace.id - 1) / config.modules.workspaces.shown) *
+                            config.modules.workspaces.shown +
+                        idx;
                     self.toggleClassName("focused", hyprland.focusedWorkspace.id === wsId);
                     update();
                 });
@@ -210,7 +215,7 @@ const Workspaces = () => (
         }}
     >
         <box vertical={config.vertical} className="module workspaces">
-            {Array.from({ length: config.wsPerGroup }).map((_, idx) => (
+            {Array.from({ length: config.modules.workspaces.shown }).map((_, idx) => (
                 <Workspace idx={idx + 1} /> // Start from 1
             ))}
         </box>
@@ -484,11 +489,11 @@ const Battery = () => {
 const DateTime = () => (
     <button
         onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
-        setup={self => setupCustomTooltip(self, bindCurrentTime(config.dateTime.detailed))}
+        setup={self => setupCustomTooltip(self, bindCurrentTime(config.modules.dateTime.detailedFormat))}
     >
         <box className="module date-time">
             <label className="icon" label="calendar_month" />
-            <label label={bindCurrentTime(config.dateTime.format)} />
+            <label label={bindCurrentTime(config.modules.dateTime.format)} />
         </box>
     </button>
 );
@@ -496,7 +501,7 @@ const DateTime = () => (
 const DateTimeVertical = () => (
     <button
         onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
-        setup={self => setupCustomTooltip(self, bindCurrentTime(config.dateTime.detailed))}
+        setup={self => setupCustomTooltip(self, bindCurrentTime(config.modules.dateTime.detailedFormat))}
     >
         <box vertical className="module date-time">
             <label className="icon" label="calendar_month" />
@@ -527,9 +532,9 @@ export default ({ monitor }: { monitor: Monitor }) => (
     >
         <centerbox vertical={config.vertical} className={`bar ${config.vertical ? "vertical" : " horizontal"}`}>
             <box vertical={config.vertical}>
-                <OSIcon />
-                <ActiveWindow />
-                <MediaPlaying />
+                {config.modules.osIcon.enabled && <OSIcon />}
+                {config.modules.activeWindow.enabled && <ActiveWindow />}
+                {config.modules.mediaPlaying.enabled && <MediaPlaying />}
                 <button
                     expand
                     onScroll={(_, event) =>
@@ -537,7 +542,7 @@ export default ({ monitor }: { monitor: Monitor }) => (
                     }
                 />
             </box>
-            <Workspaces />
+            {config.modules.workspaces.enabled && <Workspaces />}
             <box vertical={config.vertical}>
                 <button
                     expand
@@ -549,13 +554,13 @@ export default ({ monitor }: { monitor: Monitor }) => (
                         else speaker.volume += 0.1;
                     }}
                 />
-                <Tray />
-                <StatusIcons />
-                <PkgUpdates />
-                <NotifCount />
-                {AstalBattery.get_default().isBattery && <Battery />}
-                {config.vertical ? <DateTimeVertical /> : <DateTime />}
-                <Power />
+                {config.modules.tray.enabled && <Tray />}
+                {config.modules.statusIcons.enabled && <StatusIcons />}
+                {config.modules.pkgUpdates.enabled && <PkgUpdates />}
+                {config.modules.notifCount.enabled && <NotifCount />}
+                {config.modules.battery.enabled && AstalBattery.get_default().isBattery && <Battery />}
+                {config.modules.dateTime.enabled && (config.vertical ? <DateTimeVertical /> : <DateTime />)}
+                {config.modules.power.enabled && <Power />}
             </box>
         </centerbox>
     </window>
