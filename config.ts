@@ -2,165 +2,196 @@ import { GLib, monitorFile, readFileAsync, Variable } from "astal";
 import { Astal } from "astal/gtk3";
 import { loadStyleAsync } from "./app";
 
+type Settings<T> = { [P in keyof T]: T[P] extends object ? Settings<T[P]> : Variable<T[P]> };
+
 const CONFIG = `${GLib.get_user_config_dir()}/caelestia/shell.json`;
 
-const s = <T>(v: T): Variable<T> => Variable(v);
+const isObject = (o: any) => typeof o === "object" && o !== null && !Array.isArray(o);
 
-const warn = (e: Error) => console.warn(`Invalid config: ${e}`);
+const deepMerge = <T extends object, U extends object>(a: T, b: U, path = ""): T & U => {
+    const merged: { [k: string]: any } = { ...b };
+    for (const [k, v] of Object.entries(a)) {
+        if (b.hasOwnProperty(k)) {
+            const bv = b[k as keyof U];
+            if (isObject(v) && isObject(bv)) merged[k] = deepMerge(v, bv as object, `${path}${k}.`);
+            else if (typeof v !== typeof bv) {
+                console.warn(`Invalid type for ${path}${k}: ${typeof v} != ${typeof bv}`);
+                merged[k] = v;
+            }
+        } else merged[k] = v;
+    }
+    return merged as any;
+};
 
-const updateSection = (from: { [k: string]: any }, to: { [k: string]: any }, path: string) => {
+const convertSettings = <T extends object>(obj: T): Settings<T> =>
+    Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, isObject(v) ? convertSettings(v) : Variable(v)])) as any;
+
+const updateSection = (from: { [k: string]: any }, to: { [k: string]: any }, path = "") => {
     for (const [k, v] of Object.entries(from)) {
+        print(`${path}${k}:`, to.hasOwnProperty(k));
         if (to.hasOwnProperty(k)) {
-            if (typeof v === "object" && v !== null && !Array.isArray(v)) updateSection(v, to[k], `${path}.${k}`);
-            else if (typeof v === typeof to[k].get()) to[k].set(v);
-            else console.warn(`Invalid type for ${path}.${k}: ${typeof v} != ${typeof to[k].get()}`);
-        } else console.warn(`Unknown config key: ${path}.${k}`);
+            if (isObject(v)) updateSection(v, to[k], `${path}${k}.`);
+            else to[k].set(v);
+        } else console.warn(`Unknown config key: ${path}${k}`);
     }
 };
 
 export const updateConfig = async () => {
-    const conf: { [k: string]: any } = JSON.parse(await readFileAsync(CONFIG));
-    for (const [k, v] of Object.entries(conf)) {
-        if (config.hasOwnProperty(k)) updateSection(v, config[k as keyof typeof config], k);
-        else console.warn(`Unknown config key: ${k}`);
-    }
+    updateSection(deepMerge(DEFAULTS, JSON.parse(await readFileAsync(CONFIG))), config);
     loadStyleAsync().catch(console.error);
 };
 
 export const initConfig = () => {
-    monitorFile(CONFIG, () => updateConfig().catch(warn));
-    updateConfig().catch(warn);
+    monitorFile(CONFIG, () => updateConfig().catch(e => console.warn(`Invalid config: ${e}`)));
+    updateConfig().catch(e => console.warn(`Invalid config: ${e}`));
 };
 
-const config = {
+const DEFAULTS = {
     // Modules
     bar: {
-        vertical: s(true),
+        vertical: true,
         modules: {
             osIcon: {
-                enabled: s(true),
+                enabled: true,
             },
             activeWindow: {
-                enabled: s(true),
+                enabled: true,
             },
             mediaPlaying: {
-                enabled: s(true),
+                enabled: true,
             },
             workspaces: {
-                enabled: s(true),
-                shown: s(5),
+                enabled: true,
+                shown: 5,
             },
             tray: {
-                enabled: s(true),
+                enabled: true,
             },
             statusIcons: {
-                enabled: s(true),
+                enabled: true,
             },
             pkgUpdates: {
-                enabled: s(true),
+                enabled: true,
             },
             notifCount: {
-                enabled: s(true),
+                enabled: true,
             },
             battery: {
-                enabled: s(true),
+                enabled: true,
             },
             dateTime: {
-                enabled: s(true),
-                format: s("%d/%m/%y %R"),
-                detailedFormat: s("%c"),
+                enabled: true,
+                format: "%d/%m/%y %R",
+                detailedFormat: "%c",
             },
             power: {
-                enabled: s(true),
+                enabled: true,
             },
         },
     },
     launcher: {
-        maxResults: s(15), // Max shown results at one time (i.e. max height of the launcher)
+        maxResults: 15, // Max shown results at one time (i.e. max height of the launcher)
         apps: {
-            maxResults: s(30), // Actual max results, -1 for infinite
-            pins: s([
+            maxResults: 30, // Actual max results, -1 for infinite
+            pins: [
                 ["zen", "firefox", "waterfox", "google-chrome", "chromium", "brave-browser"],
                 ["foot", "alacritty", "kitty", "wezterm"],
                 ["thunar", "nemo", "nautilus"],
                 ["codium", "code", "clion", "intellij-idea-ultimate-edition"],
                 ["spotify-adblock", "spotify", "audacious", "elisa"],
-            ]),
+            ],
         },
         files: {
-            maxResults: s(40), // Actual max results, -1 for infinite
-            fdOpts: s(["-a", "-t", "f"]), // Options to pass to `fd`
+            maxResults: 40, // Actual max results, -1 for infinite
+            fdOpts: ["-a", "-t", "f"], // Options to pass to `fd`
         },
         math: {
-            maxResults: s(40), // Actual max results, -1 for infinite
+            maxResults: 40, // Actual max results, -1 for infinite
         },
         windows: {
-            maxResults: s(-1), // Actual max results, -1 for infinite
+            maxResults: -1, // Actual max results, -1 for infinite
             weights: {
                 // Weights for fuzzy sort
-                title: s(1),
-                class: s(1),
-                initialTitle: s(0.5),
-                initialClass: s(0.5),
+                title: 1,
+                class: 1,
+                initialTitle: 0.5,
+                initialClass: 0.5,
             },
         },
         todo: {
-            notify: s(true),
+            notify: true,
         },
     },
     notifpopups: {
-        maxPopups: s(-1),
-        expire: s(false),
-        agoTime: s(true), // Whether to show time in ago format, e.g. 10 mins ago, or raw time, e.g. 10:42
+        maxPopups: -1,
+        expire: false,
+        agoTime: true, // Whether to show time in ago format, e.g. 10 mins ago, or raw time, e.g. 10:42
     },
     osds: {
         volume: {
-            position: s(Astal.WindowAnchor.RIGHT),
-            margin: s(20),
-            hideDelay: s(1500),
-            showValue: s(true),
+            position: Astal.WindowAnchor.RIGHT,
+            margin: 20,
+            hideDelay: 1500,
+            showValue: true,
         },
         brightness: {
-            position: s(Astal.WindowAnchor.LEFT),
-            margin: s(20),
-            hideDelay: s(1500),
-            showValue: s(true),
+            position: Astal.WindowAnchor.LEFT,
+            margin: 20,
+            hideDelay: 1500,
+            showValue: true,
         },
         lock: {
-            spacing: s(5),
+            spacing: 5,
             caps: {
-                hideDelay: s(1000),
+                hideDelay: 1000,
             },
             num: {
-                hideDelay: s(1000),
+                hideDelay: 1000,
+            },
+        },
+    },
+    sideleft: {
+        directories: {
+            left: {
+                top: "󰉍  Downloads",
+
+                middle: "󱧶  Documents",
+                bottom: "󱍙  Music",
+            },
+            right: {
+                top: "󰉏  Pictures",
+                middle: "󰉏  Videos",
+                bottom: "󱂵  Home",
             },
         },
     },
     // Services
     math: {
-        maxHistory: s(100),
+        maxHistory: 100,
     },
     updates: {
-        interval: s(900000),
+        interval: 900000,
     },
     weather: {
-        interval: s(600000),
-        key: s("assets/weather-api-key.txt"), // Path to file containing api key relative to the base directory. To get a key, visit https://weatherapi.com/
-        location: s(""), // Location as a string or empty to autodetect
-        imperial: s(false),
+        interval: 600000,
+        key: "assets/weather-api-key.txt", // Path to file containing api key relative to the base directory. To get a key, visit https://weatherapi.com/
+        location: "", // Location as a string or empty to autodetect
+        imperial: false,
     },
     cpu: {
-        interval: s(2000),
+        interval: 2000,
     },
     gpu: {
-        interval: s(2000),
+        interval: 2000,
     },
     memory: {
-        interval: s(5000),
+        interval: 5000,
     },
     storage: {
-        interval: s(5000),
+        interval: 5000,
     },
 };
 
-export const { bar, launcher, notifpopups, osds, math, updates, weather, cpu, gpu, memory, storage } = config;
+const config = convertSettings(DEFAULTS);
+
+export const { bar, launcher, notifpopups, osds, sideleft, math, updates, weather, cpu, gpu, memory, storage } = config;

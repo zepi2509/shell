@@ -7,6 +7,7 @@ import PopupWindow from "@/widgets/popupwindow";
 import { bind, execAsync, GLib, type Binding } from "astal";
 import { App, Gtk, type Widget } from "astal/gtk3";
 import type cairo from "cairo";
+import { sideleft } from "config";
 
 const fmt = (bytes: number, pow: number) => +(bytes / 1024 ** pow).toFixed(2);
 const format = ({ total, used }: { total: number; used: number }) => {
@@ -62,13 +63,14 @@ const QuickLaunch = () => (
     </box>
 );
 
-const Location = ({ home, label, num }: { home?: boolean; label: string; num: number }) => (
+const Location = ({ label, num }: { label: Binding<string>; num: number }) => (
     <button
         className={"loc" + num}
         cursor="pointer"
         onClicked={self => {
             self.get_toplevel().hide();
-            execAsync(`xdg-open ${HOME}/${home ? "" : label.split(" ").at(-1) + "/"}`).catch(console.error);
+            const dir = label.get().split(" ").at(-1);
+            execAsync(`xdg-open ${HOME}/${dir?.toLowerCase() === "home" ? "" : `${dir}/`}`).catch(console.error);
         }}
     >
         <label xalign={0} label={label} />
@@ -78,14 +80,14 @@ const Location = ({ home, label, num }: { home?: boolean; label: string; num: nu
 const Locations = () => (
     <box className="locations">
         <box vertical>
-            <Location label="󰉍  Downloads" num={1} />
-            <Location label="󱧶  Documents" num={2} />
-            <Location label="󱍙  Music" num={3} />
+            <Location label={bind(sideleft.directories.left.top)} num={1} />
+            <Location label={bind(sideleft.directories.left.middle)} num={2} />
+            <Location label={bind(sideleft.directories.left.bottom)} num={3} />
         </box>
         <box vertical>
-            <Location label="󰉏  Pictures" num={4} />
-            <Location label="󰉏  Videos" num={5} />
-            <Location label="󱂵  Home" num={6} home />
+            <Location label={bind(sideleft.directories.right.top)} num={4} />
+            <Location label={bind(sideleft.directories.right.middle)} num={5} />
+            <Location label={bind(sideleft.directories.right.bottom)} num={6} />
         </box>
     </box>
 );
