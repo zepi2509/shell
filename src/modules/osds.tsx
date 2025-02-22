@@ -1,6 +1,6 @@
 import Monitors, { type Monitor } from "@/services/monitors";
 import PopupWindow from "@/widgets/popupwindow";
-import { execAsync, register, timeout, Variable, type Time } from "astal";
+import { bind, execAsync, register, timeout, Variable, type Time } from "astal";
 import { App, Astal, Gtk, Widget } from "astal/gtk3";
 import cairo from "cairo";
 import { osds as config } from "config";
@@ -52,13 +52,13 @@ const SliderOsd = ({
         name={type}
         monitor={monitor?.id}
         keymode={Astal.Keymode.NONE}
-        anchor={config[type].position}
-        margin={config[type].margin}
+        anchor={bind(config[type].position)}
+        margin={bind(config[type].margin)}
         setup={self => {
             let time: Time | null = null;
             const hideAfterTimeout = () => {
                 time?.cancel();
-                time = timeout(config[type].hideDelay, () => self.hide());
+                time = timeout(config[type].hideDelay.get(), () => self.hide());
             };
             self.connect("show", hideAfterTimeout);
             windowSetup(self, () => {
@@ -74,8 +74,8 @@ const SliderOsd = ({
                 setup={self => {
                     const halfPi = Math.PI / 2;
                     const vertical =
-                        config[type].position === Astal.WindowAnchor.LEFT ||
-                        config[type].position === Astal.WindowAnchor.RIGHT;
+                        config[type].position.get() === Astal.WindowAnchor.LEFT ||
+                        config[type].position.get() === Astal.WindowAnchor.RIGHT;
 
                     const icon = Variable("");
                     drawAreaSetup(self, icon);
@@ -134,7 +134,7 @@ const SliderOsd = ({
                         // Progress number, at top/right
                         let nw = 0;
                         let nh = 0;
-                        if (config[type].showValue) {
+                        if (config[type].showValue.get()) {
                             const numLayout = parent.create_pango_layout(String(Math.round(progressValue * 100)));
                             [nw, nh] = numLayout.get_pixel_size();
                             let diff;
@@ -295,7 +295,7 @@ class LockOsd extends Widget.Window {
                 const child = this.get_child();
                 if (!child) return;
                 this[right ? "marginLeft" : "marginRight"] = window.visible
-                    ? child.get_preferred_width()[1] + config.lock.spacing
+                    ? child.get_preferred_width()[1] + config.lock.spacing.get()
                     : 0;
             }
         });
@@ -311,7 +311,7 @@ class LockOsd extends Widget.Window {
         super.show();
         this.#update();
         this.#timeout?.cancel();
-        this.#timeout = timeout(config.lock[this.lockType].hideDelay, () => this.hide());
+        this.#timeout = timeout(config.lock[this.lockType].hideDelay.get(), () => this.hide());
     }
 }
 

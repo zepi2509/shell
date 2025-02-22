@@ -20,7 +20,7 @@ const getTime = (time: number) => {
     const now = GLib.DateTime.new_now_local();
     const todayDay = now.get_day_of_year();
 
-    if (config.agoTime) {
+    if (config.agoTime.get()) {
         const diff = now.difference(messageTime) / 1e6;
         if (diff < 60) return "Now";
         if (diff < 3600) {
@@ -75,6 +75,7 @@ export default class Notification extends Widget.Box {
         super({ className: "notification" });
 
         const time = Variable(getTime(notification.time)).poll(60000, () => getTime(notification.time));
+        this.hook(config.agoTime, () => time.set(getTime(notification.time)));
 
         this.#revealer = (
             <revealer
@@ -138,7 +139,7 @@ export default class Notification extends Widget.Box {
         });
 
         // Close popup after timeout if transient or expire enabled in config
-        if (popup && (config.expire || notification.transient))
+        if (popup && (config.expire.get() || notification.transient))
             timeout(
                 notification.expireTimeout > 0
                     ? notification.expireTimeout

@@ -40,7 +40,7 @@ export default () => (
                     );
 
                     // Limit number of popups
-                    if (config.maxPopups > 0 && self.children.length > config.maxPopups)
+                    if (config.maxPopups.get() > 0 && self.children.length > config.maxPopups.get())
                         map.values().next().value?.destroyWithAnims();
                 });
                 self.hook(notifd, "resolved", (_, id) => map.get(id)?.destroyWithAnims());

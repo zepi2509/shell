@@ -38,7 +38,7 @@ export default class PopupWindow extends Widget.Window {
 
         let marginLeft = 0;
         let marginTop = 0;
-        if (bar.vertical) {
+        if (bar.vertical.get()) {
             marginLeft = cx + (width - x);
             marginTop = cy + ((height - pHeight) / 2 - y);
             if (marginTop < 0) marginTop = 0;

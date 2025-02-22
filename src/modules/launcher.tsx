@@ -47,8 +47,8 @@ const getEmptyTextFromMode = (mode: Mode) => {
     }
 };
 
-const limitLength = <T,>(arr: T[], cfg: { maxResults: number }) =>
-    cfg.maxResults > 0 && arr.length > cfg.maxResults ? arr.slice(0, cfg.maxResults) : arr;
+const limitLength = <T,>(arr: T[], cfg: { maxResults: Variable<number> }) =>
+    cfg.maxResults.get() > 0 && arr.length > cfg.maxResults.get() ? arr.slice(0, cfg.maxResults.get()) : arr;
 
 const close = (self: JSX.Element) => {
     const toplevel = self.get_toplevel();
@@ -117,7 +117,7 @@ const PinnedApp = (names: string[]) => {
     return widget;
 };
 
-const PinnedApps = () => <box homogeneous>{config.apps.pins.map(PinnedApp)}</box>;
+const PinnedApps = () => <box homogeneous>{bind(config.apps.pins).as(p => p.map(PinnedApp))}</box>;
 
 const SearchEntry = ({ entry }: { entry: Widget.Entry }) => (
     <stack
@@ -560,7 +560,7 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
 
                                 // Create todo, notify and close
                                 execAsync(`tod t q -c ${args.join(" ")}`).catch(console.error);
-                                if (config.todo.notify)
+                                if (config.todo.notify.get())
                                     notify({
                                         summary: "Todo created",
                                         body: `Created todo with content: ${args.join(" ")}`,
@@ -616,7 +616,7 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                     };
 
                     const fileSearch = () =>
-                        execAsync(["fd", ...config.files.fdOpts, entry.text, HOME])
+                        execAsync(["fd", ...config.files.fdOpts.get(), entry.text, HOME])
                             .then(out => {
                                 const paths = out.split("\n").filter(path => path);
                                 self.foreach(ch => ch.destroy());
@@ -638,13 +638,16 @@ const Results = ({ entry, mode }: { entry: Widget.Entry; mode: Variable<Mode> })
                                 if (entry.text) {
                                     const clients = fuzzysort.go(entry.text, unsortedClients, {
                                         all: true,
-                                        limit: config.windows.maxResults < 0 ? undefined : config.windows.maxResults,
+                                        limit:
+                                            config.windows.maxResults.get() < 0
+                                                ? undefined
+                                                : config.windows.maxResults.get(),
                                         keys: ["title", "class", "initialTitle", "initialClass"],
                                         scoreFn: r =>
-                                            r[0].score * config.windows.weights.title +
-                                            r[1].score * config.windows.weights.class +
-                                            r[2].score * config.windows.weights.initialTitle +
-                                            r[3].score * config.windows.weights.initialClass,
+                                            r[0].score * config.windows.weights.title.get() +
+                                            r[1].score * config.windows.weights.class.get() +
+                                            r[2].score * config.windows.weights.initialTitle.get() +
+                                            r[3].score * config.windows.weights.initialClass.get(),
                                     });
                                     self.foreach(ch => ch.destroy());
                                     for (const { obj } of clients)

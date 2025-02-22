@@ -9,8 +9,9 @@ import Players from "@/services/players";
 import type PopupWindow from "@/widgets/popupwindow";
 import { execAsync, GLib, monitorFile, readFileAsync, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
+import { initConfig, updateConfig } from "config";
 
-const loadStyleAsync = async () => {
+export const loadStyleAsync = async () => {
     let schemeColours;
     if (GLib.file_test(`${STATE}/scheme/current.txt`, GLib.FileTest.EXISTS)) {
         const currentScheme = await readFileAsync(`${STATE}/scheme/current.txt`);
@@ -33,6 +34,7 @@ App.start({
         const now = Date.now();
         loadStyleAsync().catch(console.error);
         monitorFile(`${STATE}/scheme/current.txt`, () => loadStyleAsync().catch(console.error));
+        initConfig();
 
         <Launcher />;
         <NotifPopups />;
@@ -46,6 +48,7 @@ App.start({
     requestHandler(request, res) {
         if (request === "quit") App.quit();
         else if (request === "reload-css") loadStyleAsync().catch(console.error);
+        else if (request === "reload-config") updateConfig();
         else if (request.startsWith("show")) App.get_window(request.split(" ")[1])?.show();
         else if (request === "toggle sideleft") {
             const window = App.get_window("sideleft") as PopupWindow | null;
