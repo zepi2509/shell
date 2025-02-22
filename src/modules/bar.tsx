@@ -114,7 +114,7 @@ const ActiveWindow = () => (
                 hookFocusedClientProp(
                     self,
                     "title",
-                    c => (self.label = c?.title ? ellipsize(c.title, config.vertical ? 30 : 40) : "Desktop")
+                    c => (self.label = c?.title ? ellipsize(c.title, config.vertical ? 25 : 40) : "Desktop")
                 )
             }
         />
@@ -158,7 +158,7 @@ const MediaPlaying = () => {
                     angle={config.vertical ? 270 : 0}
                     setup={self =>
                         players.hookLastPlayer(self, ["notify::title", "notify::artist"], () => {
-                            self.label = ellipsize(getLabel("No media"), config.vertical ? 30 : 40); // TODO: scroll text
+                            self.label = ellipsize(getLabel("No media"), config.vertical ? 25 : 40); // TODO: scroll text when playing or hover
                         })
                     }
                 />
