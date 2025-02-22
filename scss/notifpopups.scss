@@ -26,7 +26,7 @@
 
         .inner {
             @include lib.rounded(8);
-            @include lib.shadow(black, 0.64, 0, 0, 3);
+            @include lib.shadow;
 
             &.low {
                 @include popup(scheme.$overlay0, 0.3);
