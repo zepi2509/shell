@@ -28,7 +28,6 @@ const convertSettings = <T extends object>(obj: T): Settings<T> =>
 
 const updateSection = (from: { [k: string]: any }, to: { [k: string]: any }, path = "") => {
     for (const [k, v] of Object.entries(from)) {
-        print(`${path}${k}:`, to.hasOwnProperty(k));
         if (to.hasOwnProperty(k)) {
             if (isObject(v)) updateSection(v, to[k], `${path}${k}.`);
             else to[k].set(v);
