@@ -46,7 +46,10 @@ export default () => (
                 self.hook(notifd, "resolved", (_, id) => map.get(id)?.destroyWithAnims());
 
                 self.hook(App, "window-toggled", (_, window) => {
-                    if (window.name === "notifications") notifsOpen = window.visible;
+                    if (window.name === "notifications") {
+                        notifsOpen = window.visible;
+                        map.forEach(n => n.destroyWithAnims());
+                    }
                 });
 
                 // Change input region to child region so can click through empty space
