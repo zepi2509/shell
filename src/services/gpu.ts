@@ -52,6 +52,12 @@ export default class Gpu extends GObject.Object {
             }
         }
 
-        if (this.available) interval(config.interval, () => this.update());
+        if (this.available) {
+            let source = interval(config.interval.get(), () => this.update());
+            config.interval.subscribe(i => {
+                source.cancel();
+                source = interval(i, () => this.update());
+            });
+        }
     }
 }

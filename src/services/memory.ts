@@ -55,6 +55,10 @@ export default class Memory extends GObject.Object {
     constructor() {
         super();
 
-        interval(config.interval, () => this.update().catch(console.error));
+        let source = interval(config.interval.get(), () => this.update().catch(console.error));
+        config.interval.subscribe(i => {
+            source.cancel();
+            source = interval(i, () => this.update().catch(console.error));
+        });
     }
 }

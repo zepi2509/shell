@@ -17,7 +17,6 @@ export default class Math extends GObject.Object {
         return this.instance;
     }
 
-    readonly #maxHistory = config.maxHistory;
     readonly #path = `${STATE}/math-history.json`;
     readonly #history: HistoryItem[] = [];
 
@@ -42,7 +41,7 @@ export default class Math extends GObject.Object {
         // Try select first to prevent duplicates, if it fails, add it
         if (!this.select(this.#lastExpression)) {
             this.#history.unshift(this.#lastExpression);
-            if (this.#history.length > this.#maxHistory) this.#history.pop();
+            while (this.#history.length > config.maxHistory.get()) this.#history.pop();
             this.notify("history");
             this.#save();
         }
@@ -148,5 +147,9 @@ export default class Math extends GObject.Object {
                 console.error("Math - Unable to load history", e);
             }
         }
+
+        config.maxHistory.subscribe(n => {
+            while (this.#history.length > n) this.#history.pop();
+        });
     }
 }

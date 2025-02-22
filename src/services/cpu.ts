@@ -40,6 +40,10 @@ export default class Cpu extends GObject.Object {
     constructor() {
         super();
 
-        interval(config.interval, () => this.update());
+        let source = interval(config.interval.get(), () => this.update());
+        config.interval.subscribe(i => {
+            source.cancel();
+            source = interval(i, () => this.update());
+        });
     }
 }

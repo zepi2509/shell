@@ -138,28 +138,28 @@ const config = {
     },
     // Services
     math: {
-        maxHistory: 100,
+        maxHistory: s(100),
     },
     updates: {
-        interval: 900000,
+        interval: s(900000),
     },
     weather: {
-        interval: 600000,
-        key: "assets/weather-api-key.txt", // Path to file containing api key relative to the base directory. To get a key, visit https://weatherapi.com/
-        location: "", // Location as a string or empty to autodetect
-        imperial: false,
+        interval: s(600000),
+        key: s("assets/weather-api-key.txt"), // Path to file containing api key relative to the base directory. To get a key, visit https://weatherapi.com/
+        location: s(""), // Location as a string or empty to autodetect
+        imperial: s(false),
     },
     cpu: {
-        interval: 2000,
+        interval: s(2000),
     },
     gpu: {
-        interval: 2000,
+        interval: s(2000),
     },
     memory: {
-        interval: 5000,
+        interval: s(5000),
     },
     storage: {
-        interval: 5000,
+        interval: s(5000),
     },
 };
 

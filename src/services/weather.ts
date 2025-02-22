@@ -1,6 +1,16 @@
 import { weatherIcons } from "@/utils/icons";
 import { notify } from "@/utils/system";
-import { execAsync, GLib, GObject, interval, property, readFileAsync, register, writeFileAsync } from "astal";
+import {
+    execAsync,
+    GLib,
+    GObject,
+    interval,
+    property,
+    readFileAsync,
+    register,
+    writeFileAsync,
+    type Time,
+} from "astal";
 import { weather as config } from "config";
 
 export interface WeatherCondition {
@@ -211,6 +221,8 @@ export default class Weather extends GObject.Object {
     #key: string = "";
     #data: WeatherData = DEFAULT;
 
+    #interval: Time | null = null;
+
     @property(Object)
     get raw() {
         return this.#data;
@@ -243,8 +255,8 @@ export default class Weather extends GObject.Object {
 
     @property(String)
     get wind() {
-        return `${Math.round(this.#data.current[`wind_${config.imperial ? "m" : "k"}ph`])} ${
-            config.imperial ? "m" : "k"
+        return `${Math.round(this.#data.current[`wind_${config.imperial.get() ? "m" : "k"}ph`])} ${
+            config.imperial.get() ? "m" : "k"
         }ph`;
     }
 
@@ -275,7 +287,7 @@ export default class Weather extends GObject.Object {
     }
 
     getTemp(data: _WeatherState) {
-        return `${Math.round(data[`temp_${config.imperial ? "f" : "c"}`])}°${config.imperial ? "F" : "C"}`;
+        return `${Math.round(data[`temp_${config.imperial.get() ? "f" : "c"}`])}°${config.imperial.get() ? "F" : "C"}`;
     }
 
     getTempIcon(temp: number) {
@@ -322,7 +334,7 @@ export default class Weather extends GObject.Object {
         if (GLib.file_test(this.#cache, GLib.FileTest.EXISTS)) {
             const cache = await readFileAsync(this.#cache);
             const cache_data: WeatherData = JSON.parse(cache);
-            if (cache_data.location.localtime_epoch * 1000 + config.interval > Date.now()) {
+            if (cache_data.location.localtime_epoch * 1000 + config.interval.get() > Date.now()) {
                 if (JSON.stringify(this.#data) !== cache) {
                     this.#data = cache_data;
                     this.#notify();
@@ -342,18 +354,16 @@ export default class Weather extends GObject.Object {
         this.#notify();
     }
 
-    constructor() {
-        super();
-
-        if (GLib.file_test(config.key, GLib.FileTest.EXISTS))
-            readFileAsync(config.key)
+    #init(first: boolean) {
+        if (GLib.file_test(config.key.get(), GLib.FileTest.EXISTS))
+            readFileAsync(config.key.get())
                 .then(k => {
                     this.#key = k.trim();
                     this.updateWeather().catch(console.error);
-                    interval(config.interval, () => this.updateWeather().catch(console.error));
+                    this.#interval = interval(config.interval.get(), () => this.updateWeather().catch(console.error));
                 })
                 .catch(console.error);
-        else
+        else if (first)
             notify({
                 summary: "Weather API key required",
                 body: `A weather API key is required to get weather data. Get one from https://www.weatherapi.com and put it in ${config.key}.`,
@@ -363,5 +373,22 @@ export default class Weather extends GObject.Object {
                     "Get API key": () => execAsync(["xdg-open", "https://www.weatherapi.com"]).catch(print),
                 },
             });
+    }
+
+    constructor() {
+        super();
+
+        this.#init(true);
+        config.key.subscribe(() => this.#init(false));
+
+        config.interval.subscribe(i => {
+            this.#interval?.cancel();
+            this.#interval = interval(i, () => this.updateWeather().catch(console.error));
+        });
+
+        config.imperial.subscribe(() => {
+            this.notify("temperature");
+            this.notify("wind");
+        });
     }
 }

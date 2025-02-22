@@ -151,7 +151,7 @@ export default class Updates extends GObject.Object {
                 this.notify("loading");
 
                 this.#timeout?.destroy();
-                this.#timeout = setTimeout(() => this.getUpdates(), config.interval);
+                this.#timeout = setTimeout(() => this.getUpdates(), config.interval.get());
             })
             .catch(console.error);
     }
@@ -164,5 +164,10 @@ export default class Updates extends GObject.Object {
             writeFileAsync(this.#cachePath, JSON.stringify(this.#data)).catch(console.error)
         );
         this.getUpdates();
+
+        config.interval.subscribe(i => {
+            this.#timeout?.destroy();
+            this.#timeout = setTimeout(() => this.getUpdates(), i);
+        });
     }
 }
