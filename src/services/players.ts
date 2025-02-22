@@ -11,7 +11,7 @@ export default class Players extends GObject.Object {
         return this.instance;
     }
 
-    readonly #path = `${CACHE}/players.txt`;
+    readonly #path = `${STATE}/players.txt`;
     readonly #players: AstalMpris.Player[] = [];
     readonly #subs = new Map<
         JSX.Element,

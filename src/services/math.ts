@@ -18,7 +18,7 @@ export default class Math extends GObject.Object {
     }
 
     readonly #maxHistory = config.maxHistory;
-    readonly #path = `${CACHE}/math-history.json`;
+    readonly #path = `${STATE}/math-history.json`;
     readonly #history: HistoryItem[] = [];
 
     #variables: Record<string, string> = {};

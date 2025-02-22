@@ -12,8 +12,8 @@ import { App } from "astal/gtk3";
 
 const loadStyleAsync = async () => {
     let schemeColours;
-    if (GLib.file_test(`${CACHE}/scheme/current.txt`, GLib.FileTest.EXISTS)) {
-        const currentScheme = await readFileAsync(`${CACHE}/scheme/current.txt`);
+    if (GLib.file_test(`${STATE}/scheme/current.txt`, GLib.FileTest.EXISTS)) {
+        const currentScheme = await readFileAsync(`${STATE}/scheme/current.txt`);
         schemeColours = currentScheme
             .split("\n")
             .map(l => {
@@ -32,7 +32,7 @@ App.start({
     main() {
         const now = Date.now();
         loadStyleAsync().catch(console.error);
-        monitorFile(`${CACHE}/scheme/current.txt`, () => loadStyleAsync().catch(console.error));
+        monitorFile(`${STATE}/scheme/current.txt`, () => loadStyleAsync().catch(console.error));
 
         <Launcher />;
         <NotifPopups />;
