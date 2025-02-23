@@ -2,7 +2,7 @@ import { GLib, monitorFile, readFileAsync, Variable } from "astal";
 import { Astal } from "astal/gtk3";
 import { loadStyleAsync } from "./app";
 
-type Settings<T> = { [P in keyof T]: T[P] extends object ? Settings<T[P]> : Variable<T[P]> };
+type Settings<T> = { [P in keyof T]: T[P] extends object & { length?: never } ? Settings<T[P]> : Variable<T[P]> };
 
 const CONFIG = `${GLib.get_user_config_dir()}/caelestia/shell.json`;
 
