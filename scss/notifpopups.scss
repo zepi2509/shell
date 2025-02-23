@@ -37,6 +37,7 @@
             }
 
             &.critical {
+                @include lib.border(scheme.$red, 0.5);
                 @include popup(scheme.$red, 0.8);
             }
         }
