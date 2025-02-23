@@ -17,7 +17,6 @@
 
 .launcher {
     @include lib.rounded(10);
-    @include lib.border(scheme.$overlay0, 0.2);
     @include lib.shadow;
     @include lib.element-decel;
     @include font.main;
