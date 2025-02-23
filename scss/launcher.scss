@@ -100,6 +100,10 @@
                     font-size: lib.s(14);
                 }
             }
+
+            &.italic {
+                font-style: italic;
+            }
         }
     }
 }

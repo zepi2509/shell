@@ -142,6 +142,7 @@ const Result = ({
     label,
     sublabel,
     tooltip,
+    italic,
     onClicked,
     onSecondaryClick,
     onMiddleClick,
@@ -152,13 +153,14 @@ const Result = ({
     label: string;
     sublabel?: string;
     tooltip?: string;
+    italic?: boolean;
     onClicked: (self: Widget.Button) => void;
     onSecondaryClick?: (self: Widget.Button) => void;
     onMiddleClick?: (self: Widget.Button) => void;
     onDestroy?: () => void;
 }) => (
     <button
-        className="result"
+        className={`result ${italic ? "italic" : ""}`}
         cursor="pointer"
         onClicked={onClicked}
         onClick={(self, event) => {
@@ -450,6 +452,7 @@ const WindowResult = ({ client, reload }: { client: Client; reload: () => void }
             tooltip={`${classOrTitle("Title")}\n${classOrTitle("Class")}\n${prop("address")}\n${workspace(
                 true
             )}\n${prop("pid", "Process ID")}\n${prop("floating")}\n${prop("inhibitingIdle", "Inhibiting idle")}`}
+            italic={client.xwayland}
             onClicked={self => {
                 close(self);
                 astalClient?.focus();
