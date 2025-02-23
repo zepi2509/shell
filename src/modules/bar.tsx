@@ -198,7 +198,7 @@ const Workspace = ({ idx }: { idx: number }) => {
                 };
 
                 self.hook(config.modules.workspaces.shown, updateWs);
-                self.hook(hyprland, "notify::focused-workspace", () => updateWs);
+                self.hook(hyprland, "notify::focused-workspace", updateWs);
                 self.hook(hyprland, "client-added", update);
                 self.hook(hyprland, "client-moved", update);
                 self.hook(hyprland, "client-removed", update);
