@@ -32,8 +32,8 @@
             }
 
             &.normal {
-                @include lib.border(scheme.$lavender, 0.3);
-                @include popup(scheme.$lavender);
+                @include lib.border(scheme.$accent, 0.3);
+                @include popup(scheme.$accent);
             }
 
             &.critical {

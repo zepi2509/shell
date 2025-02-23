@@ -33,7 +33,7 @@
             }
 
             &.normal {
-                @include popup(scheme.$lavender, 0.3);
+                @include popup(scheme.$accent, 0.3);
             }
 
             &.critical {
