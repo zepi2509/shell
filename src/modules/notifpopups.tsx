@@ -30,8 +30,12 @@ export default () => (
 
                     self.add(
                         <eventbox
-                            // Dismiss on middle click
-                            onClick={(_, event) => event.button === Astal.MouseButton.MIDDLE && notification.dismiss()}
+                            onClick={(_, event) => {
+                                // Go to notif center on primary click
+                                if (event.button === Astal.MouseButton.PRIMARY) App.get_window("notifications")?.show();
+                                // Dismiss on middle click
+                                else if (event.button === Astal.MouseButton.MIDDLE) notification.dismiss();
+                            }}
                             // Close on hover lost
                             onHoverLost={() => popup.destroyWithAnims()}
                         >
