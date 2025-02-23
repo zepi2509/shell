@@ -51,18 +51,19 @@ const AppIcon = ({ appIcon, desktopEntry }: { appIcon: string; desktopEntry: str
     return icon ? <icon className="app-icon" icon={icon} /> : null;
 };
 
-const Image = ({ icon }: { icon: string }) => {
+const Image = ({ popup, icon }: { popup?: boolean; icon: string }) => {
     if (GLib.file_test(icon, GLib.FileTest.EXISTS))
         return (
             <box
                 valign={Gtk.Align.START}
-                className="image"
+                className={`image ${popup ? "small" : ""}`}
                 css={`
                     background-image: url("${icon}");
                 `}
             />
         );
-    if (Astal.Icon.lookup_icon(icon)) return <icon valign={Gtk.Align.START} className="image" icon={icon} />;
+    if (Astal.Icon.lookup_icon(icon))
+        return <icon valign={Gtk.Align.START} className={`image ${popup ? "small" : ""}`} icon={icon} />;
     return null;
 };
 
@@ -93,7 +94,7 @@ export default class Notification extends Widget.Box {
                         </box>
                         <box hexpand className="separator" />
                         <box className="content">
-                            {notification.image && <Image icon={notification.image} />}
+                            {notification.image && <Image popup={popup} icon={notification.image} />}
                             <box vertical>
                                 <label className="summary" xalign={0} label={notification.summary} truncate />
                                 {notification.body && (

@@ -42,9 +42,14 @@ label.icon {
 
         background-size: cover;
         background-position: center;
+        margin-top: lib.s(3);
         min-width: lib.s(64);
         min-height: lib.s(64);
-        margin-top: lib.s(3);
+
+        &.small {
+            min-width: lib.s(48);
+            min-height: lib.s(48);
+        }
     }
 
     .summary {
