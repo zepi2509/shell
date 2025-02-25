@@ -103,7 +103,6 @@ export default class Notification extends Widget.Box {
                                         xalign={0}
                                         label={popup ? notification.body.split("\n")[0] : notification.body}
                                         wrap
-                                        useMarkup
                                         lines={popup ? 1 : -1}
                                         truncate={popup}
                                     />
