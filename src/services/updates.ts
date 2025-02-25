@@ -23,6 +23,7 @@ export interface Data {
     cached?: boolean;
     repos: Repo[];
     errors: string[];
+    news: string;
 }
 
 @register({ GTypeName: "Updates" })
@@ -38,7 +39,7 @@ export default class Updates extends GObject.Object {
 
     #timeout?: GLib.Source;
     #loading = false;
-    #data: Data = { cached: true, repos: [], errors: [] };
+    #data: Data = { cached: true, repos: [], errors: [], news: "" };
 
     @property(Boolean)
     get loading() {
@@ -60,11 +61,17 @@ export default class Updates extends GObject.Object {
         return this.#data.repos.reduce((acc, repo) => acc + repo.updates.length, 0);
     }
 
+    @property(String)
+    get news() {
+        return this.#data.news;
+    }
+
     async #updateFromCache() {
         this.#data = JSON.parse(await readFileAsync(this.#cachePath));
         this.notify("update-data");
         this.notify("list");
         this.notify("num-updates");
+        this.notify("news");
     }
 
     async getRepo(repo: string) {
@@ -93,9 +100,9 @@ export default class Updates extends GObject.Object {
         this.notify("loading");
 
         // Get new updates
-        Promise.allSettled([execAsync("checkupdates"), execAsync("yay -Qua")])
-            .then(async ([pacman, yay]) => {
-                const data: Data = { repos: [], errors: [] };
+        Promise.allSettled([execAsync("checkupdates"), execAsync("yay -Qua"), execAsync("yay -Pw")])
+            .then(async ([pacman, yay, news]) => {
+                const data: Data = { repos: [], errors: [], news: news.status === "fulfilled" ? news.value : "" };
 
                 // Pacman updates (checkupdates)
                 if (pacman.status === "fulfilled") {
@@ -145,6 +152,7 @@ export default class Updates extends GObject.Object {
                     this.notify("update-data");
                     this.notify("list");
                     this.notify("num-updates");
+                    this.notify("news");
                 }
 
                 this.#loading = false;

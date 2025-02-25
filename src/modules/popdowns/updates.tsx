@@ -1,3 +1,4 @@
+import Palette from "@/services/palette";
 import Updates, { Repo as IRepo, Update as IUpdate } from "@/services/updates";
 import { MenuItem } from "@/utils/widgets";
 import PopdownWindow from "@/widgets/popdownwindow";
@@ -35,8 +36,8 @@ const Update = (update: IUpdate) => {
     );
 };
 
-const Repo = (repo: IRepo) => {
-    const expanded = Variable(false);
+const Repo = ({ repo, first }: { repo: IRepo; first?: boolean }) => {
+    const expanded = Variable(first);
 
     return (
         <box vertical className="repo">
@@ -61,9 +62,50 @@ const Repo = (repo: IRepo) => {
     );
 };
 
+const News = ({ news }: { news: string }) => {
+    const expanded = Variable(true);
+
+    return (
+        <box vertical className="repo">
+            <button className="wrapper" cursor="pointer" onClicked={() => expanded.set(!expanded.get())}>
+                <box className="header">
+                    <label className="icon" label="newspaper" />
+                    <label label="News" />
+                    <box hexpand />
+                    <label className="icon" label={bind(expanded).as(e => (e ? "expand_less" : "expand_more"))} />
+                </box>
+            </button>
+            <revealer
+                revealChild={bind(expanded)}
+                transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                transitionDuration={200}
+            >
+                <label
+                    wrap
+                    useMarkup
+                    xalign={0}
+                    className="news"
+                    label={bind(Palette.get_default(), "teal").as(c =>
+                        news
+                            .slice(0, news.lastIndexOf("\n")) // Remove last line cause it contains an unopened \x1b[0m
+                            .replace(/^([0-9]{4}-[0-9]{2}-[0-9]{2} .+)$/gm, "<b>$1</b>") // Make titles bold
+                            // Replace color codes with html spans
+                            .replaceAll("\x1b[36m", `<span foreground="${c}">`)
+                            .replaceAll("\x1b[0m", "</span>")
+                    )}
+                />
+            </revealer>
+        </box>
+    );
+};
+
 const List = () => (
     <box vertical valign={Gtk.Align.START} className="repos">
-        {bind(Updates.get_default(), "updateData").as(d => d.repos.map(Repo))}
+        {bind(Updates.get_default(), "updateData").as(d =>
+            d.news
+                ? [<News news={d.news} />, ...d.repos.map(r => <Repo repo={r} />)]
+                : d.repos.map((r, i) => <Repo repo={r} first={i === 0} />)
+        )}
     </box>
 );
 

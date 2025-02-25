@@ -9,7 +9,7 @@ $-accent: scheme.$blue;
     @include lib.popdown-window($-accent);
 
     min-width: lib.s(550);
-    min-height: lib.s(450);
+    min-height: lib.s(800);
 
     .wrapper {
         @include lib.element-decel;
@@ -32,9 +32,14 @@ $-accent: scheme.$blue;
                 font-size: lib.s(16);
             }
 
-            .list {
+            .list,
+            .news {
                 color: scheme.$text;
                 margin-left: lib.s(12);
+            }
+
+            .news {
+                margin-bottom: lib.s(5);
             }
         }
     }

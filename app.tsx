@@ -5,24 +5,17 @@ import Osds from "@/modules/osds";
 import Popdowns from "@/modules/popdowns";
 import Session from "@/modules/session";
 import Monitors from "@/services/monitors";
+import Palette from "@/services/palette";
 import Players from "@/services/players";
 import type PopupWindow from "@/widgets/popupwindow";
-import { execAsync, GLib, monitorFile, readFileAsync, writeFileAsync } from "astal";
+import { execAsync, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
 import { initConfig, updateConfig } from "config";
 
 export const loadStyleAsync = async () => {
-    let schemeColours;
-    if (GLib.file_test(`${STATE}/scheme/current.txt`, GLib.FileTest.EXISTS)) {
-        const currentScheme = await readFileAsync(`${STATE}/scheme/current.txt`);
-        schemeColours = currentScheme
-            .split("\n")
-            .map(l => {
-                const [name, hex] = l.split(" ");
-                return `$${name}: #${hex};`;
-            })
-            .join("\n");
-    } else schemeColours = await readFileAsync(`${SRC}/scss/scheme/_default.scss`);
+    const schemeColours = Object.entries(Palette.get_default().colours)
+        .map(([name, hex]) => `$${name}: ${hex};`)
+        .join("\n");
     await writeFileAsync(`${SRC}/scss/scheme/_index.scss`, schemeColours);
     App.apply_css(await execAsync(`sass ${SRC}/style.scss`), true);
 };
@@ -32,8 +25,10 @@ App.start({
     icons: "assets/icons",
     main() {
         const now = Date.now();
+
         loadStyleAsync().catch(console.error);
-        monitorFile(`${STATE}/scheme/current.txt`, () => loadStyleAsync().catch(console.error));
+        Palette.get_default().connect("notify::colours", () => loadStyleAsync().catch(console.error));
+
         initConfig();
 
         <Launcher />;
