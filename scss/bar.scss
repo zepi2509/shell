@@ -75,11 +75,11 @@
         color: scheme.$teal;
 
         &.charging {
-            color: scheme.$green;
+            color: scheme.$success;
         }
 
         &.low {
-            color: scheme.$red;
+            color: scheme.$error;
         }
     }
 
