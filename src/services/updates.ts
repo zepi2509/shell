@@ -146,6 +146,9 @@ export default class Updates extends GObject.Object {
                 if (data.errors.length > 0 && data.repos.length === 0) {
                     this.#updateFromCache().catch(console.error);
                 } else {
+                    // Sort updates by name
+                    for (const repo of data.repos) repo.updates.sort((a, b) => a.name.localeCompare(b.name));
+
                     // Cache and set
                     writeFileAsync(this.#cachePath, JSON.stringify({ cached: true, ...data })).catch(console.error);
                     this.#data = data;
