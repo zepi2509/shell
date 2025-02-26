@@ -38,6 +38,10 @@ $-accent: scheme.$blue;
                 margin-left: lib.s(12);
             }
 
+            .list {
+                @include lib.spacing($vertical: true);
+            }
+
             .news {
                 margin-bottom: lib.s(5);
             }

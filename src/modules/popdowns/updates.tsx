@@ -29,8 +29,12 @@ const Update = (update: IUpdate) => {
         >
             <label
                 truncate
+                useMarkup
                 xalign={0}
-                label={`${update.name} (${update.version.old} -> ${update.version.new})\n    ${update.description}`}
+                label={bind(Palette.get_default(), "colours").as(
+                    c =>
+                        `${update.name} <span foreground="${c.teal}">(${update.version.old} -> ${update.version.new})</span>\n    <span foreground="${c.subtext0}">${update.description}</span>`
+                )}
             />
         </button>
     );
