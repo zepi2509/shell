@@ -31,8 +31,12 @@ export default () => (
                     self.add(
                         <eventbox
                             onClick={(_, event) => {
-                                // Go to notif center on primary click
-                                if (event.button === Astal.MouseButton.PRIMARY) App.get_window("notifications")?.show();
+                                // Activate notif or go to notif center on primary click
+                                if (event.button === Astal.MouseButton.PRIMARY) {
+                                    if (notification.actions.length === 1)
+                                        notification.invoke(notification.actions[0].id);
+                                    else App.get_window("notifications")?.show();
+                                }
                                 // Dismiss on middle click
                                 else if (event.button === Astal.MouseButton.MIDDLE) notification.dismiss();
                             }}
