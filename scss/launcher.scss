@@ -4,13 +4,18 @@
 
 @mixin launcher($mode, $colour) {
     &.#{$mode} {
-        label.icon {
-            color: $colour;
+        .search-bar {
+            .mode {
+                @include lib.border($colour, $width: 2);
+            }
+
+            .entry {
+                border-bottom: lib.s(2) solid $colour;
+            }
         }
 
-        .separator {
-            background-color: $colour;
-            margin: lib.s(5) 0;
+        .mode-switcher .mode.selected {
+            border-top: lib.s(2) solid $colour;
         }
     }
 }
@@ -18,12 +23,16 @@
 .launcher {
     @include lib.rounded(10);
     @include lib.shadow;
-    @include lib.element-decel;
-    @include font.main;
+    @include font.mono;
 
-    background-color: scheme.$mantle;
+    background-color: scheme.$base;
     color: scheme.$text;
-    padding: lib.s(10) lib.s(14);
+    padding: lib.s(14);
+    font-size: lib.s(16);
+    min-width: lib.s(700);
+    min-height: lib.s(420);
+
+    @include lib.spacing(20, true);
 
     @include launcher(apps, scheme.$sapphire);
     @include launcher(files, scheme.$peach);
@@ -31,18 +40,21 @@
     @include launcher(windows, scheme.$teal);
 
     .search-bar {
-        margin-bottom: lib.s(5);
-        font-size: lib.s(16);
+        @include lib.spacing(10);
 
-        @include lib.spacing;
+        .mode {
+            @include lib.rounded(5);
+            @include lib.element-decel;
 
-        .icon {
-            font-size: lib.s(18);
+            padding: lib.s(5);
         }
+    }
 
-        .placeholder {
-            color: scheme.$subtext0;
-        }
+    .mode-switcher .mode {
+        @include lib.element-decel;
+
+        border-top: lib.s(2) solid transparent;
+        padding-top: lib.s(10);
     }
 
     .result {

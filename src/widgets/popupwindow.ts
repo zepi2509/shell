@@ -1,7 +1,7 @@
 import { Binding, register } from "astal";
 import { App, Astal, Gdk, Widget } from "astal/gtk3";
 import { bar } from "config";
-import AstalHyprland from "gi://AstalHyprland?version=0.1";
+import AstalHyprland from "gi://AstalHyprland";
 
 const extendProp = <T>(
     prop: T | Binding<T | undefined> | undefined,
