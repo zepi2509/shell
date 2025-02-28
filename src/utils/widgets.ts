@@ -73,3 +73,10 @@ export class Calendar extends astalify(Gtk.Calendar) {
         super(props as any);
     }
 }
+
+@register()
+export class FlowBox extends astalify(Gtk.FlowBox) {
+    constructor(props: ConstructProps<FlowBox, Gtk.FlowBox.ConstructorProps>) {
+        super(props as any);
+    }
+}

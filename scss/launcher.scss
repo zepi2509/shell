@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "scheme";
 @use "lib";
 @use "font";
@@ -14,8 +15,19 @@
             }
         }
 
-        .mode-switcher .mode.selected {
-            border-top: lib.s(2) solid $colour;
+        .mode-switcher .mode {
+            &.selected {
+                border-top: lib.s(2) solid $colour;
+            }
+
+            &:hover,
+            &:focus {
+                color: $colour;
+            }
+
+            &:active {
+                color: color.mix($colour, scheme.$base, 80%);
+            }
         }
     }
 }
@@ -32,14 +44,14 @@
     min-width: lib.s(700);
     min-height: lib.s(420);
 
-    @include lib.spacing(20, true);
-
     @include launcher(apps, scheme.$sapphire);
     @include launcher(files, scheme.$peach);
     @include launcher(math, scheme.$green);
     @include launcher(windows, scheme.$teal);
 
     .search-bar {
+        margin-bottom: lib.s(15);
+
         @include lib.spacing(10);
 
         .mode {
@@ -55,22 +67,60 @@
 
         border-top: lib.s(2) solid transparent;
         padding-top: lib.s(10);
+
+        .icon {
+            font-size: lib.s(24);
+        }
+
+        & > box {
+            @include lib.spacing(10);
+        }
     }
 
     .result {
         @include lib.element-decel;
 
-        padding: lib.s(5) lib.s(10);
+        .icon {
+            font-size: lib.s(32);
+        }
+    }
 
-        &:hover,
-        &:focus {
+    .apps .result {
+        border-bottom: lib.s(2) solid transparent;
+        padding-left: lib.s(10);
+
+        & > box {
+            @include lib.spacing(10);
+        }
+
+        &:hover {
             background-color: scheme.$surface0;
+        }
+
+        &:focus {
+            border-bottom: lib.s(2) solid scheme.$red;
+            color: scheme.$red;
         }
 
         &:active {
             background-color: scheme.$surface1;
         }
     }
+
+    // .result {
+    //     @include lib.element-decel;
+
+    //     padding: lib.s(5) lib.s(10);
+
+    //     &:hover,
+    //     &:focus {
+    //         background-color: scheme.$surface0;
+    //     }
+
+    //     &:active {
+    //         background-color: scheme.$surface1;
+    //     }
+    // }
 
     .pinned-app {
         @include lib.rounded(5);
