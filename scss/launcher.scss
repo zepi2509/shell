@@ -80,14 +80,12 @@
     .result {
         @include lib.element-decel;
 
+        border-bottom: lib.s(2) solid transparent;
+        padding-left: lib.s(10);
+
         .icon {
             font-size: lib.s(32);
         }
-    }
-
-    .apps .result {
-        border-bottom: lib.s(2) solid transparent;
-        padding-left: lib.s(10);
 
         & > box {
             @include lib.spacing(10);
@@ -106,21 +104,6 @@
             background-color: scheme.$surface1;
         }
     }
-
-    // .result {
-    //     @include lib.element-decel;
-
-    //     padding: lib.s(5) lib.s(10);
-
-    //     &:hover,
-    //     &:focus {
-    //         background-color: scheme.$surface0;
-    //     }
-
-    //     &:active {
-    //         background-color: scheme.$surface1;
-    //     }
-    // }
 
     .pinned-app {
         @include lib.rounded(5);

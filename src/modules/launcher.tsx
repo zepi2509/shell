@@ -3,8 +3,9 @@ import { getAppCategoryIcon } from "@/utils/icons";
 import { launch } from "@/utils/system";
 import { FlowBox } from "@/utils/widgets";
 import PopupWindow from "@/widgets/popupwindow";
-import { bind, register, Variable } from "astal";
+import { bind, execAsync, Gio, register, Variable } from "astal";
 import { App, Astal, Gtk, Widget } from "astal/gtk3";
+import { launcher as config } from "config";
 import type AstalApps from "gi://AstalApps";
 
 type Mode = "apps" | "files" | "math" | "windows";
@@ -32,6 +33,9 @@ const getPrettyMode = (mode: Mode) => {
     return mode;
 };
 
+const limitLength = <T,>(arr: T[], cfg: { maxResults: Variable<number> }) =>
+    cfg.maxResults.get() > 0 && arr.length > cfg.maxResults.get() ? arr.slice(0, cfg.maxResults.get()) : arr;
+
 const AppResult = ({ app }: { app: AstalApps.Application }) => (
     <Gtk.FlowBoxChild visible canFocus={false}>
         <button
@@ -49,6 +53,35 @@ const AppResult = ({ app }: { app: AstalApps.Application }) => (
                     <label className="icon" label={getAppCategoryIcon(app)} />
                 )}
                 <label truncate label={app.name} />
+            </box>
+        </button>
+    </Gtk.FlowBoxChild>
+);
+
+const FileResult = ({ path }: { path: string }) => (
+    <Gtk.FlowBoxChild visible canFocus={false}>
+        <button
+            className="result"
+            cursor="pointer"
+            onClicked={() => {
+                execAsync([
+                    "bash",
+                    "-c",
+                    `dbus-send --session --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://${path}" string:"" || xdg-open "${path}"`,
+                ]).catch(console.error);
+                close();
+            }}
+        >
+            <box>
+                <icon
+                    className="icon"
+                    gicon={
+                        Gio.File.new_for_path(path)
+                            .query_info(Gio.FILE_ATTRIBUTE_STANDARD_ICON, Gio.FileQueryInfoFlags.NONE, null)
+                            .get_icon()!
+                    }
+                />
+                <label truncate label={path.replace(HOME, "~")} />
             </box>
         </button>
     </Gtk.FlowBoxChild>
@@ -72,7 +105,8 @@ class Apps extends Widget.Box implements ModeContent {
 
     updateContent(search: string): void {
         this.#content.foreach(c => c.destroy());
-        AppsService.fuzzy_query(search).forEach(app => this.#content.add(<AppResult app={app} />));
+        for (const app of limitLength(AppsService.fuzzy_query(search), config.apps))
+            this.#content.add(<AppResult app={app} />);
     }
 
     handleActivate(): void {
@@ -83,16 +117,33 @@ class Apps extends Widget.Box implements ModeContent {
 
 @register()
 class Files extends Widget.Box implements ModeContent {
+    #content: FlowBox;
+
     constructor() {
         super({ name: "files", className: "files" });
+
+        this.#content = (<FlowBox homogeneous valign={Gtk.Align.START} maxChildrenPerLine={2} />) as FlowBox;
+
+        this.add(
+            <scrollable expand hscroll={Gtk.PolicyType.NEVER}>
+                {this.#content}
+            </scrollable>
+        );
     }
 
     updateContent(search: string): void {
-        throw new Error("Method not implemented.");
+        execAsync(["fd", ...config.files.fdOpts.get(), search, HOME])
+            .then(out => {
+                this.#content.foreach(c => c.destroy());
+                const paths = out.split("\n").filter(path => path);
+                for (const path of limitLength(paths, config.files)) this.#content.add(<FileResult path={path} />);
+            })
+            .catch(() => {}); // Ignore errors
     }
 
-    handleActivate(search: string): void {
-        throw new Error("Method not implemented.");
+    handleActivate(): void {
+        this.#content.get_child_at_index(0)?.get_child()?.grab_focus();
+        this.#content.get_child_at_index(0)?.get_child()?.activate();
     }
 }
 
