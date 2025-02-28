@@ -1,7 +1,7 @@
 import { Apps as AppsService } from "@/services/apps";
 import { getAppCategoryIcon } from "@/utils/icons";
 import { launch } from "@/utils/system";
-import { FlowBox } from "@/utils/widgets";
+import { FlowBox, setupCustomTooltip } from "@/utils/widgets";
 import PopupWindow from "@/widgets/popupwindow";
 import { bind, execAsync, Gio, register, Variable } from "astal";
 import { App, Astal, Gtk, Widget } from "astal/gtk3";
@@ -36,6 +36,8 @@ const getPrettyMode = (mode: Mode) => {
 const limitLength = <T,>(arr: T[], cfg: { maxResults: Variable<number> }) =>
     cfg.maxResults.get() > 0 && arr.length > cfg.maxResults.get() ? arr.slice(0, cfg.maxResults.get()) : arr;
 
+const ContentBox = () => <FlowBox homogeneous valign={Gtk.Align.START} minChildrenPerLine={2} maxChildrenPerLine={2} />;
+
 const AppResult = ({ app }: { app: AstalApps.Application }) => (
     <Gtk.FlowBoxChild visible canFocus={false}>
         <button
@@ -45,6 +47,7 @@ const AppResult = ({ app }: { app: AstalApps.Application }) => (
                 launch(app);
                 close();
             }}
+            setup={self => setupCustomTooltip(self, app.description ? `${app.name}: ${app.description}` : app.name)}
         >
             <box>
                 {app.iconName && Astal.Icon.lookup_icon(app.iconName) ? (
@@ -72,7 +75,7 @@ const FileResult = ({ path }: { path: string }) => (
                 close();
             }}
         >
-            <box>
+            <box setup={self => setupCustomTooltip(self, path.replace(HOME, "~"))}>
                 <icon
                     className="icon"
                     gicon={
@@ -81,7 +84,18 @@ const FileResult = ({ path }: { path: string }) => (
                             .get_icon()!
                     }
                 />
-                <label truncate label={path.replace(HOME, "~")} />
+                <label
+                    truncate
+                    label={
+                        path.replace(HOME, "~").length > config.files.shortenThreshold.get()
+                            ? path
+                                  .replace(HOME, "~")
+                                  .split("/")
+                                  .map((n, i, arr) => (i === 0 || i === arr.length - 1 ? n : n.slice(0, 1)))
+                                  .join("/")
+                            : path.replace(HOME, "~")
+                    }
+                />
             </box>
         </button>
     </Gtk.FlowBoxChild>
@@ -94,7 +108,7 @@ class Apps extends Widget.Box implements ModeContent {
     constructor() {
         super({ name: "apps", className: "apps" });
 
-        this.#content = (<FlowBox homogeneous valign={Gtk.Align.START} maxChildrenPerLine={2} />) as FlowBox;
+        this.#content = (<ContentBox />) as FlowBox;
 
         this.add(
             <scrollable expand hscroll={Gtk.PolicyType.NEVER}>
@@ -122,7 +136,7 @@ class Files extends Widget.Box implements ModeContent {
     constructor() {
         super({ name: "files", className: "files" });
 
-        this.#content = (<FlowBox homogeneous valign={Gtk.Align.START} maxChildrenPerLine={2} />) as FlowBox;
+        this.#content = (<ContentBox />) as FlowBox;
 
         this.add(
             <scrollable expand hscroll={Gtk.PolicyType.NEVER}>

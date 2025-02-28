@@ -103,6 +103,7 @@ const DEFAULTS = {
         files: {
             maxResults: 40, // Actual max results, -1 for infinite
             fdOpts: ["-a", "-t", "f"], // Options to pass to `fd`
+            shortenThreshold: 30, // Threshold to shorten paths in characters
         },
         math: {
             maxResults: 40, // Actual max results, -1 for infinite
