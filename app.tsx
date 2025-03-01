@@ -7,8 +7,9 @@ import Session from "@/modules/session";
 import Monitors from "@/services/monitors";
 import Palette from "@/services/palette";
 import Players from "@/services/players";
+import Schemes from "@/services/schemes";
 import type PopupWindow from "@/widgets/popupwindow";
-import { execAsync, writeFileAsync } from "astal";
+import { execAsync, idle, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
 import { initConfig, updateConfig } from "config";
 
@@ -37,6 +38,9 @@ App.start({
         <Session />;
         Monitors.get_default().forEach(m => <Bar monitor={m} />);
         <Popdowns />;
+
+        // Init services
+        idle(() => Schemes.get_default());
 
         console.log(`Caelestia started in ${Date.now() - now}ms`);
     },

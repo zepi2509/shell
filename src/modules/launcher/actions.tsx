@@ -1,4 +1,6 @@
 import { Apps } from "@/services/apps";
+import type { IPalette } from "@/services/palette";
+import Schemes from "@/services/schemes";
 import { notify } from "@/utils/system";
 import { setupCustomTooltip, type FlowBox } from "@/utils/widgets";
 import { execAsync, GLib, readFile, register, type Variable } from "astal";
@@ -18,6 +20,11 @@ interface IAction {
 interface ActionMap {
     [k: string]: IAction;
 }
+
+const autocomplete = (entry: Widget.Entry, action: string) => {
+    entry.set_text(`${config.actionPrefix.get()}${action} `);
+    entry.set_position(-1);
+};
 
 const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     apps: {
@@ -62,13 +69,22 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
         description: "Change the current colour scheme",
         action: (...args) => {
             // If no args, autocomplete cmd
-            if (args.length === 0) {
-                entry.set_text(`${config.actionPrefix.get()}scheme `);
-                entry.set_position(-1);
-                return;
-            }
+            if (args.length === 0) return autocomplete(entry, "scheme");
 
             execAsync(`caelestia scheme ${args[0]}`).catch(console.error);
+            close();
+        },
+    },
+    wallpaper: {
+        icon: "image",
+        name: "Wallpaper",
+        description: "Change the current wallpaper",
+        action: (...args) => {
+            // If no args, autocomplete cmd
+            if (args.length === 0) return autocomplete(entry, "wallpaper");
+
+            if (args[0] === "random") execAsync("caelestia wallpaper").catch(console.error);
+            else execAsync(`caelestia wallpaper -f ${args[0]}`).catch(console.error);
             close();
         },
     },
@@ -78,11 +94,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
         description: "Create a todo in Todoist",
         action: (...args) => {
             // If no args, autocomplete cmd
-            if (args.length === 0) {
-                entry.set_text(`${config.actionPrefix.get()}todo `);
-                entry.set_position(-1);
-                return;
-            }
+            if (args.length === 0) return autocomplete(entry, "todo");
 
             // If tod not installed, notify
             if (!GLib.find_program_in_path("tod")) {
@@ -165,6 +177,47 @@ const Action = ({ args, icon, name, description, action }: IAction & { args: str
     </Gtk.FlowBoxChild>
 );
 
+const Swatch = ({ colour }: { colour: string }) => <box className="swatch" css={"background-color: " + colour + ";"} />;
+
+const Scheme = ({ name, colours }: { name: string; colours: IPalette }) => (
+    <Gtk.FlowBoxChild visible canFocus={false}>
+        <button
+            className="result"
+            cursor="pointer"
+            onClicked={() => {
+                execAsync(`caelestia scheme ${name}`).catch(console.error);
+                close();
+            }}
+        >
+            <box>
+                <box valign={Gtk.Align.CENTER}>
+                    <box className="swatch big left" css={"background-color: " + colours.base + ";"} />
+                    <box className="swatch big right" css={"background-color: " + colours.accent + ";"} />
+                </box>
+                <box vertical className="has-sublabel">
+                    <label truncate xalign={0} label={name} />
+                    <box className="swatches">
+                        <Swatch colour={colours.rosewater} />
+                        <Swatch colour={colours.flamingo} />
+                        <Swatch colour={colours.pink} />
+                        <Swatch colour={colours.mauve} />
+                        <Swatch colour={colours.red} />
+                        <Swatch colour={colours.maroon} />
+                        <Swatch colour={colours.peach} />
+                        <Swatch colour={colours.yellow} />
+                        <Swatch colour={colours.green} />
+                        <Swatch colour={colours.teal} />
+                        <Swatch colour={colours.sky} />
+                        <Swatch colour={colours.sapphire} />
+                        <Swatch colour={colours.blue} />
+                        <Swatch colour={colours.lavender} />
+                    </box>
+                </box>
+            </box>
+        </button>
+    </Gtk.FlowBoxChild>
+);
+
 @register()
 export default class Actions extends Widget.Box implements LauncherContent {
     #map: ActionMap;
@@ -190,8 +243,16 @@ export default class Actions extends Widget.Box implements LauncherContent {
     updateContent(search: string): void {
         this.#content.foreach(c => c.destroy());
         const args = search.split(" ");
-        for (const { target } of fuzzysort.go(args[0].slice(1), this.#list, { all: true }))
-            this.#content.add(<Action {...this.#map[target]} args={args.slice(1)} />);
+        const action = args[0].slice(1);
+
+        if (action === "scheme") {
+            const scheme = args[1] ?? "";
+            for (const { target } of fuzzysort.go(scheme, Object.keys(Schemes.get_default().map), { all: true }))
+                this.#content.add(<Scheme name={target} colours={Schemes.get_default().map[target]} />);
+        } else {
+            for (const { target } of fuzzysort.go(action, this.#list, { all: true }))
+                this.#content.add(<Action {...this.#map[target]} args={args.slice(1)} />);
+        }
     }
 
     handleActivate(): void {

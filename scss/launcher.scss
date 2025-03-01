@@ -125,4 +125,32 @@
             background-color: scheme.$surface1;
         }
     }
+
+    .swatches {
+        @include lib.spacing(3);
+    }
+
+    .swatch {
+        @include lib.rounded(100);
+
+        min-width: lib.s(16);
+        min-height: lib.s(16);
+
+        &.big {
+            min-height: lib.s(32);
+
+            &.left {
+                @include lib.border(scheme.$overlay0, 0.3);
+
+                border-right: none;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            &.right {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+        }
+    }
 }
