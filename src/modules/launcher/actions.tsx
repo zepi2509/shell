@@ -1,6 +1,8 @@
 import { Apps } from "@/services/apps";
 import type { IPalette } from "@/services/palette";
 import Schemes from "@/services/schemes";
+import Wallpapers from "@/services/wallpapers";
+import { basename } from "@/utils/strings";
 import { notify } from "@/utils/system";
 import { setupCustomTooltip, type FlowBox } from "@/utils/widgets";
 import { execAsync, GLib, readFile, register, type Variable } from "astal";
@@ -218,6 +220,28 @@ const Scheme = ({ name, colours }: { name: string; colours: IPalette }) => (
     </Gtk.FlowBoxChild>
 );
 
+const Wallpaper = ({ path, thumbnail }: { path: string; thumbnail?: string }) => (
+    <Gtk.FlowBoxChild visible canFocus={false}>
+        <button
+            className="result"
+            cursor="pointer"
+            onClicked={() => {
+                execAsync(`caelestia wallpaper -f ${path}`).catch(console.error);
+                close();
+            }}
+            setup={self => setupCustomTooltip(self, path.replace(HOME, "~"))}
+        >
+            <box
+                vertical={config.wallpaper.style.get() !== "compact"}
+                className={`wallpaper ${config.wallpaper.style.get()}`}
+            >
+                <box className="thumbnail" css={"background-image: url('" + (thumbnail ?? path) + "');"} />
+                <label truncate label={basename(path)} />
+            </box>
+        </button>
+    </Gtk.FlowBoxChild>
+);
+
 @register()
 export default class Actions extends Widget.Box implements LauncherContent {
     #map: ActionMap;
@@ -249,6 +273,10 @@ export default class Actions extends Widget.Box implements LauncherContent {
             const scheme = args[1] ?? "";
             for (const { target } of fuzzysort.go(scheme, Object.keys(Schemes.get_default().map), { all: true }))
                 this.#content.add(<Scheme name={target} colours={Schemes.get_default().map[target]} />);
+        } else if (action === "wallpaper") {
+            const wallpaper = args[1] ?? "";
+            for (const { obj } of fuzzysort.go(wallpaper, Wallpapers.get_default().list, { all: true, key: "path" }))
+                this.#content.add(<Wallpaper {...obj} />);
         } else {
             for (const { target } of fuzzysort.go(action, this.#list, { all: true }))
                 this.#content.add(<Action {...this.#map[target]} args={args.slice(1)} />);

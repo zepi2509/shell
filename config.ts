@@ -121,6 +121,9 @@ const DEFAULTS = {
         todo: {
             notify: true,
         },
+        wallpaper: {
+            style: "compact", // One of "compact", "medium", "large"
+        },
     },
     notifpopups: {
         maxPopups: -1,
@@ -190,8 +193,30 @@ const DEFAULTS = {
     storage: {
         interval: 5000,
     },
+    wallpapers: {
+        paths: [
+            {
+                recursive: true, // Whether to search recursively
+                path: "~/Pictures/Wallpapers", // Path to search
+            },
+        ],
+    },
 };
 
 const config = convertSettings(DEFAULTS);
 
-export const { bar, launcher, notifpopups, osds, sideleft, math, updates, weather, cpu, gpu, memory, storage } = config;
+export const {
+    bar,
+    launcher,
+    notifpopups,
+    osds,
+    sideleft,
+    math,
+    updates,
+    weather,
+    cpu,
+    gpu,
+    memory,
+    storage,
+    wallpapers,
+} = config;

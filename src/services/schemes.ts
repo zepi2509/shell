@@ -1,3 +1,4 @@
+import { basename } from "@/utils/strings";
 import { execAsync, GLib, GObject, monitorFile, property, readFileAsync, register } from "astal";
 import type { IPalette } from "./palette";
 
@@ -19,10 +20,6 @@ export default class Schemes extends GObject.Object {
         return this.#map;
     }
 
-    #schemePathToName(path: string) {
-        return path.slice(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
-    }
-
     async parseScheme(path: string) {
         const schemeColours = (await readFileAsync(path)).split("\n").map(l => l.split(" "));
         return schemeColours.reduce((acc, [name, hex]) => ({ ...acc, [name]: `#${hex}` }), {} as IPalette);
@@ -30,8 +27,7 @@ export default class Schemes extends GObject.Object {
 
     async update() {
         const schemes = await execAsync(`find ${DATA}/scripts/data/schemes/ -type f`);
-        for (const scheme of schemes.split("\n"))
-            this.#map[this.#schemePathToName(scheme)] = await this.parseScheme(scheme);
+        for (const scheme of schemes.split("\n")) this.#map[basename(scheme)] = await this.parseScheme(scheme);
         this.notify("map");
     }
 
