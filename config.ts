@@ -89,7 +89,7 @@ const DEFAULTS = {
         },
     },
     launcher: {
-        actionPrefix: ":", // Prefix for launcher actions
+        actionPrefix: ">", // Prefix for launcher actions
         apps: {
             maxResults: 30, // Actual max results, -1 for infinite
             pins: [

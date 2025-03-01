@@ -63,7 +63,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
         action: (...args) => {
             // If no args, autocomplete cmd
             if (args.length === 0) {
-                entry.set_text(">scheme ");
+                entry.set_text(`${config.actionPrefix.get()}scheme `);
                 entry.set_position(-1);
                 return;
             }
@@ -79,7 +79,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
         action: (...args) => {
             // If no args, autocomplete cmd
             if (args.length === 0) {
-                entry.set_text(">todo ");
+                entry.set_text(`${config.actionPrefix.get()}todo `);
                 entry.set_position(-1);
                 return;
             }
@@ -195,7 +195,6 @@ export default class Actions extends Widget.Box implements LauncherContent {
     }
 
     handleActivate(): void {
-        this.#content.get_child_at_index(0)?.get_child()?.grab_focus();
         this.#content.get_child_at_index(0)?.get_child()?.activate();
     }
 }
