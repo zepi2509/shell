@@ -51,7 +51,7 @@
     @include launcher(apps, scheme.$sapphire);
     @include launcher(files, scheme.$peach);
     @include launcher(math, scheme.$green);
-    @include launcher(windows, scheme.$teal);
+    @include launcher(windows, scheme.$mauve);
 
     .search-bar {
         margin-bottom: lib.s(15);
