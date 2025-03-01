@@ -1,42 +1,12 @@
 import { Apps as AppsService } from "@/services/apps";
 import { getAppCategoryIcon } from "@/utils/icons";
 import { launch } from "@/utils/system";
-import { FlowBox, setupCustomTooltip } from "@/utils/widgets";
-import PopupWindow from "@/widgets/popupwindow";
-import { bind, execAsync, Gio, register, Variable } from "astal";
-import { App, Astal, Gtk, Widget } from "astal/gtk3";
+import { type FlowBox, setupCustomTooltip } from "@/utils/widgets";
+import { execAsync, Gio, register } from "astal";
+import { Astal, Gtk, Widget } from "astal/gtk3";
 import { launcher as config } from "config";
 import type AstalApps from "gi://AstalApps";
-
-type Mode = "apps" | "files" | "math" | "windows";
-
-interface ModeContent {
-    updateContent(search: string): void;
-    handleActivate(search: string): void;
-}
-
-const close = () => App.get_window("launcher")?.hide();
-
-const getModeIcon = (mode: Mode) => {
-    if (mode === "apps") return "apps";
-    if (mode === "files") return "folder";
-    if (mode === "math") return "calculate";
-    if (mode === "windows") return "select_window";
-    return "search";
-};
-
-const getPrettyMode = (mode: Mode) => {
-    if (mode === "apps") return "Apps";
-    if (mode === "files") return "Files";
-    if (mode === "math") return "Math";
-    if (mode === "windows") return "Windows";
-    return mode;
-};
-
-const limitLength = <T,>(arr: T[], cfg: { maxResults: Variable<number> }) =>
-    cfg.maxResults.get() > 0 && arr.length > cfg.maxResults.get() ? arr.slice(0, cfg.maxResults.get()) : arr;
-
-const ContentBox = () => <FlowBox homogeneous valign={Gtk.Align.START} minChildrenPerLine={2} maxChildrenPerLine={2} />;
+import { close, ContentBox, type LauncherContent, limitLength } from "./util";
 
 const AppResult = ({ app }: { app: AstalApps.Application }) => (
     <Gtk.FlowBoxChild visible canFocus={false}>
@@ -102,7 +72,7 @@ const FileResult = ({ path }: { path: string }) => (
 );
 
 @register()
-class Apps extends Widget.Box implements ModeContent {
+class Apps extends Widget.Box implements LauncherContent {
     #content: FlowBox;
 
     constructor() {
@@ -130,7 +100,7 @@ class Apps extends Widget.Box implements ModeContent {
 }
 
 @register()
-class Files extends Widget.Box implements ModeContent {
+class Files extends Widget.Box implements LauncherContent {
     #content: FlowBox;
 
     constructor() {
@@ -162,7 +132,7 @@ class Files extends Widget.Box implements ModeContent {
 }
 
 @register()
-class Math extends Widget.Box implements ModeContent {
+class Math extends Widget.Box implements LauncherContent {
     constructor() {
         super({ name: "math", className: "math" });
     }
@@ -177,7 +147,7 @@ class Math extends Widget.Box implements ModeContent {
 }
 
 @register()
-class Windows extends Widget.Box implements ModeContent {
+class Windows extends Widget.Box implements LauncherContent {
     constructor() {
         super({ name: "windows", className: "windows" });
     }
@@ -191,99 +161,9 @@ class Windows extends Widget.Box implements ModeContent {
     }
 }
 
-const SearchBar = ({ mode, entry }: { mode: Variable<Mode>; entry: Widget.Entry }) => (
-    <box className="search-bar">
-        <label className="mode" label={bind(mode)} />
-        {entry}
-    </box>
-);
-
-const ModeSwitcher = ({ mode, modes }: { mode: Variable<Mode>; modes: Mode[] }) => (
-    <box homogeneous hexpand className="mode-switcher">
-        {modes.map(m => (
-            <button
-                className={bind(mode).as(c => `mode ${c === m ? "selected" : ""}`)}
-                cursor="pointer"
-                onClicked={() => mode.set(m)}
-            >
-                <box halign={Gtk.Align.CENTER}>
-                    <label className="icon" label={getModeIcon(m)} />
-                    <label label={getPrettyMode(m)} />
-                </box>
-            </button>
-        ))}
-    </box>
-);
-
-@register()
-export default class Launcher extends PopupWindow {
-    readonly mode: Variable<Mode>;
-
-    constructor() {
-        const entry = (<entry hexpand className="entry" />) as Widget.Entry;
-        const mode = Variable<Mode>("apps");
-        const content = {
-            apps: new Apps(),
-            files: new Files(),
-            math: new Math(),
-            windows: new Windows(),
-        };
-
-        super({
-            name: "launcher",
-            anchor:
-                Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.RIGHT,
-            keymode: Astal.Keymode.EXCLUSIVE,
-            borderWidth: 0,
-            onKeyPressEvent(_, event) {
-                const keyval = event.get_keyval()[1];
-                // Focus entry on typing
-                if (!entry.isFocus && keyval >= 32 && keyval <= 126) {
-                    entry.text += String.fromCharCode(keyval);
-                    entry.grab_focus();
-                    entry.set_position(-1);
-
-                    // Consume event, if not consumed it will duplicate character in entry
-                    return true;
-                }
-            },
-            child: (
-                <box
-                    vertical
-                    halign={Gtk.Align.CENTER}
-                    valign={Gtk.Align.CENTER}
-                    className={bind(mode).as(m => `launcher ${m}`)}
-                >
-                    <SearchBar mode={mode} entry={entry} />
-                    <stack
-                        expand
-                        transitionType={Gtk.StackTransitionType.SLIDE_LEFT_RIGHT}
-                        transitionDuration={200}
-                        shown={bind(mode)}
-                    >
-                        {Object.values(content)}
-                    </stack>
-                    <ModeSwitcher mode={mode} modes={Object.keys(content) as Mode[]} />
-                </box>
-            ),
-        });
-
-        this.mode = mode;
-
-        content[mode.get()].updateContent(entry.get_text());
-        this.hook(mode, (_, v: Mode) => {
-            entry.set_text("");
-            content[v].updateContent(entry.get_text());
-        });
-        this.hook(entry, "changed", () => content[mode.get()].updateContent(entry.get_text()));
-        this.hook(entry, "activate", () => content[mode.get()].handleActivate(entry.get_text()));
-
-        // Clear search on hide if not in math mode or creating a todo
-        this.connect("hide", () => mode.get() !== "math" && !entry.text.startsWith(">todo") && entry.set_text(""));
-    }
-
-    open(mode: Mode) {
-        this.mode.set(mode);
-        this.show();
-    }
-}
+export default () => ({
+    apps: new Apps(),
+    files: new Files(),
+    math: new Math(),
+    windows: new Windows(),
+});

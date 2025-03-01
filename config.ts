@@ -89,7 +89,7 @@ const DEFAULTS = {
         },
     },
     launcher: {
-        maxResults: 15, // Max shown results at one time (i.e. max height of the launcher)
+        actionPrefix: ":", // Prefix for launcher actions
         apps: {
             maxResults: 30, // Actual max results, -1 for infinite
             pins: [

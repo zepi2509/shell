@@ -5,6 +5,10 @@
 
 @mixin launcher($mode, $colour) {
     &.#{$mode} {
+        label.icon {
+            color: $colour;
+        }
+
         .search-bar {
             .mode {
                 @include lib.border($colour, $width: 2);
@@ -87,8 +91,21 @@
             font-size: lib.s(32);
         }
 
+        .has-sublabel {
+            padding: lib.s(3) 0;
+        }
+
+        .sublabel {
+            color: scheme.$subtext0;
+            font-size: lib.s(14);
+        }
+
         & > box {
             @include lib.spacing(10);
+        }
+
+        &.italic {
+            font-style: italic;
         }
 
         &:hover {
@@ -98,57 +115,14 @@
         &:focus {
             border-bottom: lib.s(2) solid scheme.$red;
             color: scheme.$red;
+
+            .sublabel {
+                color: color.mix(scheme.$red, scheme.$base, 70%);
+            }
         }
 
         &:active {
             background-color: scheme.$surface1;
-        }
-    }
-
-    .pinned-app {
-        @include lib.rounded(5);
-
-        font-size: lib.s(64);
-    }
-
-    .results {
-        .icon {
-            font-size: lib.s(32);
-        }
-
-        .empty {
-            color: scheme.$subtext0;
-            font-size: lib.s(18);
-            padding: lib.s(10) 0;
-
-            @include lib.spacing;
-
-            .icon {
-                color: scheme.$subtext0;
-            }
-        }
-
-        .result {
-            @include lib.rounded(10);
-
-            font-size: lib.s(18);
-
-            & > * {
-                @include lib.spacing(8);
-            }
-
-            .has-sublabel {
-                font-size: lib.s(16);
-
-                .sublabel {
-                    color: scheme.$subtext0;
-                    font-size: lib.s(14);
-                }
-            }
-
-            &.italic {
-                font-style: italic;
-            }
         }
     }
 }
