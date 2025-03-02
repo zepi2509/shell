@@ -67,7 +67,13 @@ App.start({
         else if (request === "media next") Players.get_default().lastPlayer?.next();
         else if (request === "media previous") Players.get_default().lastPlayer?.previous();
         else if (request === "media stop") Players.get_default().lastPlayer?.stop();
-        else if (request.startsWith("brightness")) {
+        else if (request.startsWith("media")) {
+            const player = Players.get_default().lastPlayer;
+            const key = request.split(" ")[1];
+            if (player === null) return res("No available players");
+            if (key in player) return res(player[key as keyof typeof player]);
+            return res(`Invalid key: ${key}`);
+        } else if (request.startsWith("brightness")) {
             const value = request.split(" ")[1];
             const num = parseFloat(value) / (value.includes("%") ? 100 : 1);
             if (isNaN(num)) return res("Syntax: brightness <value>[%][+ | -]");
