@@ -1,5 +1,6 @@
 import { Apps } from "@/services/apps";
 import type { IPalette } from "@/services/palette";
+import Palette from "@/services/palette";
 import Schemes from "@/services/schemes";
 import Wallpapers from "@/services/wallpapers";
 import { basename } from "@/utils/strings";
@@ -17,6 +18,7 @@ interface IAction {
     name: string;
     description: string;
     action: (...args: string[]) => void;
+    available?: () => boolean;
 }
 
 interface ActionMap {
@@ -64,6 +66,26 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
             mode.set("windows");
             entry.set_text("");
         },
+    },
+    light: {
+        icon: "light_mode",
+        name: "Light",
+        description: "Change dynamic scheme to light mode",
+        action: () => {
+            execAsync(`caelestia wallpaper -T light -f ${STATE}/wallpaper/current`).catch(console.error);
+            close();
+        },
+        available: () => Palette.get_default().name === "dynamic",
+    },
+    dark: {
+        icon: "dark_mode",
+        name: "Dark",
+        description: "Change dynamic scheme to dark mode",
+        action: () => {
+            execAsync(`caelestia wallpaper -T dark -f ${STATE}/wallpaper/current`).catch(console.error);
+            close();
+        },
+        available: () => Palette.get_default().name === "dynamic",
     },
     scheme: {
         icon: "palette",
@@ -278,7 +300,8 @@ export default class Actions extends Widget.Box implements LauncherContent {
             for (const { obj } of fuzzysort.go(wallpaper, Wallpapers.get_default().list, { all: true, key: "path" }))
                 this.#content.add(<Wallpaper {...obj} />);
         } else {
-            for (const { target } of fuzzysort.go(action, this.#list, { all: true }))
+            const list = this.#list.filter(a => this.#map[a].available?.() ?? true);
+            for (const { target } of fuzzysort.go(action, list, { all: true }))
                 this.#content.add(<Action {...this.#map[target]} args={args.slice(1)} />);
         }
     }

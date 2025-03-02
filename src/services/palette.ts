@@ -1,4 +1,4 @@
-import { GLib, GObject, monitorFile, property, readFile, register } from "astal";
+import { GLib, GObject, monitorFile, property, readFile, readFileAsync, register } from "astal";
 
 export type Hex = `#${string}`;
 
@@ -41,7 +41,19 @@ export default class Palette extends GObject.Object {
         return this.instance;
     }
 
+    #isLight: boolean;
+    #name: string;
     #colours!: IPalette;
+
+    @property(Boolean)
+    get isLight() {
+        return this.#isLight;
+    }
+
+    @property(String)
+    get name() {
+        return this.#name;
+    }
 
     @property(Object)
     get colours() {
@@ -233,6 +245,18 @@ export default class Palette extends GObject.Object {
 
     constructor() {
         super();
+
+        this.#isLight = readFile(`${STATE}/scheme/current-mode.txt`) === "light";
+        monitorFile(`${STATE}/scheme/current-mode.txt`, async file => {
+            this.#isLight = (await readFileAsync(file)) === "light";
+            this.notify("is-light");
+        });
+
+        this.#name = readFile(`${STATE}/scheme/current-name.txt`);
+        monitorFile(`${STATE}/scheme/current-name.txt`, async file => {
+            this.#name = await readFileAsync(file);
+            this.notify("name");
+        });
 
         this.update();
         monitorFile(`${STATE}/scheme/current.txt`, () => this.update());
