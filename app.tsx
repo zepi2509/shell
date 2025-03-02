@@ -70,7 +70,7 @@ App.start({
         else if (request.startsWith("media")) {
             const player = Players.get_default().lastPlayer;
             const key = request.split(" ")[1];
-            if (player === null) return res("No available players");
+            if (player === null) return res("No media");
             if (key in player) return res(player[key as keyof typeof player]);
             return res(`Invalid key: ${key}`);
         } else if (request.startsWith("brightness")) {
