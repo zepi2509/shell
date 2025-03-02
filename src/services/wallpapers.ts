@@ -26,7 +26,8 @@ export default class Wallpapers extends GObject.Object {
     }
 
     async #thumbnail(path: string) {
-        const thumbPath = `${this.#thumbnailDir}/${basename(path)}.jpg`;
+        const dir = path.slice(1, path.lastIndexOf("/")).replaceAll("/", "-");
+        const thumbPath = `${this.#thumbnailDir}/${dir}-${basename(path)}.jpg`;
         await execAsync(`magick -define jpeg:size=1000x500 ${path} -thumbnail 500x250 -unsharp 0x.5 ${thumbPath}`);
         return thumbPath;
     }
