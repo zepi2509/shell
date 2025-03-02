@@ -24,7 +24,7 @@ const lengthStr = (length: number) =>
 
 const Player = ({ player }: { player: AstalMpris.Player }) => {
     const background = (
-        <box className="background" css={bind(player, "coverArt").as(u => u && `background-image: url("${u}");`)} />
+        <box className="background" css={bind(player, "coverArt").as(u => `background-image: url("${u}");`)} />
     );
     return (
         <overlay
