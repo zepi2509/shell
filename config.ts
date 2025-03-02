@@ -122,7 +122,7 @@ const DEFAULTS = {
             notify: true,
         },
         wallpaper: {
-            style: "compact", // One of "compact", "medium", "large"
+            style: "medium", // One of "compact", "medium", "large"
         },
     },
     notifpopups: {
