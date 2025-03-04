@@ -170,7 +170,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     lock: {
         icon: "lock",
         name: "Lock",
-        description: "Lock the current session.",
+        description: "Lock the current session",
         action: () => {
             execAsync("loginctl lock-session").catch(console.error);
             close();
@@ -179,7 +179,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     logout: {
         icon: "logout",
         name: "Logout",
-        description: "End the current session.",
+        description: "End the current session",
         action: () => {
             execAsync("uwsm stop").catch(console.error);
             close();
@@ -188,7 +188,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     sleep: {
         icon: "bedtime",
         name: "Sleep",
-        description: "Suspend then hibernate.",
+        description: "Suspend then hibernate",
         action: () => {
             execAsync("systemctl suspend-then-hibernate").catch(console.error);
             close();
@@ -197,7 +197,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     reboot: {
         icon: "cached",
         name: "Reboot",
-        description: "Restart the machine.",
+        description: "Restart the machine",
         action: () => {
             execAsync("systemctl reboot").catch(console.error);
             close();
@@ -206,7 +206,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     hibernate: {
         icon: "downloading",
         name: "Hibernate",
-        description: "Suspend to RAM.",
+        description: "Suspend to RAM",
         action: () => {
             execAsync("systemctl hibernate").catch(console.error);
             close();
@@ -215,7 +215,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     shutdown: {
         icon: "power_settings_new",
         name: "Shutdown",
-        description: "Suspend to disk.",
+        description: "Suspend to disk",
         action: () => {
             execAsync("systemctl poweroff").catch(console.error);
             close();
@@ -341,7 +341,9 @@ export default class Actions extends Widget.Box implements LauncherContent {
             for (const { obj } of fuzzysort.go(wallpaper, Wallpapers.get_default().list, { all: true, key: "path" }))
                 this.#content.add(<Wallpaper {...obj} />);
         } else {
-            const list = this.#list.filter(a => this.#map[a].available?.() ?? true);
+            const list = this.#list.filter(
+                a => this.#map[a].available?.() ?? !config.disabledActions.get().includes(a)
+            );
             for (const { target } of fuzzysort.go(action, list, { all: true }))
                 this.#content.add(<Action {...this.#map[target]} args={args.slice(1)} />);
         }

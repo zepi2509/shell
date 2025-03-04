@@ -124,6 +124,7 @@ const DEFAULTS = {
         wallpaper: {
             style: "medium", // One of "compact", "medium", "large"
         },
+        disabledActions: ["logout", "shutdown", "reboot", "hibernate"], // Actions to hide, see launcher/actions.tsx for available actions
     },
     notifpopups: {
         maxPopups: -1,
