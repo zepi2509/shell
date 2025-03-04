@@ -167,6 +167,60 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
             entry.set_text("");
         },
     },
+    lock: {
+        icon: "lock",
+        name: "Lock",
+        description: "Lock the current session.",
+        action: () => {
+            execAsync("loginctl lock-session").catch(console.error);
+            close();
+        },
+    },
+    logout: {
+        icon: "logout",
+        name: "Logout",
+        description: "End the current session.",
+        action: () => {
+            execAsync("uwsm stop").catch(console.error);
+            close();
+        },
+    },
+    sleep: {
+        icon: "bedtime",
+        name: "Sleep",
+        description: "Suspend then hibernate.",
+        action: () => {
+            execAsync("systemctl suspend-then-hibernate").catch(console.error);
+            close();
+        },
+    },
+    reboot: {
+        icon: "cached",
+        name: "Reboot",
+        description: "Restart the machine.",
+        action: () => {
+            execAsync("systemctl reboot").catch(console.error);
+            close();
+        },
+    },
+    hibernate: {
+        icon: "downloading",
+        name: "Hibernate",
+        description: "Suspend to RAM.",
+        action: () => {
+            execAsync("systemctl hibernate").catch(console.error);
+            close();
+        },
+    },
+    shutdown: {
+        icon: "power_settings_new",
+        name: "Shutdown",
+        description: "Suspend to disk.",
+        action: () => {
+            execAsync("systemctl poweroff").catch(console.error);
+            close();
+        },
+    },
 });
 
 const Action = ({ args, icon, name, description, action }: IAction & { args: string[] }) => (
