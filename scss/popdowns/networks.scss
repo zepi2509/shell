@@ -37,6 +37,10 @@ $-accent: scheme.$rosewater;
                 &:active {
                     background-color: scheme.$surface1;
                 }
+
+                &:disabled {
+                    color: scheme.$subtext0;
+                }
             }
 
             &.active {
