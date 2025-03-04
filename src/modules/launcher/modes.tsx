@@ -1,8 +1,9 @@
 import { Apps as AppsService } from "@/services/apps";
+import MathService, { type HistoryItem } from "@/services/math";
 import { getAppCategoryIcon } from "@/utils/icons";
 import { launch } from "@/utils/system";
 import { type FlowBox, setupCustomTooltip } from "@/utils/widgets";
-import { execAsync, Gio, register } from "astal";
+import { bind, execAsync, Gio, register, Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
 import { launcher as config } from "config";
 import type AstalApps from "gi://AstalApps";
@@ -71,6 +72,28 @@ const FileResult = ({ path }: { path: string }) => (
     </Gtk.FlowBoxChild>
 );
 
+const MathResult = ({ icon, equation, result }: HistoryItem) => (
+    <Gtk.FlowBoxChild visible canFocus={false}>
+        <button
+            className="result"
+            cursor="pointer"
+            onClicked={() => {
+                execAsync(["wl-copy", "--", result]).catch(console.error);
+                close();
+            }}
+            setup={self => setupCustomTooltip(self, `${equation} -> ${result}`)}
+        >
+            <box>
+                <label className="icon" label={icon} />
+                <box vertical className="has-sublabel">
+                    <label truncate xalign={0} label={equation} />
+                    <label truncate xalign={0} label={result} className="sublabel" />
+                </box>
+            </box>
+        </button>
+    </Gtk.FlowBoxChild>
+);
+
 @register()
 class Apps extends Widget.Box implements LauncherContent {
     #content: FlowBox;
@@ -133,16 +156,65 @@ class Files extends Widget.Box implements LauncherContent {
 
 @register()
 class Math extends Widget.Box implements LauncherContent {
+    #showResult: Variable<boolean>;
+    #result: Variable<HistoryItem>;
+    #content: FlowBox;
+
     constructor() {
-        super({ name: "math", className: "math" });
+        super({ name: "math", className: "math", vertical: true });
+
+        this.#showResult = Variable(false);
+        this.#result = Variable({ equation: "", result: "", icon: "" });
+        this.#content = (<ContentBox />) as FlowBox;
+
+        this.add(
+            <revealer
+                transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                transitionDuration={150}
+                revealChild={bind(this.#showResult)}
+            >
+                <box vertical className="preview">
+                    <box className="result">
+                        <label className="icon" label={bind(this.#result).as(r => r.icon)} />
+                        <box vertical>
+                            <label xalign={0} label="Result" />
+                            <label
+                                truncate
+                                xalign={0}
+                                className="sublabel"
+                                label={bind(this.#result).as(r => r.result)}
+                            />
+                        </box>
+                    </box>
+                    <box className="separator" />
+                </box>
+            </revealer>
+        );
+        this.add(
+            <scrollable expand hscroll={Gtk.PolicyType.NEVER}>
+                {this.#content}
+            </scrollable>
+        );
     }
 
     updateContent(search: string): void {
-        throw new Error("Method not implemented.");
+        this.#showResult.set(search.length > 0);
+        this.#result.set(MathService.get_default().evaluate(search));
+
+        this.#content.foreach(c => c.destroy());
+        for (const item of limitLength(MathService.get_default().history, config.math))
+            this.#content.add(<MathResult {...item} />);
     }
 
     handleActivate(search: string): void {
-        throw new Error("Method not implemented.");
+        if (!search) return;
+        MathService.get_default().commit();
+        const res = this.#result.get();
+        // Copy and close if not assignment, help or error
+        if (!["equal", "help", "error"].includes(res.icon)) {
+            execAsync(["wl-copy", "--", res.result]).catch(console.error);
+            close();
+        }
     }
 }
 

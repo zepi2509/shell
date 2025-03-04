@@ -121,9 +121,10 @@ export default class Launcher extends PopupWindow {
         this.hook(entry, "changed", () =>
             (isAction(entry.get_text()) ? actions : content[mode.get()]).updateContent(entry.get_text())
         );
-        this.hook(entry, "activate", () =>
-            (isAction(entry.get_text()) ? actions : content[mode.get()]).handleActivate(entry.get_text())
-        );
+        this.hook(entry, "activate", () => {
+            (isAction(entry.get_text()) ? actions : content[mode.get()]).handleActivate(entry.get_text());
+            entry.set_text(""); // Clear search on activate
+        });
 
         // Clear search on hide if not in math mode or creating a todo
         this.connect("hide", () => mode.get() !== "math" && !entry.text.startsWith(">todo") && entry.set_text(""));

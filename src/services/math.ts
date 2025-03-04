@@ -103,7 +103,7 @@ export default class Math extends GObject.Object {
             } else if (equation.includes("=")) {
                 const [left, right] = equation.split("=");
                 try {
-                    this.#variables[left.trim()] = simplify(right).toString();
+                    this.#variables[left.trim()] = simplify(right, this.#variables).toString();
                 } catch {
                     this.#variables[left.trim()] = right.trim();
                 }
