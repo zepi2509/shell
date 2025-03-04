@@ -10,7 +10,7 @@ import Players from "@/services/players";
 import Schemes from "@/services/schemes";
 import Wallpapers from "@/services/wallpapers";
 import type PopupWindow from "@/widgets/popupwindow";
-import { execAsync, idle, writeFileAsync } from "astal";
+import { execAsync, idle, timeout, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
 import { initConfig, updateConfig } from "config";
 
@@ -41,8 +41,10 @@ App.start({
         <Popdowns />;
 
         // Init services
-        idle(() => Schemes.get_default());
-        idle(() => Wallpapers.get_default());
+        timeout(1000, () => {
+            idle(() => Schemes.get_default());
+            idle(() => Wallpapers.get_default());
+        });
 
         console.log(`Caelestia started in ${Date.now() - now}ms`);
     },
