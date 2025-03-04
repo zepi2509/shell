@@ -91,26 +91,13 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
         icon: "palette",
         name: "Scheme",
         description: "Change the current colour scheme",
-        action: (...args) => {
-            // If no args, autocomplete cmd
-            if (args.length === 0) return autocomplete(entry, "scheme");
-
-            execAsync(`caelestia scheme ${args[0]}`).catch(console.error);
-            close();
-        },
+        action: () => autocomplete(entry, "scheme"),
     },
     wallpaper: {
         icon: "image",
         name: "Wallpaper",
         description: "Change the current wallpaper",
-        action: (...args) => {
-            // If no args, autocomplete cmd
-            if (args.length === 0) return autocomplete(entry, "wallpaper");
-
-            if (args[0] === "random") execAsync("caelestia wallpaper").catch(console.error);
-            else execAsync(`caelestia wallpaper -f ${args[0]}`).catch(console.error);
-            close();
-        },
+        action: () => autocomplete(entry, "wallpaper"),
     },
     todo: {
         icon: "checklist",
@@ -289,7 +276,7 @@ export default class Actions extends Widget.Box implements LauncherContent {
     updateContent(search: string): void {
         this.#content.foreach(c => c.destroy());
         const args = search.split(" ");
-        const action = args[0].slice(1);
+        const action = args[0].slice(1).toLowerCase();
 
         if (action === "scheme") {
             const scheme = args[1] ?? "";
@@ -306,7 +293,15 @@ export default class Actions extends Widget.Box implements LauncherContent {
         }
     }
 
-    handleActivate(): void {
+    handleActivate(search: string): void {
+        const args = search.split(" ");
+        const action = args[0].slice(1).toLowerCase();
+
+        if ((action === "scheme" || action === "wallpaper") && args[1].toLowerCase() === "random") {
+            execAsync(`caelestia ${action}`).catch(console.error);
+            close();
+        }
+
         this.#content.get_child_at_index(0)?.get_child()?.activate();
     }
 }
