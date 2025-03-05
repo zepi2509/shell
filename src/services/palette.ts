@@ -41,18 +41,24 @@ export default class Palette extends GObject.Object {
         return this.instance;
     }
 
-    #isLight: boolean;
-    #name: string;
+    #mode: "light" | "dark";
+    #scheme: string;
+    #flavour?: string;
     #colours!: IPalette;
 
     @property(Boolean)
-    get isLight() {
-        return this.#isLight;
+    get mode() {
+        return this.#mode;
     }
 
     @property(String)
-    get name() {
-        return this.#name;
+    get scheme() {
+        return this.#scheme;
+    }
+
+    @property(String)
+    get flavour() {
+        return this.#flavour;
     }
 
     @property(Object)
@@ -246,16 +252,17 @@ export default class Palette extends GObject.Object {
     constructor() {
         super();
 
-        this.#isLight = readFile(`${STATE}/scheme/current-mode.txt`) === "light";
+        this.#mode = readFile(`${STATE}/scheme/current-mode.txt`) === "light" ? "light" : "dark";
         monitorFile(`${STATE}/scheme/current-mode.txt`, async file => {
-            this.#isLight = (await readFileAsync(file)) === "light";
-            this.notify("is-light");
+            this.#mode = (await readFileAsync(file)) === "light" ? "light" : "dark";
+            this.notify("mode");
         });
 
-        this.#name = readFile(`${STATE}/scheme/current-name.txt`);
+        [this.#scheme, this.#flavour] = readFile(`${STATE}/scheme/current-name.txt`).split("-");
         monitorFile(`${STATE}/scheme/current-name.txt`, async file => {
-            this.#name = await readFileAsync(file);
-            this.notify("name");
+            [this.#scheme, this.#flavour] = (await readFileAsync(file)).split("-");
+            this.notify("scheme");
+            this.notify("flavour");
         });
 
         this.update();

@@ -1,7 +1,6 @@
 import { Apps } from "@/services/apps";
-import type { IPalette } from "@/services/palette";
 import Palette from "@/services/palette";
-import Schemes from "@/services/schemes";
+import Schemes, { type Colours } from "@/services/schemes";
 import Wallpapers from "@/services/wallpapers";
 import { basename } from "@/utils/strings";
 import { notify } from "@/utils/system";
@@ -28,6 +27,12 @@ interface ActionMap {
 const autocomplete = (entry: Widget.Entry, action: string) => {
     entry.set_text(`${config.actionPrefix.get()}${action} `);
     entry.set_position(-1);
+};
+
+const hasMode = (mode: "light" | "dark") => {
+    const scheme = Schemes.get_default().map[Palette.get_default().scheme];
+    if (scheme.colours?.[mode]) return true;
+    return scheme.flavours?.[Palette.get_default().flavour ?? ""]?.colours?.[mode] !== undefined;
 };
 
 const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
@@ -70,22 +75,22 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     light: {
         icon: "light_mode",
         name: "Light",
-        description: "Change dynamic scheme to light mode",
+        description: "Change scheme to light mode",
         action: () => {
             execAsync(`caelestia wallpaper -T light -f ${STATE}/wallpaper/current`).catch(console.error);
             close();
         },
-        available: () => Palette.get_default().name === "dynamic",
+        available: () => hasMode("light"),
     },
     dark: {
         icon: "dark_mode",
         name: "Dark",
-        description: "Change dynamic scheme to dark mode",
+        description: "Change scheme to dark mode",
         action: () => {
             execAsync(`caelestia wallpaper -T dark -f ${STATE}/wallpaper/current`).catch(console.error);
             close();
         },
-        available: () => Palette.get_default().name === "dynamic",
+        available: () => hasMode("dark"),
     },
     scheme: {
         icon: "palette",
@@ -244,44 +249,47 @@ const Action = ({ args, icon, name, description, action }: IAction & { args: str
 
 const Swatch = ({ colour }: { colour: string }) => <box className="swatch" css={"background-color: " + colour + ";"} />;
 
-const Scheme = ({ name, colours }: { name: string; colours: IPalette }) => (
-    <Gtk.FlowBoxChild visible canFocus={false}>
-        <button
-            className="result"
-            cursor="pointer"
-            onClicked={() => {
-                execAsync(`caelestia scheme ${name}`).catch(console.error);
-                close();
-            }}
-        >
-            <box>
-                <box valign={Gtk.Align.CENTER}>
-                    <box className="swatch big left" css={"background-color: " + colours.base + ";"} />
-                    <box className="swatch big right" css={"background-color: " + colours.accent + ";"} />
-                </box>
-                <box vertical className="has-sublabel">
-                    <label truncate xalign={0} label={name} />
-                    <box className="swatches">
-                        <Swatch colour={colours.rosewater} />
-                        <Swatch colour={colours.flamingo} />
-                        <Swatch colour={colours.pink} />
-                        <Swatch colour={colours.mauve} />
-                        <Swatch colour={colours.red} />
-                        <Swatch colour={colours.maroon} />
-                        <Swatch colour={colours.peach} />
-                        <Swatch colour={colours.yellow} />
-                        <Swatch colour={colours.green} />
-                        <Swatch colour={colours.teal} />
-                        <Swatch colour={colours.sky} />
-                        <Swatch colour={colours.sapphire} />
-                        <Swatch colour={colours.blue} />
-                        <Swatch colour={colours.lavender} />
+const Scheme = ({ scheme, name, colours }: { scheme?: string; name: string; colours?: Colours }) => {
+    const palette = colours![Palette.get_default().mode] ?? colours!.light ?? colours!.dark!;
+    return (
+        <Gtk.FlowBoxChild visible canFocus={false}>
+            <button
+                className="result"
+                cursor="pointer"
+                onClicked={() => {
+                    execAsync(`caelestia scheme ${scheme ?? ""} ${name}`).catch(console.error);
+                    close();
+                }}
+            >
+                <box>
+                    <box valign={Gtk.Align.CENTER}>
+                        <box className="swatch big left" css={"background-color: " + palette.base + ";"} />
+                        <box className="swatch big right" css={"background-color: " + palette.accent + ";"} />
+                    </box>
+                    <box vertical className="has-sublabel">
+                        <label truncate xalign={0} label={scheme ? `${scheme} (${name})` : name} />
+                        <box className="swatches">
+                            <Swatch colour={palette.rosewater} />
+                            <Swatch colour={palette.flamingo} />
+                            <Swatch colour={palette.pink} />
+                            <Swatch colour={palette.mauve} />
+                            <Swatch colour={palette.red} />
+                            <Swatch colour={palette.maroon} />
+                            <Swatch colour={palette.peach} />
+                            <Swatch colour={palette.yellow} />
+                            <Swatch colour={palette.green} />
+                            <Swatch colour={palette.teal} />
+                            <Swatch colour={palette.sky} />
+                            <Swatch colour={palette.sapphire} />
+                            <Swatch colour={palette.blue} />
+                            <Swatch colour={palette.lavender} />
+                        </box>
                     </box>
                 </box>
-            </box>
-        </button>
-    </Gtk.FlowBoxChild>
-);
+            </button>
+        </Gtk.FlowBoxChild>
+    );
+};
 
 const Wallpaper = ({ path, thumbnail }: { path: string; thumbnail?: string }) => (
     <Gtk.FlowBoxChild visible canFocus={false}>
@@ -334,8 +342,17 @@ export default class Actions extends Widget.Box implements LauncherContent {
 
         if (action === "scheme") {
             const scheme = args[1] ?? "";
-            for (const { target } of fuzzysort.go(scheme, Object.keys(Schemes.get_default().map), { all: true }))
-                this.#content.add(<Scheme name={target} colours={Schemes.get_default().map[target]} />);
+            const schemes = Object.values(Schemes.get_default().map)
+                .flatMap(s => (s.colours ? s.name : Object.values(s.flavours!).map(f => `${f.scheme}-${f.name}`)))
+                .filter(s => s !== undefined);
+            for (const { target } of fuzzysort.go(scheme, schemes, { all: true })) {
+                if (Schemes.get_default().map.hasOwnProperty(target))
+                    this.#content.add(<Scheme {...Schemes.get_default().map[target]} />);
+                else {
+                    const [scheme, flavour] = target.split("-");
+                    this.#content.add(<Scheme {...Schemes.get_default().map[scheme].flavours![flavour]} />);
+                }
+            }
         } else if (action === "wallpaper") {
             const wallpaper = args[1] ?? "";
             for (const { obj } of fuzzysort.go(wallpaper, Wallpapers.get_default().list, { all: true, key: "path" }))

@@ -1,4 +1,4 @@
-import { bind, execAsync, GLib, Variable, type Binding, type Gio } from "astal";
+import { bind, execAsync, Gio, GLib, Variable, type Binding } from "astal";
 import type AstalApps from "gi://AstalApps";
 import { osIcons } from "./icons";
 
@@ -74,4 +74,22 @@ export const bindCurrentTime = (
     const time = Variable.derive([currentTime, format], (c, f) => fmt(c, f));
     self?.connect("destroy", () => time.drop());
     return bind(time);
+};
+
+export const monitorDirectory = (path: string, callback: (path: string) => void, recursive?: boolean) => {
+    const file = Gio.file_new_for_path(path.replace("~", HOME));
+    const monitor = file.monitor_directory(null, null);
+    monitor.connect("changed", callback);
+
+    const monitors = [monitor];
+
+    if (recursive) {
+        const enumerator = file.enumerate_children("standard::*", null, null);
+        let child;
+        while ((child = enumerator.next_file(null)))
+            if (child.get_file_type() === Gio.FileType.DIRECTORY)
+                monitors.push(...monitorDirectory(`${path}/${child.get_name()}`, callback, recursive));
+    }
+
+    return monitors;
 };

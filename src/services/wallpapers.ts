@@ -1,5 +1,6 @@
 import { basename } from "@/utils/strings";
-import { execAsync, Gio, GLib, GObject, property, register } from "astal";
+import { monitorDirectory } from "@/utils/system";
+import { execAsync, GLib, GObject, property, register } from "astal";
 import { wallpapers as config } from "config";
 
 export interface Wallpaper {
@@ -55,28 +56,12 @@ export default class Wallpapers extends GObject.Object {
 
         this.update().catch(console.error);
 
-        const monitorDir = ({ path, recursive }: { path: string; recursive: boolean }) => {
-            const file = Gio.file_new_for_path(path.replace("~", HOME));
-            const monitor = file.monitor_directory(null, null);
-            monitor.connect("changed", () => this.update().catch(console.error));
-
-            const monitors = [monitor];
-
-            if (recursive) {
-                const enumerator = file.enumerate_children("standard::*", null, null);
-                let child;
-                while ((child = enumerator.next_file(null)))
-                    if (child.get_file_type() === Gio.FileType.DIRECTORY)
-                        monitors.push(...monitorDir({ path: `${path}/${child.get_name()}`, recursive }));
-            }
-
-            return monitors;
-        };
-
-        let monitors = config.paths.get().flatMap(monitorDir);
+        let monitors = config.paths
+            .get()
+            .flatMap(p => monitorDirectory(p.path, () => this.update().catch(console.error), p.recursive));
         config.paths.subscribe(v => {
             for (const m of monitors) m.cancel();
-            monitors = v.flatMap(monitorDir);
+            monitors = v.flatMap(p => monitorDirectory(p.path, () => this.update().catch(console.error), p.recursive));
         });
     }
 }
