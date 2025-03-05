@@ -2,7 +2,7 @@ import Palette from "@/services/palette";
 import Updates, { Repo as IRepo, Update as IUpdate } from "@/services/updates";
 import { MenuItem } from "@/utils/widgets";
 import PopdownWindow from "@/widgets/popdownwindow";
-import { bind, execAsync, Variable } from "astal";
+import { bind, execAsync, GLib, Variable } from "astal";
 import { App, Astal, Gtk } from "astal/gtk3";
 
 const constructItem = (label: string, exec: string, quiet = true) =>
@@ -33,7 +33,12 @@ const Update = (update: IUpdate) => {
                 xalign={0}
                 label={bind(Palette.get_default(), "colours").as(
                     c =>
-                        `${update.name} <span foreground="${c.teal}">(${update.version.old} -> ${update.version.new})</span>\n    <span foreground="${c.subtext0}">${update.description}</span>`
+                        `${update.name} <span foreground="${c.teal}">(${update.version.old} -> ${
+                            update.version.new
+                        })</span>\n    <span foreground="${c.subtext0}">${GLib.markup_escape_text(
+                            update.description,
+                            update.description.length
+                        )}</span>`
                 )}
             />
         </button>
@@ -69,6 +74,11 @@ const Repo = ({ repo, first }: { repo: IRepo; first?: boolean }) => {
 const News = ({ news }: { news: string }) => {
     const expanded = Variable(true);
 
+    news = news
+        .replaceAll("\n\n\x1b", "\n\n") // Remove unopened \x1b[0m after each piece of news
+        .replace(/^([0-9]{4}-[0-9]{2}-[0-9]{2} .+)$/gm, "<b>$1</b>") // Make titles bold
+        .replaceAll("\x1b[0m", "</span>"); // Replace reset code with end span
+
     return (
         <box vertical className="repo">
             <button className="wrapper" cursor="pointer" onClicked={() => expanded.set(!expanded.get())}>
@@ -89,13 +99,8 @@ const News = ({ news }: { news: string }) => {
                     useMarkup
                     xalign={0}
                     className="news"
-                    label={bind(Palette.get_default(), "teal").as(c =>
-                        news
-                            .slice(0, news.lastIndexOf("\n")) // Remove last line cause it contains an unopened \x1b[0m
-                            .replace(/^([0-9]{4}-[0-9]{2}-[0-9]{2} .+)$/gm, "<b>$1</b>") // Make titles bold
-                            // Replace color codes with html spans
-                            .replaceAll("\x1b[36m", `<span foreground="${c}">`)
-                            .replaceAll("\x1b[0m", "</span>")
+                    label={bind(Palette.get_default(), "teal").as(
+                        c => news.replaceAll("\x1b[36m", `<span foreground="${c}">`) // Replace color codes with html spans
                     )}
                 />
             </revealer>
