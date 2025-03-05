@@ -29,12 +29,6 @@ const autocomplete = (entry: Widget.Entry, action: string) => {
     entry.set_position(-1);
 };
 
-const hasMode = (mode: "light" | "dark") => {
-    const scheme = Schemes.get_default().map[Palette.get_default().scheme];
-    if (scheme.colours?.[mode]) return true;
-    return scheme.flavours?.[Palette.get_default().flavour ?? ""]?.colours?.[mode] !== undefined;
-};
-
 const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     apps: {
         icon: "apps",
@@ -77,20 +71,20 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
         name: "Light",
         description: "Change scheme to light mode",
         action: () => {
-            execAsync(`caelestia wallpaper -T light -f ${STATE}/wallpaper/current`).catch(console.error);
+            Palette.get_default().switchMode("light");
             close();
         },
-        available: () => hasMode("light"),
+        available: () => Palette.get_default().hasMode("light"),
     },
     dark: {
         icon: "dark_mode",
         name: "Dark",
         description: "Change scheme to dark mode",
         action: () => {
-            execAsync(`caelestia wallpaper -T dark -f ${STATE}/wallpaper/current`).catch(console.error);
+            Palette.get_default().switchMode("dark");
             close();
         },
-        available: () => hasMode("dark"),
+        available: () => Palette.get_default().hasMode("dark"),
     },
     scheme: {
         icon: "palette",

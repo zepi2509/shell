@@ -1,4 +1,7 @@
-import { GLib, GObject, monitorFile, property, readFile, readFileAsync, register } from "astal";
+import { execAsync, GLib, GObject, monitorFile, property, readFile, readFileAsync, register } from "astal";
+import Schemes from "./schemes";
+
+export type ColourMode = "light" | "dark";
 
 export type Hex = `#${string}`;
 
@@ -41,7 +44,7 @@ export default class Palette extends GObject.Object {
         return this.instance;
     }
 
-    #mode: "light" | "dark";
+    #mode: ColourMode;
     #scheme: string;
     #flavour?: string;
     #colours!: IPalette;
@@ -247,6 +250,16 @@ export default class Palette extends GObject.Object {
 
         this.#colours = schemeColours.reduce((acc, [name, hex]) => ({ ...acc, [name]: `#${hex}` }), {} as IPalette);
         this.#notify();
+    }
+
+    switchMode(mode: ColourMode) {
+        execAsync(`caelestia scheme ${this.scheme} ${this.flavour ?? ""} ${mode}`).catch(console.error);
+    }
+
+    hasMode(mode: ColourMode) {
+        const scheme = Schemes.get_default().map[this.scheme];
+        if (scheme?.colours?.[mode]) return true;
+        return scheme?.flavours?.[this.flavour ?? ""]?.colours?.[mode] !== undefined;
     }
 
     constructor() {
