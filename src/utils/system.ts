@@ -78,18 +78,18 @@ export const bindCurrentTime = (
 
 export const monitorDirectory = (path: string, callback: (path: string) => void, recursive?: boolean) => {
     const file = Gio.file_new_for_path(path.replace("~", HOME));
-    const monitor = file.monitor_directory(null, null);
+    const monitor = file.monitor_directory(Gio.FileMonitorFlags.WATCH_MOUNTS | Gio.FileMonitorFlags.WATCH_MOVES, null);
     monitor.connect("changed", callback);
-
-    const monitors = [monitor];
 
     if (recursive) {
         const enumerator = file.enumerate_children("standard::*", null, null);
         let child;
         while ((child = enumerator.next_file(null)))
-            if (child.get_file_type() === Gio.FileType.DIRECTORY)
-                monitors.push(...monitorDirectory(`${path}/${child.get_name()}`, callback, recursive));
+            if (child.get_file_type() === Gio.FileType.DIRECTORY) {
+                const m = monitorDirectory(`${path}/${child.get_name()}`, callback, recursive);
+                monitor.connect("notify::cancelled", () => m.cancel());
+            }
     }
 
-    return monitors;
+    return monitor;
 };

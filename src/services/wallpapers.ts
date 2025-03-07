@@ -58,10 +58,10 @@ export default class Wallpapers extends GObject.Object {
 
         let monitors = config.paths
             .get()
-            .flatMap(p => monitorDirectory(p.path, () => this.update().catch(console.error), p.recursive));
+            .map(p => monitorDirectory(p.path, () => this.update().catch(console.error), p.recursive));
         config.paths.subscribe(v => {
             for (const m of monitors) m.cancel();
-            monitors = v.flatMap(p => monitorDirectory(p.path, () => this.update().catch(console.error), p.recursive));
+            monitors = v.map(p => monitorDirectory(p.path, () => this.update().catch(console.error), p.recursive));
         });
     }
 }
