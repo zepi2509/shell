@@ -258,7 +258,7 @@ const Scheme = ({ scheme, name, colours }: { scheme?: string; name: string; colo
                 <box>
                     <box valign={Gtk.Align.CENTER}>
                         <box className="swatch big left" css={"background-color: " + palette.base + ";"} />
-                        <box className="swatch big right" css={"background-color: " + palette.accent + ";"} />
+                        <box className="swatch big right" css={"background-color: " + palette.primary + ";"} />
                     </box>
                     <box vertical className="has-sublabel">
                         <label truncate xalign={0} label={scheme ? `${scheme} (${name})` : name} />

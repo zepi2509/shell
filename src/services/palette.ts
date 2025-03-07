@@ -32,7 +32,9 @@ export interface IPalette {
     base: Hex;
     mantle: Hex;
     crust: Hex;
-    accent: Hex;
+    primary: Hex;
+    secondary: Hex;
+    tertiary: Hex;
 }
 
 @register({ GTypeName: "Palette" })
@@ -200,8 +202,18 @@ export default class Palette extends GObject.Object {
     }
 
     @property(String)
-    get accent() {
-        return this.#colours.accent;
+    get primary() {
+        return this.#colours.primary;
+    }
+
+    @property(String)
+    get secondary() {
+        return this.#colours.secondary;
+    }
+
+    @property(String)
+    get tertiary() {
+        return this.#colours.tertiary;
     }
 
     #notify() {
@@ -232,7 +244,9 @@ export default class Palette extends GObject.Object {
         this.notify("base");
         this.notify("mantle");
         this.notify("crust");
-        this.notify("accent");
+        this.notify("primary");
+        this.notify("secondary");
+        this.notify("tertiary");
     }
 
     update() {
