@@ -22,7 +22,7 @@ const getPrettyMode = (mode: Mode) => {
     return mode;
 };
 
-const isAction = (text: string) => text.startsWith(config.actionPrefix.get());
+const isAction = (text: string, action: string = "") => text.startsWith(config.actionPrefix.get() + action);
 
 const SearchBar = ({ mode, entry }: { mode: Variable<Mode>; entry: Widget.Entry }) => (
     <box className="search-bar">
@@ -127,7 +127,10 @@ export default class Launcher extends PopupWindow {
         });
 
         // Clear search on hide if not in math mode or creating a todo
-        this.connect("hide", () => mode.get() !== "math" && !entry.text.startsWith(">todo") && entry.set_text(""));
+        this.connect("hide", () => {
+            if ((mode.get() !== "math" || isAction(entry.get_text())) && !isAction(entry.get_text(), "todo"))
+                entry.set_text("");
+        });
     }
 
     open(mode: Mode) {
