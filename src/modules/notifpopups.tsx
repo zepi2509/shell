@@ -19,7 +19,7 @@ export default () => (
                 let notifsOpen = false;
 
                 self.hook(notifd, "notified", (self, id) => {
-                    if (notifsOpen) return;
+                    if (notifsOpen || notifd.dontDisturb) return;
 
                     const notification = notifd.get_notification(id);
 

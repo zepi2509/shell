@@ -459,8 +459,19 @@ const NotifCount = () => (
         }
     >
         <box vertical={bind(config.vertical)} className="module notif-count">
-            <label className="icon" label="info" />
-            <label label={bind(AstalNotifd.get_default(), "notifications").as(n => String(n.length))} />
+            <label
+                className="icon"
+                label={bind(AstalNotifd.get_default(), "dontDisturb").as(d => (d ? "notifications_off" : "info"))}
+            />
+            <revealer
+                transitionType={bind(config.vertical).as(v =>
+                    v ? Gtk.RevealerTransitionType.SLIDE_DOWN : Gtk.RevealerTransitionType.SLIDE_RIGHT
+                )}
+                transitionDuration={120}
+                revealChild={bind(AstalNotifd.get_default(), "dontDisturb").as(d => !d)}
+            >
+                <label label={bind(AstalNotifd.get_default(), "notifications").as(n => String(n.length))} />
+            </revealer>
         </box>
     </button>
 );

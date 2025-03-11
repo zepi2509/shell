@@ -183,11 +183,6 @@
 
         .status-icons .bluetooth {
             @include lib.spacing(10, true);
-
-            // The spacing doesn't look right for some reason so this
-            & > :first-child:not(:last-child) {
-                margin-bottom: lib.s(5);
-            }
         }
     }
 }
