@@ -1,7 +1,7 @@
 import { Apps } from "@/services/apps";
 import Palette from "@/services/palette";
 import Schemes, { type Colours } from "@/services/schemes";
-import Wallpapers from "@/services/wallpapers";
+import Wallpapers, { type ICategory, type IWallpaper } from "@/services/wallpapers";
 import { basename } from "@/utils/strings";
 import { notify } from "@/utils/system";
 import { setupCustomTooltip, type FlowBox } from "@/utils/widgets";
@@ -285,7 +285,7 @@ const Scheme = ({ scheme, name, colours }: { scheme?: string; name: string; colo
     );
 };
 
-const Wallpaper = ({ path, thumbnail }: { path: string; thumbnail?: string }) => (
+const Wallpaper = ({ path, thumbnail }: IWallpaper) => (
     <Gtk.FlowBoxChild visible canFocus={false}>
         <button
             className="result"
@@ -301,6 +301,32 @@ const Wallpaper = ({ path, thumbnail }: { path: string; thumbnail?: string }) =>
                 className={`wallpaper ${config.wallpaper.style.get()}`}
             >
                 <box className="thumbnail" css={"background-image: url('" + (thumbnail ?? path) + "');"} />
+                <label truncate label={basename(path)} />
+            </box>
+        </button>
+    </Gtk.FlowBoxChild>
+);
+
+const Category = ({ path, wallpapers }: ICategory) => (
+    <Gtk.FlowBoxChild visible canFocus={false}>
+        <button
+            className="result"
+            cursor="pointer"
+            onClicked={() => {
+                execAsync(`caelestia wallpaper -d ${path}`).catch(console.error);
+                close();
+            }}
+            setup={self => setupCustomTooltip(self, path.replace(HOME, "~"))}
+        >
+            <box
+                vertical={config.wallpaper.style.get() !== "compact"}
+                className={`wallpaper ${config.wallpaper.style.get()}`}
+            >
+                <box className="thumbnail">
+                    {wallpapers.slice(0, 3).map(w => (
+                        <box hexpand css={"background-image: url('" + (w.thumbnail ?? w.path) + "');"} />
+                    ))}
+                </box>
                 <label truncate label={basename(path)} />
             </box>
         </button>
@@ -348,9 +374,12 @@ export default class Actions extends Widget.Box implements LauncherContent {
                 }
             }
         } else if (action === "wallpaper") {
-            const wallpaper = args[1] ?? "";
-            for (const { obj } of fuzzysort.go(wallpaper, Wallpapers.get_default().list, { all: true, key: "path" }))
-                this.#content.add(<Wallpaper {...obj} />);
+            const random = args[1].toLowerCase() === "random";
+            const term = (random ? args[2] : args[1]) ?? "";
+            const list = random ? Wallpapers.get_default().categories : Wallpapers.get_default().list;
+
+            for (const { obj } of fuzzysort.go(term, list, { all: true, key: "path" }))
+                this.#content.add(random ? <Category {...(obj as ICategory)} /> : <Wallpaper {...obj} />);
         } else {
             const list = this.#list.filter(
                 a => this.#map[a].available?.() ?? !config.disabledActions.get().includes(a)
@@ -364,11 +393,9 @@ export default class Actions extends Widget.Box implements LauncherContent {
         const args = search.split(" ");
         const action = args[0].slice(1).toLowerCase();
 
-        if ((action === "scheme" || action === "wallpaper") && args[1].toLowerCase() === "random") {
-            execAsync(`caelestia ${action}`).catch(console.error);
+        if (action === "scheme" && args[1].toLowerCase() === "random") {
+            execAsync(`caelestia scheme`).catch(console.error);
             close();
-        }
-
-        this.#content.get_child_at_index(0)?.get_child()?.activate();
+        } else this.#content.get_child_at_index(0)?.get_child()?.activate();
     }
 }

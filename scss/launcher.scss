@@ -188,6 +188,19 @@
 
             .thumbnail {
                 @include lib.rounded(10);
+
+                & > * {
+                    background-size: cover;
+                    background-position: center;
+
+                    &:first-child {
+                        @include lib.rounded(10, $tr: 0, $br: 0);
+                    }
+
+                    &:last-child {
+                        @include lib.rounded(10, $tl: 0, $bl: 0);
+                    }
+                }
             }
         }
 

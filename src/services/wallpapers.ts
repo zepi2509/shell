@@ -3,9 +3,14 @@ import { monitorDirectory } from "@/utils/system";
 import { execAsync, GLib, GObject, property, register } from "astal";
 import { wallpapers as config } from "config";
 
-export interface Wallpaper {
+export interface IWallpaper {
     path: string;
     thumbnail?: string;
+}
+
+export interface ICategory {
+    path: string;
+    wallpapers: IWallpaper[];
 }
 
 @register({ GTypeName: "Wallpapers" })
@@ -19,11 +24,17 @@ export default class Wallpapers extends GObject.Object {
 
     #thumbnailDir = `${CACHE}/thumbnails`;
 
-    #list: Wallpaper[] = [];
+    #list: IWallpaper[] = [];
+    #categories: ICategory[] = [];
 
     @property(Object)
     get list() {
         return this.#list;
+    }
+
+    @property(Object)
+    get categories() {
+        return this.#categories;
     }
 
     async #thumbnail(path: string) {
@@ -33,20 +44,30 @@ export default class Wallpapers extends GObject.Object {
         return thumbPath;
     }
 
+    #listDir(path: { path: string; recursive: boolean }, type: "f" | "d") {
+        const absPath = path.path.replace("~", HOME);
+        const maxDepth = path.recursive ? "" : "-maxdepth 1";
+        return execAsync(`find ${absPath} ${maxDepth} -path '*/.*' -prune -o -type ${type} -print`);
+    }
+
     async update() {
         const results = await Promise.allSettled(
-            config.paths
-                .get()
-                .map(p => execAsync(`find ${p.path.replace("~", HOME)}/ ${p.recursive ? "" : "-maxdepth 1"} -type f`))
+            config.paths.get().map(async p => ({ path: p, files: await this.#listDir(p, "f") }))
         );
-        const files = results
-            .filter(r => r.status === "fulfilled")
-            .map(r => r.value.replaceAll("\n", " "))
-            .join(" ");
+        const successes = results.filter(r => r.status === "fulfilled").map(r => r.value);
+
+        const files = successes.map(r => r.files.replaceAll("\n", " ")).join(" ");
         const list = (await execAsync(["fish", "-c", `identify -ping -format '%i\n' ${files} ; true`])).split("\n");
 
         this.#list = await Promise.all(list.map(async p => ({ path: p, thumbnail: await this.#thumbnail(p) })));
         this.notify("list");
+
+        const categories = await Promise.all(successes.map(r => this.#listDir(r.path, "d")));
+        this.#categories = categories
+            .flatMap(c => c.split("\n"))
+            .map(c => ({ path: c, wallpapers: this.#list.filter(w => w.path.startsWith(c)) }))
+            .filter(c => c.wallpapers.length > 0);
+        this.notify("categories");
     }
 
     constructor() {
