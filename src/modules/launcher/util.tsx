@@ -2,7 +2,7 @@ import { FlowBox } from "@/utils/widgets";
 import type { Variable } from "astal";
 import { App, Gtk } from "astal/gtk3";
 
-export type Mode = "apps" | "files" | "math" | "windows";
+export type Mode = "apps" | "files" | "math";
 
 export interface LauncherContent {
     updateContent(search: string): void;

@@ -10,7 +10,6 @@ const getModeIcon = (mode: Mode) => {
     if (mode === "apps") return "apps";
     if (mode === "files") return "folder";
     if (mode === "math") return "calculate";
-    if (mode === "windows") return "select_window";
     return "search";
 };
 
@@ -18,7 +17,6 @@ const getPrettyMode = (mode: Mode) => {
     if (mode === "apps") return "Apps";
     if (mode === "files") return "Files";
     if (mode === "math") return "Math";
-    if (mode === "windows") return "Windows";
     return mode;
 };
 

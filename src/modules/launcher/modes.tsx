@@ -218,24 +218,8 @@ class Math extends Widget.Box implements LauncherContent {
     }
 }
 
-@register()
-class Windows extends Widget.Box implements LauncherContent {
-    constructor() {
-        super({ name: "windows", className: "windows" });
-    }
-
-    updateContent(search: string): void {
-        throw new Error("Method not implemented.");
-    }
-
-    handleActivate(search: string): void {
-        throw new Error("Method not implemented.");
-    }
-}
-
 export default () => ({
     apps: new Apps(),
     files: new Files(),
     math: new Math(),
-    windows: new Windows(),
 });

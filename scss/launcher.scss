@@ -52,10 +52,9 @@
     min-width: lib.s(700);
     min-height: lib.s(420);
 
-    @include launcher(apps, scheme.$sapphire);
-    @include launcher(files, scheme.$peach);
-    @include launcher(math, scheme.$green);
-    @include launcher(windows, scheme.$mauve);
+    @include launcher(apps, scheme.$primary);
+    @include launcher(files, scheme.$secondary);
+    @include launcher(math, scheme.$tertiary);
 
     .search-bar {
         margin-bottom: lib.s(15);
