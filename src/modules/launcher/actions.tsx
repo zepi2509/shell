@@ -57,15 +57,6 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
             entry.set_text("");
         },
     },
-    windows: {
-        icon: "select_window",
-        name: "Windows",
-        description: "Manage open windows",
-        action: () => {
-            mode.set("windows");
-            entry.set_text("");
-        },
-    },
     light: {
         icon: "light_mode",
         name: "Light",
