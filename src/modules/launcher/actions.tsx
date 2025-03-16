@@ -5,7 +5,7 @@ import Wallpapers, { type ICategory, type IWallpaper } from "@/services/wallpape
 import { basename } from "@/utils/strings";
 import { notify } from "@/utils/system";
 import { setupCustomTooltip, type FlowBox } from "@/utils/widgets";
-import { execAsync, GLib, readFile, register, type Variable } from "astal";
+import { bind, execAsync, GLib, readFile, register, type Variable } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import { launcher as config } from "config";
 import fuzzysort from "fuzzysort";
@@ -313,11 +313,20 @@ const Category = ({ path, wallpapers }: ICategory) => (
                 vertical={config.wallpaper.style.get() !== "compact"}
                 className={`wallpaper ${config.wallpaper.style.get()}`}
             >
-                <box className="thumbnail">
-                    {wallpapers.slice(0, 3).map(w => (
-                        <box hexpand css={"background-image: url('" + (w.thumbnail ?? w.path) + "');"} />
-                    ))}
-                </box>
+                {bind(config.wallpaper.style).as(s =>
+                    s === "compact" ? (
+                        <box
+                            className="thumbnail"
+                            css={"background-image: url('" + (wallpapers[0].thumbnail ?? wallpapers[0].path) + "');"}
+                        />
+                    ) : (
+                        <box className="thumbnail">
+                            {wallpapers.slice(0, 3).map(w => (
+                                <box hexpand css={"background-image: url('" + (w.thumbnail ?? w.path) + "');"} />
+                            ))}
+                        </box>
+                    )
+                )}
                 <label truncate label={basename(path)} />
             </box>
         </button>
@@ -365,7 +374,7 @@ export default class Actions extends Widget.Box implements LauncherContent {
                 }
             }
         } else if (action === "wallpaper") {
-            const random = args[1].toLowerCase() === "random";
+            const random = args[1]?.toLowerCase() === "random";
             const term = (random ? args[2] : args[1]) ?? "";
             const list = random ? Wallpapers.get_default().categories : Wallpapers.get_default().list;
 
@@ -384,7 +393,7 @@ export default class Actions extends Widget.Box implements LauncherContent {
         const args = search.split(" ");
         const action = args[0].slice(1).toLowerCase();
 
-        if (action === "scheme" && args[1].toLowerCase() === "random") {
+        if (action === "scheme" && args[1]?.toLowerCase() === "random") {
             execAsync(`caelestia scheme`).catch(console.error);
             close();
         } else this.#content.get_child_at_index(0)?.get_child()?.activate();
