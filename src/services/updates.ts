@@ -92,6 +92,19 @@ export default class Updates extends GObject.Object {
         );
     }
 
+    getRepoIcon(repo: string) {
+        switch (repo) {
+            case "core":
+                return "hub";
+            case "extra":
+                return "add_circle";
+            case "multilib":
+                return "account_tree";
+            default:
+                return "deployed_code_update";
+        }
+    }
+
     getUpdates() {
         // Return if already getting updates
         if (this.#loading) return;
@@ -106,21 +119,14 @@ export default class Updates extends GObject.Object {
 
                 // Pacman updates (checkupdates)
                 if (pacman.status === "fulfilled") {
-                    const repos: Repo[] = [
-                        { repo: await this.getRepo("core"), updates: [], icon: "hub", name: "Core repository" },
-                        {
-                            repo: await this.getRepo("extra"),
+                    const repos: Repo[] = await Promise.all(
+                        (await execAsync("pacman-conf -l")).split("\n").map(async r => ({
+                            repo: await this.getRepo(r),
                             updates: [],
-                            icon: "add_circle",
-                            name: "Extra repository",
-                        },
-                        {
-                            repo: await this.getRepo("multilib"),
-                            updates: [],
-                            icon: "account_tree",
-                            name: "Multilib repository",
-                        },
-                    ];
+                            icon: this.getRepoIcon(r),
+                            name: r[0].toUpperCase() + r.slice(1) + " repository",
+                        }))
+                    );
 
                     for (const update of pacman.value.split("\n")) {
                         const pkg = update.split(" ")[0];
