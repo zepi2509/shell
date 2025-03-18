@@ -75,8 +75,9 @@ const News = ({ news }: { news: string }) => {
     const expanded = Variable(true);
 
     news = news
-        .replaceAll("\n\n\x1b", "\n\n") // Remove unopened \x1b[0m after each piece of news
         .replace(/^([0-9]{4}-[0-9]{2}-[0-9]{2} .+)$/gm, "<b>$1</b>") // Make titles bold
+        .replaceAll("\n\x1b[0m\n<b>", "\n\n<b>") // Remove unopened \x1b[0m after each piece of news
+        .slice(0, -5) // Remove last unopened \x1b[0m
         .replaceAll("\x1b[0m", "</span>"); // Replace reset code with end span
 
     return (
