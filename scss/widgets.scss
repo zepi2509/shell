@@ -167,7 +167,7 @@ menu {
 tooltip,
 .tooltip {
     @include lib.rounded(5);
-    @include lib.border(scheme.$teal, 0.7);
+    @include lib.border(scheme.$primary, 0.7);
     @include font.mono;
 
     background-color: scheme.$surface0;
