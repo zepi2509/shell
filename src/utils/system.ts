@@ -76,10 +76,21 @@ export const bindCurrentTime = (
     return bind(time);
 };
 
-export const monitorDirectory = (path: string, callback: (path: string) => void, recursive?: boolean) => {
+export const monitorDirectory = (
+    path: string,
+    callback: (
+        source: Gio.FileMonitor,
+        file: Gio.File,
+        other_file: Gio.File | null,
+        type: Gio.FileMonitorEvent
+    ) => void,
+    recursive: boolean = true
+) => {
     const file = Gio.file_new_for_path(path.replace("~", HOME));
-    const monitor = file.monitor_directory(Gio.FileMonitorFlags.WATCH_MOUNTS | Gio.FileMonitorFlags.WATCH_MOVES, null);
-    monitor.connect("changed", callback);
+    const monitor = file.monitor_directory(null, null);
+    monitor.connect("changed", (m, f1, f2, t) => {
+        if (t === Gio.FileMonitorEvent.CHANGES_DONE_HINT || t === Gio.FileMonitorEvent.DELETED) callback(m, f1, f2, t);
+    });
 
     if (recursive) {
         const enumerator = file.enumerate_children("standard::*", null, null);

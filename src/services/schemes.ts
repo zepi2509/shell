@@ -1,6 +1,6 @@
 import { basename } from "@/utils/strings";
 import { monitorDirectory } from "@/utils/system";
-import { execAsync, GLib, GObject, property, readFileAsync, register } from "astal";
+import { execAsync, Gio, GLib, GObject, property, readFileAsync, register } from "astal";
 import type { IPalette } from "./palette";
 
 export interface Colours {
@@ -80,10 +80,25 @@ export default class Schemes extends GObject.Object {
 
     async update() {
         const schemes = await execAsync(`find ${this.#schemeDir}/ -mindepth 1 -maxdepth 1 -type d`);
-        for (const scheme of schemes.split("\n")) {
-            const name = basename(scheme);
-            this.#map[name] = await this.parseScheme(name);
-        }
+        (await Promise.all(schemes.split("\n").map(s => this.parseScheme(basename(s))))).forEach(
+            s => (this.#map[s.name] = s)
+        );
+        this.notify("map");
+    }
+
+    async updateFile(file: Gio.File) {
+        if (file.get_basename() !== "light.txt" && file.get_basename() !== "dark.txt") return;
+
+        const mode = file.get_basename()!.slice(0, -4) as "light" | "dark";
+        const parent = file.get_parent()!;
+        const parentParent = parent.get_parent()!;
+
+        if (parentParent.get_basename() === "schemes")
+            this.#map[parent.get_basename()!].colours![mode] = await this.parseMode(file.get_path()!);
+        else
+            this.#map[parentParent.get_basename()!].flavours![parent.get_basename()!].colours![mode] =
+                await this.parseMode(file.get_path()!);
+
         this.notify("map");
     }
 
@@ -91,6 +106,8 @@ export default class Schemes extends GObject.Object {
         super();
 
         this.update().catch(console.error);
-        this.#monitor = monitorDirectory(this.#schemeDir, () => this.update().catch(console.error), true);
+        this.#monitor = monitorDirectory(this.#schemeDir, (_m, file, _f, type) => {
+            if (type !== Gio.FileMonitorEvent.DELETED) this.updateFile(file).catch(console.error);
+        });
     }
 }
