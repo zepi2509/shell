@@ -32,6 +32,7 @@ export default class Schemes extends GObject.Object {
     }
 
     readonly #schemeDir: string = `${DATA}/scripts/data/schemes`;
+    readonly #monitor;
 
     #map: { [k: string]: Scheme } = {};
 
@@ -90,6 +91,6 @@ export default class Schemes extends GObject.Object {
         super();
 
         this.update().catch(console.error);
-        monitorDirectory(this.#schemeDir, () => this.update().catch(console.error), true);
+        this.#monitor = monitorDirectory(this.#schemeDir, () => this.update().catch(console.error), true);
     }
 }
