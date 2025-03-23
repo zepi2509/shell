@@ -15,22 +15,16 @@ import { App } from "astal/gtk3";
 import { style } from "config";
 import { initConfig, updateConfig } from "config/funcs";
 
-const shouldBeTransparent = (name: string) =>
-    name === "base" ||
-    name === "mantle" ||
-    name === "crust" ||
-    name.startsWith("surface") ||
-    name.startsWith("overlay");
+const isLayer = (name: string) =>
+    ["base", "mantle", "crust"].includes(name) || name.startsWith("surface") || name.startsWith("overlay");
 
 const applyTransparency = (name: string, hex: string) => {
-    if (style.transparency.get() === "off" || !shouldBeTransparent(name)) return hex;
+    if (style.transparency.get() === "off" || !isLayer(name)) return hex;
     const amount = style.transparency.get() === "high" ? 0.58 : 0.78;
     return `color.change(${hex}, $alpha: ${amount})`;
 };
 
-const applyVibrancy = (hex: string) => {
-    return style.vibrant.get() ? `color.scale(${hex}, $saturation: 40%)` : hex;
-};
+const applyVibrancy = (hex: string) => (style.vibrant.get() ? `color.scale(${hex}, $saturation: 40%)` : hex);
 
 export const loadStyleAsync = async () => {
     const schemeColours = Object.entries(Palette.get_default().colours)
