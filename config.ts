@@ -46,6 +46,9 @@ export const initConfig = () => {
 };
 
 const DEFAULTS = {
+    style: {
+        transparency: "normal", // One of "off", "normal", "high"
+    },
     // Modules
     bar: {
         vertical: true,
@@ -92,13 +95,6 @@ const DEFAULTS = {
         actionPrefix: ">", // Prefix for launcher actions
         apps: {
             maxResults: 30, // Actual max results, -1 for infinite
-            pins: [
-                ["zen", "firefox", "waterfox", "google-chrome", "chromium", "brave-browser"],
-                ["foot", "alacritty", "kitty", "wezterm"],
-                ["thunar", "nemo", "nautilus"],
-                ["codium", "code", "clion", "intellij-idea-ultimate-edition"],
-                ["spotify-adblock", "spotify", "audacious", "elisa"],
-            ],
         },
         files: {
             maxResults: 40, // Actual max results, -1 for infinite
@@ -107,16 +103,6 @@ const DEFAULTS = {
         },
         math: {
             maxResults: 40, // Actual max results, -1 for infinite
-        },
-        windows: {
-            maxResults: -1, // Actual max results, -1 for infinite
-            weights: {
-                // Weights for fuzzy sort
-                title: 1,
-                class: 1,
-                initialTitle: 0.5,
-                initialClass: 0.5,
-            },
         },
         todo: {
             notify: true,
@@ -158,7 +144,6 @@ const DEFAULTS = {
         directories: {
             left: {
                 top: "󰉍  Downloads",
-
                 middle: "󱧶  Documents",
                 bottom: "󱍙  Music",
             },
@@ -207,6 +192,7 @@ const DEFAULTS = {
 const config = convertSettings(DEFAULTS);
 
 export const {
+    style,
     bar,
     launcher,
     notifpopups,

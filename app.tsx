@@ -5,20 +5,33 @@ import Osds from "@/modules/osds";
 import Popdowns from "@/modules/popdowns";
 import Session from "@/modules/session";
 import Monitors from "@/services/monitors";
-import Palette from "@/services/palette";
+import Palette, { type Hex } from "@/services/palette";
 import Players from "@/services/players";
 import Schemes from "@/services/schemes";
 import Wallpapers from "@/services/wallpapers";
 import type PopupWindow from "@/widgets/popupwindow";
 import { execAsync, idle, timeout, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
-import { initConfig, updateConfig } from "config";
+import { initConfig, style, updateConfig } from "config";
+
+const shouldBeTransparent = (name: string) =>
+    name === "base" ||
+    name === "mantle" ||
+    name === "crust" ||
+    name.startsWith("surface") ||
+    name.startsWith("overlay");
+
+const applyTransparency = (name: string, hex: Hex) => {
+    if (style.transparency.get() === "off" || !shouldBeTransparent(name)) return hex;
+    const amount = style.transparency.get() === "high" ? 0.58 : 0.78;
+    return `color.change(${hex}, $alpha: ${amount})`;
+};
 
 export const loadStyleAsync = async () => {
     const schemeColours = Object.entries(Palette.get_default().colours)
-        .map(([name, hex]) => `$${name}: ${hex};`)
+        .map(([name, hex]) => `$${name}: ${applyTransparency(name, hex)};`)
         .join("\n");
-    await writeFileAsync(`${SRC}/scss/scheme/_index.scss`, schemeColours);
+    await writeFileAsync(`${SRC}/scss/scheme/_index.scss`, `@use "sass:color";\n${schemeColours}`);
     App.apply_css(await execAsync(`sass ${SRC}/style.scss`), true);
 };
 
@@ -29,6 +42,7 @@ App.start({
         const now = Date.now();
 
         loadStyleAsync().catch(console.error);
+        style.transparency.subscribe(() => loadStyleAsync().catch(console.error));
         Palette.get_default().connect("notify::colours", () => loadStyleAsync().catch(console.error));
 
         initConfig();
