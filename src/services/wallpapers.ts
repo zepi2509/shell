@@ -56,6 +56,14 @@ export default class Wallpapers extends GObject.Object {
         );
         const successes = results.filter(r => r.status === "fulfilled").map(r => r.value);
 
+        if (!successes.length) {
+            this.#list = [];
+            this.notify("list");
+            this.#categories = [];
+            this.notify("categories");
+            return;
+        }
+
         const files = successes.map(r => r.files.replaceAll("\n", " ")).join(" ");
         const list = (await execAsync(["fish", "-c", `identify -ping -format '%i\n' ${files} ; true`])).split("\n");
 
@@ -81,6 +89,7 @@ export default class Wallpapers extends GObject.Object {
             .get()
             .map(p => monitorDirectory(p.path, () => this.update().catch(console.error), p.recursive));
         config.paths.subscribe(v => {
+            this.update().catch(console.error);
             for (const m of monitors) m.cancel();
             monitors = v.map(p => monitorDirectory(p.path, () => this.update().catch(console.error), p.recursive));
         });
