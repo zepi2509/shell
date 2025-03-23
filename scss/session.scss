@@ -4,7 +4,7 @@
 @use "font";
 
 .session {
-    background-color: #0000009e;
+    background-color: rgba(0, 0, 0, 0.5);
 
     .inner {
         @include lib.rounded(8);
