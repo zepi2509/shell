@@ -1,6 +1,6 @@
 import { App, Astal, Gtk } from "astal/gtk3";
+import { notifpopups as config } from "config";
 import AstalNotifd from "gi://AstalNotifd";
-import { notifpopups as config } from "../../config";
 import { setupChildClickthrough } from "../utils/widgets";
 import Notification from "../widgets/notification";
 

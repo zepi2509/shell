@@ -12,7 +12,8 @@ import Wallpapers from "@/services/wallpapers";
 import type PopupWindow from "@/widgets/popupwindow";
 import { execAsync, idle, timeout, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
-import { initConfig, style, updateConfig } from "config";
+import { style } from "config";
+import { initConfig, updateConfig } from "config/funcs";
 
 const shouldBeTransparent = (name: string) =>
     name === "base" ||
