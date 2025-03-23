@@ -2,23 +2,70 @@ import { GLib, monitorFile, readFileAsync, Variable } from "astal";
 import config from ".";
 import { loadStyleAsync } from "../../app";
 import defaults from "./defaults";
+import types from "./types";
 
 type Settings<T> = { [P in keyof T]: T[P] extends object & { length?: never } ? Settings<T[P]> : Variable<T[P]> };
 
 const CONFIG = `${GLib.get_user_config_dir()}/caelestia/shell.json`;
 
-const isObject = (o: any) => typeof o === "object" && o !== null && !Array.isArray(o);
+const isObject = (o: any): o is object => typeof o === "object" && o !== null && !Array.isArray(o);
+
+const isCorrectType = (v: any, type: string | string[] | number[], path: string) => {
+    if (Array.isArray(type)) {
+        // type is array of valid values
+        if (!type.includes(v as never)) {
+            console.warn(`Invalid value for ${path}: ${v} != ${type.map(v => `"${v}"`).join(" | ")}`);
+            return false;
+        }
+    } else if (type.startsWith("array of ")) {
+        // Array of ...
+        if (Array.isArray(v)) {
+            // Remove invalid items but always return true
+            const arrType = type.slice(9);
+            try {
+                // Recursively check type
+                const type = JSON.parse(arrType);
+                const valid = v.filter((item, i) =>
+                    Object.entries(type).some(([k, t]) => {
+                        if (!item[k]) {
+                            console.warn(`Invalid shape for ${path}[${i}]: ${JSON.stringify(item)} != ${arrType}`);
+                            return false;
+                        }
+                        return !isCorrectType(item[k], t as any, `${path}[${i}].${k}`);
+                    })
+                );
+                v.splice(0, v.length, ...valid); // In-place filter
+            } catch {
+                const valid = v.filter((item, i) => {
+                    if (typeof item !== arrType) {
+                        console.warn(`Invalid type for ${path}[${i}]: ${typeof item} != ${arrType}`);
+                        return false;
+                    }
+                    return true;
+                });
+                v.splice(0, v.length, ...valid); // In-place filter
+            }
+        } else {
+            // Type is array but value is not
+            console.warn(`Invalid type for ${path}: ${typeof v} != ${type}`);
+            return false;
+        }
+    } else if (typeof v !== type) {
+        // Value is not correct type
+        console.warn(`Invalid type for ${path}: ${typeof v} != ${type}`);
+        return false;
+    }
+
+    return true;
+};
 
 const deepMerge = <T extends object, U extends object>(a: T, b: U, path = ""): T & U => {
     const merged: { [k: string]: any } = { ...b };
     for (const [k, v] of Object.entries(a)) {
         if (b.hasOwnProperty(k)) {
             const bv = b[k as keyof U];
-            if (isObject(v) && isObject(bv)) merged[k] = deepMerge(v, bv as object, `${path}${k}.`);
-            else if (typeof v !== typeof bv) {
-                console.warn(`Invalid type for ${path}${k}: ${typeof v} != ${typeof bv}`);
-                merged[k] = v;
-            }
+            if (isObject(v) && isObject(bv)) merged[k] = deepMerge(v, bv, `${path}${k}.`);
+            else if (!isCorrectType(bv, types[path + k], path + k)) merged[k] = v;
         } else merged[k] = v;
     }
     return merged as any;
