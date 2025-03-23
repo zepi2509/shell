@@ -5,7 +5,7 @@ import Osds from "@/modules/osds";
 import Popdowns from "@/modules/popdowns";
 import Session from "@/modules/session";
 import Monitors from "@/services/monitors";
-import Palette, { type Hex } from "@/services/palette";
+import Palette from "@/services/palette";
 import Players from "@/services/players";
 import Schemes from "@/services/schemes";
 import Wallpapers from "@/services/wallpapers";
@@ -21,15 +21,19 @@ const shouldBeTransparent = (name: string) =>
     name.startsWith("surface") ||
     name.startsWith("overlay");
 
-const applyTransparency = (name: string, hex: Hex) => {
+const applyTransparency = (name: string, hex: string) => {
     if (style.transparency.get() === "off" || !shouldBeTransparent(name)) return hex;
     const amount = style.transparency.get() === "high" ? 0.58 : 0.78;
     return `color.change(${hex}, $alpha: ${amount})`;
 };
 
+const applyVibrancy = (hex: string) => {
+    return style.vibrant.get() ? `color.scale(${hex}, $saturation: 40%)` : hex;
+};
+
 export const loadStyleAsync = async () => {
     const schemeColours = Object.entries(Palette.get_default().colours)
-        .map(([name, hex]) => `$${name}: ${applyTransparency(name, hex)};`)
+        .map(([name, hex]) => `$${name}: ${applyVibrancy(applyTransparency(name, hex))};`)
         .join("\n");
     await writeFileAsync(`${SRC}/scss/scheme/_index.scss`, `@use "sass:color";\n${schemeColours}`);
     App.apply_css(await execAsync(`sass ${SRC}/style.scss`), true);

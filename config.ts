@@ -48,6 +48,7 @@ export const initConfig = () => {
 const DEFAULTS = {
     style: {
         transparency: "normal", // One of "off", "normal", "high"
+        vibrant: false, // Extra saturation
     },
     // Modules
     bar: {
