@@ -107,13 +107,13 @@
         }
 
         .module {
-            padding: lib.s(3) lib.s(8);
+            padding: lib.s(5) lib.s(10);
 
             @include lib.spacing;
         }
 
         .os-icon {
-            padding-right: lib.s(12);
+            padding-right: lib.s(14);
         }
 
         .media-playing {
