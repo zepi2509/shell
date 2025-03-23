@@ -78,8 +78,9 @@ $-accent2: scheme.$blue;
 
             // Current day
             &:selected {
-                box-shadow: inset 0 lib.s(-12) 0 0 $-accent, inset 0 lib.s(-9) 0 0 scheme.$base,
-                    inset lib.s(-10) lib.s(-3) 0 0 scheme.$base, inset lib.s(10) 0 0 lib.s(0.1) scheme.$base;
+                $base: color.change(scheme.$base, $alpha: 1);
+                box-shadow: inset 0 lib.s(-12) 0 0 $-accent, inset 0 lib.s(-9) 0 0 $base,
+                    inset lib.s(-10) lib.s(-3) 0 0 $base, inset lib.s(10) 0 0 lib.s(0.1) $base;
                 color: $-accent;
             }
         }
