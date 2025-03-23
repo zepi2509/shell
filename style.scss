@@ -1,8 +1,9 @@
 @use "sass:color";
 @use "scss/scheme";
 
-// Common widgets
+// Common styles
 @use "scss/widgets";
+@use "scss/common";
 
 // Modules
 @use "scss/bar";
