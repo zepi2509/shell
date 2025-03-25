@@ -42,6 +42,7 @@ export default () => (
                             }}
                             // Close on hover lost
                             onHoverLost={() => popup.destroyWithAnims()}
+                            setup={self => self.hook(popup, "destroy", () => self.destroy())}
                         >
                             {popup}
                         </eventbox>
