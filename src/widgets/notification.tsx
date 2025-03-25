@@ -51,19 +51,19 @@ const AppIcon = ({ appIcon, desktopEntry }: { appIcon: string; desktopEntry: str
     return icon ? <icon className="app-icon" icon={icon} /> : null;
 };
 
-const Image = ({ popup, icon }: { popup?: boolean; icon: string }) => {
+const Image = ({ compact, icon }: { compact?: boolean; icon: string }) => {
     if (GLib.file_test(icon, GLib.FileTest.EXISTS))
         return (
             <box
                 valign={Gtk.Align.START}
-                className={`image ${popup ? "small" : ""}`}
+                className={`image ${compact ? "small" : ""}`}
                 css={`
                     background-image: url("${icon}");
                 `}
             />
         );
     if (Astal.Icon.lookup_icon(icon))
-        return <icon valign={Gtk.Align.START} className={`image ${popup ? "small" : ""}`} icon={icon} />;
+        return <icon valign={Gtk.Align.START} className={`image ${compact ? "small" : ""}`} icon={icon} />;
     return null;
 };
 
@@ -72,7 +72,15 @@ export default class Notification extends Widget.Box {
     readonly #revealer;
     #destroyed = false;
 
-    constructor({ notification, popup }: { notification: AstalNotifd.Notification; popup?: boolean }) {
+    constructor({
+        notification,
+        popup,
+        compact = popup,
+    }: {
+        notification: AstalNotifd.Notification;
+        popup?: boolean;
+        compact?: boolean;
+    }) {
         super({ className: "notification" });
 
         const time = Variable(getTime(notification.time)).poll(60000, () => getTime(notification.time));
@@ -94,17 +102,17 @@ export default class Notification extends Widget.Box {
                         </box>
                         <box hexpand className="separator" />
                         <box className="content">
-                            {notification.image && <Image popup={popup} icon={notification.image} />}
+                            {notification.image && <Image compact={compact} icon={notification.image} />}
                             <box vertical>
                                 <label className="summary" xalign={0} label={notification.summary} truncate />
                                 {notification.body && (
                                     <label
                                         className="body"
                                         xalign={0}
-                                        label={popup ? notification.body.split("\n")[0] : notification.body}
+                                        label={compact ? notification.body.split("\n")[0] : notification.body}
                                         wrap
-                                        lines={popup ? 1 : -1}
-                                        truncate={popup}
+                                        lines={compact ? 1 : -1}
+                                        truncate={compact}
                                     />
                                 )}
                             </box>
@@ -132,7 +140,7 @@ export default class Notification extends Widget.Box {
 
         // Init animation
         const width = this.get_preferred_width()[1];
-        this.css = `margin-left: ${width}px; margin-right: -${width}px;`;
+        if (popup) this.css = `margin-left: ${width}px; margin-right: -${width}px;`;
         timeout(1, () => {
             this.#revealer.revealChild = true;
             this.css = `transition: 300ms cubic-bezier(0.05, 0.9, 0.1, 1.1); margin-left: 0; margin-right: 0;`;

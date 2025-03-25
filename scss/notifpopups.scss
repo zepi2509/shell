@@ -3,7 +3,7 @@
 @use "lib";
 @use "font";
 
-@mixin popup($colour, $alpha) {
+@mixin popup($colour) {
     .separator {
         background-color: $colour;
     }
@@ -29,16 +29,16 @@
             @include lib.shadow;
 
             &.low {
-                @include popup(scheme.$overlay0, 0.3);
+                @include popup(scheme.$overlay0);
             }
 
             &.normal {
-                @include popup(scheme.$primary, 0.3);
+                @include popup(scheme.$primary);
             }
 
             &.critical {
                 @include lib.border(scheme.$error, 0.5);
-                @include popup(scheme.$error, 0.8);
+                @include popup(scheme.$error);
             }
         }
     }

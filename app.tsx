@@ -4,6 +4,7 @@ import NotifPopups from "@/modules/notifpopups";
 import Osds from "@/modules/osds";
 import Popdowns from "@/modules/popdowns";
 import Session from "@/modules/session";
+import SideBar from "@/modules/sidebar";
 import Monitors from "@/services/monitors";
 import Palette from "@/services/palette";
 import Players from "@/services/players";
@@ -73,6 +74,7 @@ App.start({
         <NotifPopups />;
         <Osds />;
         <Session />;
+        Monitors.get_default().forEach(m => <SideBar monitor={m} />);
         Monitors.get_default().forEach(m => <Bar monitor={m} />);
         <Popdowns />;
 

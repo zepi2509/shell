@@ -1,0 +1,221 @@
+@use "sass:color";
+@use "scheme";
+@use "lib";
+@use "font";
+
+@mixin notification($accent) {
+    .separator {
+        background-color: $accent;
+    }
+
+    .image {
+        @include lib.border($accent, 0.05);
+    }
+}
+
+.sidebar {
+    @include font.mono;
+
+    background-color: scheme.$mantle;
+    color: scheme.$text;
+    padding: lib.s(18) lib.s(20);
+    min-width: lib.s(380);
+
+    .pane {
+        @include lib.spacing(20, true);
+    }
+
+    .separator {
+        background-color: if(scheme.$light, scheme.$surface1, scheme.$overlay0);
+        margin: 0 lib.s(10);
+    }
+
+    .user {
+        @include lib.spacing(15);
+
+        .face {
+            @include lib.rounded(10);
+
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-width: lib.s(96);
+            min-height: lib.s(96);
+            font-size: lib.s(48);
+            font-weight: bold;
+            background-color: scheme.$base;
+        }
+
+        .details {
+            font-size: lib.s(14);
+            color: scheme.$yellow;
+
+            @include lib.spacing(8, true);
+
+            .name {
+                font-size: lib.s(18);
+                color: scheme.$text;
+                margin-bottom: lib.s(10);
+            }
+
+            .uptime {
+                color: scheme.$blue;
+            }
+        }
+    }
+
+    .media {
+        @include lib.spacing(15);
+
+        .cover-art {
+            @include lib.rounded(10);
+            @include lib.element-decel;
+
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-width: lib.s(128);
+            min-height: lib.s(128);
+            font-size: lib.s(64);
+            font-weight: bold;
+            background-color: scheme.$base;
+        }
+
+        .details {
+            font-size: lib.s(14);
+
+            .title {
+                font-size: lib.s(16);
+                color: scheme.$text;
+            }
+
+            .artist {
+                color: scheme.$green;
+            }
+
+            .controls {
+                margin-top: lib.s(20);
+                margin-bottom: lib.s(5);
+                font-size: lib.s(24);
+
+                & > * {
+                    @include lib.element-decel;
+
+                    &:disabled {
+                        color: scheme.$overlay0;
+                    }
+
+                    &:hover,
+                    &:focus {
+                        color: scheme.$subtext0;
+                    }
+
+                    &:active {
+                        color: scheme.$overlay2;
+                    }
+                }
+            }
+
+            .slider {
+                @include lib.rounded(5);
+                @include lib.fluent-decel(1000ms);
+
+                min-height: lib.s(8);
+                background-color: scheme.$surface0;
+                color: scheme.$overlay0;
+            }
+
+            .time {
+                margin-top: lib.s(5);
+                font-size: lib.s(13);
+                color: scheme.$subtext0;
+            }
+        }
+    }
+
+    .notifications {
+        .header-bar {
+            margin-bottom: lib.s(10);
+            margin-right: lib.s(-10);
+
+            @include lib.spacing;
+
+            & > button {
+                @include lib.element-decel;
+                @include lib.rounded(10);
+
+                padding: lib.s(3) lib.s(8);
+
+                &:hover,
+                &:focus {
+                    color: scheme.$subtext0;
+                }
+
+                &:active {
+                    color: scheme.$overlay2;
+                }
+
+                &.enabled {
+                    background-color: scheme.$primary;
+                    color: scheme.$base;
+
+                    &:hover,
+                    &:focus {
+                        background-color: color.mix(scheme.$primary, scheme.$base, 80%);
+                    }
+
+                    &:active {
+                        background-color: color.mix(scheme.$primary, scheme.$base, 70%);
+                    }
+                }
+            }
+        }
+
+        .notification {
+            .wrapper {
+                padding-bottom: lib.s(10);
+            }
+
+            .inner {
+                @include lib.rounded(20);
+
+                background-color: color.change(scheme.$surface1, $alpha: 0.4);
+
+                &.low {
+                    @include notification(if(scheme.$light, scheme.$surface1, scheme.$overlay0));
+                }
+
+                &.normal {
+                    @include lib.border(scheme.$primary, if(scheme.$light, 0.5, 0.3));
+                    @include notification(scheme.$primary);
+                }
+
+                &.critical {
+                    @include lib.border(scheme.$error, 0.8);
+                    @include notification(scheme.$error);
+                }
+            }
+
+            .actions {
+                @include lib.spacing;
+
+                & > button {
+                    @include lib.rounded(10);
+                    @include lib.element-decel;
+
+                    padding: lib.s(5) lib.s(10);
+                    background-color: color.change(scheme.$surface1, $alpha: 0.5);
+
+                    &:hover,
+                    &:focus {
+                        background-color: color.change(scheme.$surface2, $alpha: 0.5);
+                    }
+
+                    &:active {
+                        background-color: color.change(scheme.$overlay0, $alpha: 0.5);
+                    }
+                }
+            }
+        }
+    }
+}

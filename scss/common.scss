@@ -61,25 +61,4 @@ label.icon {
         font-size: lib.s(14);
         color: scheme.$subtext0;
     }
-
-    .actions {
-        @include lib.spacing;
-
-        & > * {
-            @include lib.rounded(5);
-            @include lib.element-decel;
-
-            padding: lib.s(5) lib.s(10);
-            background-color: scheme.$surface0;
-
-            &:hover,
-            &:focus {
-                background-color: scheme.$surface1;
-            }
-
-            &:active {
-                background-color: scheme.$surface2;
-            }
-        }
-    }
 }

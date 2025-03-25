@@ -10,8 +10,8 @@
 @use "scss/notifpopups";
 @use "scss/launcher";
 @use "scss/osds";
-@use "scss/popdowns";
 @use "scss/session";
+@use "scss/sidebar";
 
 * {
     all: unset; // Remove GTK theme styles
