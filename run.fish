@@ -8,7 +8,7 @@ set -q XDG_STATE_HOME && set -l state_dir $XDG_STATE_HOME/caelestia || set -l st
 
 mkdir -p $cache_dir
 
-./node_modules/.bin/esbuild app.tsx --bundle --outfile=$bundle_dir/caelestia.js \
+./node_modules/.bin/esbuild app.tsx --bundle --minify-whitespace --minify-identifiers --outfile=$bundle_dir/caelestia.js \
     --external:console --external:system --external:cairo --external:gettext --external:'file://*' --external:'gi://*' --external:'resource://*' \
     --define:HOME=\"$HOME\" --define:CACHE=\"$cache_dir\" --define:STATE=\"$state_dir\" --define:SRC=\"(pwd)\" --format=esm --platform=neutral --main-fields=module,main
 
