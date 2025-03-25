@@ -26,13 +26,34 @@ const applyTransparency = (name: string, hex: string) => {
 
 const applyVibrancy = (hex: string) => (style.vibrant.get() ? `color.scale(${hex}, $saturation: 40%)` : hex);
 
-export const loadStyleAsync = async () => {
-    const schemeColours = Object.entries(Palette.get_default().colours)
-        .map(([name, hex]) => `$${name}: ${applyVibrancy(applyTransparency(name, hex))};`)
-        .join("\n");
-    await writeFileAsync(`${SRC}/scss/scheme/_index.scss`, `@use "sass:color";\n${schemeColours}`);
-    App.apply_css(await execAsync(`sass ${SRC}/style.scss`), true);
-};
+const styleLoader = new (class {
+    #running = false;
+    #dirty = false;
+
+    async run() {
+        this.#dirty = true;
+        if (this.#running) return;
+        this.#running = true;
+        while (this.#dirty) {
+            this.#dirty = false;
+            await this.#run();
+        }
+        this.#running = false;
+    }
+
+    async #run() {
+        const schemeColours = Object.entries(Palette.get_default().colours)
+            .map(([name, hex]) => `$${name}: ${applyVibrancy(applyTransparency(name, hex))};`)
+            .join("\n");
+        await writeFileAsync(
+            `${SRC}/scss/scheme/_index.scss`,
+            `@use "sass:color";\n$light: ${Palette.get_default().mode === "light"};\n${schemeColours}`
+        );
+        App.apply_css(await execAsync(`sass ${SRC}/style.scss`), true);
+    }
+})();
+
+export const loadStyleAsync = () => styleLoader.run();
 
 App.start({
     instanceName: "caelestia",
@@ -43,6 +64,7 @@ App.start({
         loadStyleAsync().catch(console.error);
         style.transparency.subscribe(() => loadStyleAsync().catch(console.error));
         Palette.get_default().connect("notify::colours", () => loadStyleAsync().catch(console.error));
+        Palette.get_default().connect("notify::mode", () => loadStyleAsync().catch(console.error));
 
         initConfig();
 
