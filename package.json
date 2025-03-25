@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "fuzzysort": "^3.1.0",
+    "ical.js": "^2.1.0",
     "mathjs": "^14.0.1"
   },
   "devDependencies": {

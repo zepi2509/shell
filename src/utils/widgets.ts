@@ -3,7 +3,11 @@ import { Astal, astalify, Gtk, Widget, type ConstructProps } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
 import type { AstalWidget } from "./types";
 
-export const setupCustomTooltip = (self: AstalWidget, text: string | Binding<string>) => {
+export const setupCustomTooltip = (
+    self: AstalWidget,
+    text: string | Binding<string>,
+    labelProps: Widget.LabelProps = {}
+) => {
     if (!text) return null;
 
     self.set_has_tooltip(true);
@@ -15,7 +19,7 @@ export const setupCustomTooltip = (self: AstalWidget, text: string | Binding<str
         keymode: Astal.Keymode.NONE,
         exclusivity: Astal.Exclusivity.IGNORE,
         anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT,
-        child: new Widget.Label({ className: "tooltip", label: text }),
+        child: new Widget.Label({ ...labelProps, className: "tooltip", label: text }),
     });
     self.set_tooltip_window(window);
 

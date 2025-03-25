@@ -5,6 +5,7 @@ import Osds from "@/modules/osds";
 import Popdowns from "@/modules/popdowns";
 import Session from "@/modules/session";
 import SideBar from "@/modules/sidebar";
+import Calendar from "@/services/calendar";
 import Monitors from "@/services/monitors";
 import Palette from "@/services/palette";
 import Players from "@/services/players";
@@ -82,6 +83,7 @@ App.start({
         timeout(1000, () => {
             idle(() => Schemes.get_default());
             idle(() => Wallpapers.get_default());
+            idle(() => Calendar.get_default());
         });
 
         console.log(`Caelestia started in ${Date.now() - now}ms`);

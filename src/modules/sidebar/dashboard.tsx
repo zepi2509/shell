@@ -5,6 +5,7 @@ import { bind, GLib, monitorFile, Variable } from "astal";
 import { Gtk } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 import Notifications from "./modules/notifications";
+import Upcoming from "./modules/upcoming";
 
 const lengthStr = (length: number) =>
     `${Math.floor(length / 60)}:${Math.floor(length % 60)
@@ -127,5 +128,7 @@ export default () => (
         ))}
         <box className="separator" />
         <Notifications />
+        <box className="separator" />
+        <Upcoming />
     </box>
 );

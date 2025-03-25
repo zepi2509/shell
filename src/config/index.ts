@@ -18,5 +18,6 @@ export const {
     memory,
     storage,
     wallpapers,
+    calendar,
 } = config;
 export default config;

@@ -68,4 +68,6 @@ export default {
     "memory.interval": NUM,
     "storage.interval": NUM,
     "wallpapers.paths": OBJ_ARR({ recursive: BOOL, path: STR }),
+    "calendar.webcals": ARR(STR),
+    "calendar.upcomingDays": NUM,
 } as { [k: string]: string | string[] | number[] };

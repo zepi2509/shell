@@ -30,6 +30,49 @@
         margin: 0 lib.s(10);
     }
 
+    .header-bar {
+        margin-bottom: lib.s(10);
+
+        @include lib.spacing;
+
+        & > :not(button) {
+            font-weight: bold;
+            font-size: lib.s(16);
+        }
+
+        & > button {
+            @include lib.element-decel;
+            @include lib.rounded(10);
+
+            padding: lib.s(3) lib.s(8);
+
+            &:hover,
+            &:focus {
+                color: scheme.$subtext0;
+            }
+
+            &:active {
+                color: scheme.$overlay2;
+            }
+
+            &.enabled {
+                $-base: color.change(scheme.$base, $alpha: 1);
+
+                background-color: scheme.$primary;
+                color: $-base;
+
+                &:hover,
+                &:focus {
+                    background-color: color.mix(scheme.$primary, $-base, 80%);
+                }
+
+                &:active {
+                    background-color: color.mix(scheme.$primary, $-base, 70%);
+                }
+            }
+        }
+    }
+
     .user {
         @include lib.spacing(15);
 
@@ -79,6 +122,7 @@
             font-size: lib.s(64);
             font-weight: bold;
             background-color: scheme.$base;
+            color: scheme.$subtext0;
         }
 
         .details {
@@ -133,86 +177,98 @@
         }
     }
 
-    .notifications {
-        .header-bar {
-            margin-bottom: lib.s(10);
-            margin-right: lib.s(-10);
+    .notification {
+        .wrapper {
+            padding-bottom: lib.s(10);
+        }
 
-            @include lib.spacing;
+        .inner {
+            @include lib.rounded(20);
 
-            & > button {
-                @include lib.element-decel;
-                @include lib.rounded(10);
+            background-color: color.change(scheme.$surface1, $alpha: 0.4);
 
-                padding: lib.s(3) lib.s(8);
+            &.low {
+                @include notification(if(scheme.$light, scheme.$surface1, scheme.$overlay0));
+            }
 
-                &:hover,
-                &:focus {
-                    color: scheme.$subtext0;
-                }
+            &.normal {
+                @include lib.border(scheme.$primary, if(scheme.$light, 0.5, 0.3));
+                @include notification(scheme.$primary);
+            }
 
-                &:active {
-                    color: scheme.$overlay2;
-                }
-
-                &.enabled {
-                    background-color: scheme.$primary;
-                    color: scheme.$base;
-
-                    &:hover,
-                    &:focus {
-                        background-color: color.mix(scheme.$primary, scheme.$base, 80%);
-                    }
-
-                    &:active {
-                        background-color: color.mix(scheme.$primary, scheme.$base, 70%);
-                    }
-                }
+            &.critical {
+                @include lib.border(scheme.$error, 0.8);
+                @include notification(scheme.$error);
             }
         }
 
-        .notification {
-            .wrapper {
-                padding-bottom: lib.s(10);
+        .actions {
+            @include lib.spacing;
+
+            & > button {
+                @include lib.rounded(10);
+                @include lib.element-decel;
+
+                padding: lib.s(5) lib.s(10);
+                background-color: color.change(scheme.$surface1, $alpha: 0.5);
+
+                &:hover,
+                &:focus {
+                    background-color: color.change(scheme.$surface2, $alpha: 0.5);
+                }
+
+                &:active {
+                    background-color: color.change(scheme.$overlay0, $alpha: 0.5);
+                }
+            }
+        }
+    }
+
+    .upcoming {
+        .list {
+            min-height: lib.s(300);
+        }
+
+        .day {
+            @include lib.spacing($vertical: true);
+
+            &:not(:first-child) {
+                margin-top: lib.s(20);
             }
 
-            .inner {
+            .date {
+                margin-left: lib.s(10);
+            }
+
+            .sublabel {
+                font-size: lib.s(14);
+                color: scheme.$subtext0;
+            }
+
+            .events {
                 @include lib.rounded(20);
 
                 background-color: color.change(scheme.$surface1, $alpha: 0.4);
+                padding: lib.s(10) lib.s(15);
 
-                &.low {
-                    @include notification(if(scheme.$light, scheme.$surface1, scheme.$overlay0));
-                }
-
-                &.normal {
-                    @include lib.border(scheme.$primary, if(scheme.$light, 0.5, 0.3));
-                    @include notification(scheme.$primary);
-                }
-
-                &.critical {
-                    @include lib.border(scheme.$error, 0.8);
-                    @include notification(scheme.$error);
-                }
+                @include lib.spacing(10, true);
             }
 
-            .actions {
-                @include lib.spacing;
+            .event {
+                @include lib.spacing(8);
+            }
 
-                & > button {
-                    @include lib.rounded(10);
-                    @include lib.element-decel;
+            .calendar-indicator {
+                @include lib.rounded(5);
 
-                    padding: lib.s(5) lib.s(10);
-                    background-color: color.change(scheme.$surface1, $alpha: 0.5);
+                min-width: lib.s(1);
 
-                    &:hover,
-                    &:focus {
-                        background-color: color.change(scheme.$surface2, $alpha: 0.5);
-                    }
-
-                    &:active {
-                        background-color: color.change(scheme.$overlay0, $alpha: 0.5);
+                $-colours: scheme.$red, scheme.$sapphire, scheme.$flamingo, scheme.$maroon, scheme.$pink, scheme.$sky,
+                    scheme.$peach, scheme.$yellow, scheme.$green, scheme.$rosewater, scheme.$mauve, scheme.$teal,
+                    scheme.$blue;
+                @for $i from 1 through length($-colours) {
+                    &.c#{$i} {
+                        background-color: nth($-colours, $i);
                     }
                 }
             }

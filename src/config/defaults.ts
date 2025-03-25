@@ -143,4 +143,8 @@ export default {
             },
         ],
     },
+    calendar: {
+        webcals: [] as string[], // An array of urls to ICS files which you can curl
+        upcomingDays: 7, // Number of days which count as upcoming
+    },
 };
