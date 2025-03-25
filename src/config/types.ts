@@ -70,4 +70,5 @@ export default {
     "wallpapers.paths": OBJ_ARR({ recursive: BOOL, path: STR }),
     "calendar.webcals": ARR(STR),
     "calendar.upcomingDays": NUM,
+    "calendar.notify": BOOL,
 } as { [k: string]: string | string[] | number[] };

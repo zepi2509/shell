@@ -1,4 +1,5 @@
-import { execAsync, GObject, property, register } from "astal";
+import { notify } from "@/utils/system";
+import { execAsync, GLib, GObject, property, register, timeout, type AstalIO } from "astal";
 import { calendar as config } from "config";
 import ical from "ical.js";
 
@@ -16,8 +17,9 @@ export default class Calendar extends GObject.Object {
         return this.instance;
     }
 
-    #calCount = 1;
-    #loading = false;
+    #calCount: number = 1;
+    #reminders: AstalIO.Time[] = [];
+    #loading: boolean = false;
     #calendars: { [name: string]: ical.Component } = {};
     #upcoming: { [date: string]: IEvent[] } = {};
 
@@ -71,10 +73,9 @@ export default class Calendar extends GObject.Object {
     updateUpcoming() {
         this.#upcoming = {};
 
+        const today = ical.Time.now();
+        const upcoming = ical.Time.now().adjust(config.upcomingDays.get(), 0, 0, 0);
         for (const [name, cal] of Object.entries(this.#calendars)) {
-            const today = ical.Time.now();
-            const upcoming = ical.Time.now().adjust(config.upcomingDays.get(), 0, 0, 0);
-
             for (const e of cal.getAllSubcomponents()) {
                 const event = new ical.Event(e);
 
@@ -88,7 +89,10 @@ export default class Calendar extends GObject.Object {
                         if (next.compare(today) >= 0) {
                             const date = next.toJSDate().toDateString();
                             if (!this.#upcoming.hasOwnProperty(date)) this.#upcoming[date] = [];
-                            this.#upcoming[date].push({ calendar: name, event });
+
+                            const rEvent = new ical.Event(e);
+                            rEvent.startDate = next;
+                            this.#upcoming[date].push({ calendar: name, event: rEvent });
                         }
                 } else if (event.startDate.compare(today) >= 0 && event.startDate.compare(upcoming) <= 0) {
                     // Add to upcoming if in upcoming range
@@ -104,6 +108,53 @@ export default class Calendar extends GObject.Object {
 
         this.notify("upcoming");
         this.notify("num-upcoming");
+
+        this.setReminders();
+    }
+
+    #notifyEvent(event: ical.Event, calendar: string) {
+        const start = GLib.DateTime.new_from_unix_local(event.startDate.toUnixTime());
+        const end = GLib.DateTime.new_from_unix_local(event.endDate.toUnixTime());
+        const time = `${start.format(`%A, %-d %B`)} • Now — ${end.format("%-I:%M%P")}`;
+        const locIfExists = event.location ? ` ${event.location}\n` : "";
+        const descIfExists = event.description ? `󰒿 ${event.description}\n` : "";
+
+        notify({
+            summary: `󰨱   ${event.summary}   󰨱`,
+            body: `${time}\n${locIfExists}${descIfExists}󰃭 ${calendar}`,
+        }).catch(console.error);
+    }
+
+    #createReminder(event: ical.Event, calendar: string, next: ical.Time) {
+        const diff = next.toUnixTime() - ical.Time.now().toUnixTime();
+        if (diff > 0) this.#reminders.push(timeout(diff * 1000, () => this.#notifyEvent(event, calendar)));
+    }
+
+    setReminders() {
+        this.#reminders.forEach(r => r.cancel());
+        this.#reminders = [];
+
+        if (!config.notify.get()) return;
+
+        const today = ical.Time.now();
+        const upcoming = ical.Time.now().adjust(config.upcomingDays.get(), 0, 0, 0);
+        for (const [name, cal] of Object.entries(this.#calendars)) {
+            for (const e of cal.getAllSubcomponents()) {
+                const event = new ical.Event(e);
+
+                // Skip invalid events
+                if (!event.startDate) continue;
+
+                if (event.isRecurring()) {
+                    // Recurring events
+                    const iter = event.iterator();
+                    for (let next = iter.next(); next && next.compare(upcoming) <= 0; next = iter.next())
+                        if (next.compare(today) >= 0) this.#createReminder(event, name, next);
+                } else if (event.startDate.compare(today) >= 0 && event.startDate.compare(upcoming) <= 0)
+                    // Create reminder if in upcoming range
+                    this.#createReminder(event, name, event.startDate);
+            }
+        }
     }
 
     constructor() {
@@ -112,5 +163,6 @@ export default class Calendar extends GObject.Object {
         this.updateCalendars().catch(console.error);
         config.webcals.subscribe(() => this.updateCalendars().catch(console.error));
         config.upcomingDays.subscribe(() => this.updateUpcoming());
+        config.notify.subscribe(() => this.setReminders());
     }
 }
