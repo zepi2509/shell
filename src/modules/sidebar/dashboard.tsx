@@ -11,6 +11,8 @@ const lengthStr = (length: number) =>
         .toString()
         .padStart(2, "0")}`;
 
+const noNull = (s: string | null) => s ?? "-";
+
 const FaceFallback = () => (
     <label
         setup={self => {
@@ -55,43 +57,51 @@ const User = () => {
     );
 };
 
-const QuickToggles = () => <box></box>;
-
 const Media = ({ player }: { player: AstalMpris.Player }) => {
-    const position = Variable.derive([bind(player, "position"), bind(player, "length")], (p, l) => p / l);
+    const position = player
+        ? Variable.derive([bind(player, "position"), bind(player, "length")], (p, l) => p / l)
+        : Variable(0);
 
     return (
         <box className="media" onDestroy={() => position.drop()}>
             <box
                 homogeneous
                 className="cover-art"
-                css={bind(player, "coverArt").as(a => `background-image: url("${a}");`)}
+                css={player ? bind(player, "coverArt").as(a => `background-image: url("${a}");`) : ""}
             >
-                {bind(player, "coverArt").as(a => (a ? <box visible={false} /> : <label xalign={0.31} label="" />))}
+                {player ? (
+                    bind(player, "coverArt").as(a => (a ? <box visible={false} /> : <label xalign={0.31} label="" />))
+                ) : (
+                    <label xalign={0.31} label="" />
+                )}
             </box>
             <box vertical className="details">
-                <label truncate className="title" label={bind(player, "title")} />
-                <label truncate className="artist" label={bind(player, "artist")} />
+                <label truncate className="title" label={player ? bind(player, "title").as(noNull) : ""} />
+                <label truncate className="artist" label={player ? bind(player, "artist").as(noNull) : "No media"} />
                 <box hexpand className="controls">
                     <button
                         hexpand
-                        sensitive={bind(player, "canGoPrevious")}
+                        sensitive={player ? bind(player, "canGoPrevious") : false}
                         cursor="pointer"
                         onClicked={() => player.next()}
                         label="󰒮"
                     />
                     <button
                         hexpand
-                        sensitive={bind(player, "canControl")}
+                        sensitive={player ? bind(player, "canControl") : false}
                         cursor="pointer"
                         onClicked={() => player.play_pause()}
-                        label={bind(player, "playbackStatus").as(s =>
-                            s === AstalMpris.PlaybackStatus.PLAYING ? "󰏤" : "󰐊"
-                        )}
+                        label={
+                            player
+                                ? bind(player, "playbackStatus").as(s =>
+                                      s === AstalMpris.PlaybackStatus.PLAYING ? "󰏤" : "󰐊"
+                                  )
+                                : "󰐊"
+                        }
                     />
                     <button
                         hexpand
-                        sensitive={bind(player, "canGoNext")}
+                        sensitive={player ? bind(player, "canGoNext") : false}
                         cursor="pointer"
                         onClicked={() => player.next()}
                         label="󰒭"
@@ -99,16 +109,14 @@ const Media = ({ player }: { player: AstalMpris.Player }) => {
                 </box>
                 <Slider value={bind(position)} />
                 <box className="time">
-                    <label label={bind(player, "position").as(lengthStr)} />
+                    <label label={player ? bind(player, "position").as(lengthStr) : "-1:-1"} />
                     <box hexpand />
-                    <label label={bind(player, "length").as(lengthStr)} />
+                    <label label={player ? bind(player, "length").as(lengthStr) : "-1:-1"} />
                 </box>
             </box>
         </box>
     );
 };
-
-const Today = () => <box></box>;
 
 export default () => (
     <box vertical className="pane dashboard" name="dashboard">
