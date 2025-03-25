@@ -23,35 +23,35 @@ export const setupCustomTooltip = (
     });
     self.set_tooltip_window(window);
 
-    let lastX = 0;
-    window.connect("size-allocate", () => {
-        const mWidth = AstalHyprland.get_default().get_focused_monitor().get_width();
-        const pWidth = window.get_preferred_width()[1];
-
-        let marginLeft = lastX - pWidth / 2;
-        if (marginLeft < 0) marginLeft = 0;
-        else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
-
-        window.marginLeft = marginLeft;
-    });
     if (text instanceof Binding) self.hook(text, (_, v) => !v && window.hide());
 
-    self.connect("query-tooltip", () => {
-        if (text instanceof Binding && !text.get()) return false;
-        if (window.visible) return true;
-
-        const mWidth = AstalHyprland.get_default().get_focused_monitor().get_width();
-        const pWidth = window.get_preferred_width()[1];
-        const { x, y } = AstalHyprland.get_default().get_cursor_position();
+    const positionWindow = ({ x, y }: { x: number; y: number }) => {
+        const { width: mWidth, height: mHeight } = AstalHyprland.get_default().get_focused_monitor();
+        const { width: pWidth, height: pHeight } = window.get_preferred_size()[1]!;
         const cursorSize = Gtk.Settings.get_default()?.gtkCursorThemeSize ?? 0;
 
         let marginLeft = x - pWidth / 2;
         if (marginLeft < 0) marginLeft = 0;
         else if (marginLeft + pWidth > mWidth) marginLeft = mWidth - pWidth;
 
+        let marginTop = y + cursorSize;
+        if (marginTop < 0) marginTop = 0;
+        else if (marginTop + pHeight > mHeight) marginTop = y - pHeight;
+
         window.marginLeft = marginLeft;
-        window.marginTop = y + cursorSize;
-        lastX = x;
+        window.marginTop = marginTop;
+    };
+
+    let lastPos = { x: 0, y: 0 };
+
+    window.connect("size-allocate", () => positionWindow(lastPos));
+    self.connect("query-tooltip", () => {
+        if (text instanceof Binding && !text.get()) return false;
+        if (window.visible) return true;
+
+        const cPos = AstalHyprland.get_default().get_cursor_position();
+        positionWindow(cPos);
+        lastPos = cPos;
 
         return true;
     });
