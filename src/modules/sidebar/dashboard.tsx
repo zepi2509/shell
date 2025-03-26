@@ -58,7 +58,7 @@ const User = () => {
     );
 };
 
-const Media = ({ player }: { player: AstalMpris.Player }) => {
+const Media = ({ player }: { player: AstalMpris.Player | null }) => {
     const position = player
         ? Variable.derive([bind(player, "position"), bind(player, "length")], (p, l) => p / l)
         : Variable(0);
@@ -84,14 +84,14 @@ const Media = ({ player }: { player: AstalMpris.Player }) => {
                         hexpand
                         sensitive={player ? bind(player, "canGoPrevious") : false}
                         cursor="pointer"
-                        onClicked={() => player.next()}
+                        onClicked={() => player?.next()}
                         label="󰒮"
                     />
                     <button
                         hexpand
                         sensitive={player ? bind(player, "canControl") : false}
                         cursor="pointer"
-                        onClicked={() => player.play_pause()}
+                        onClicked={() => player?.play_pause()}
                         label={
                             player
                                 ? bind(player, "playbackStatus").as(s =>
@@ -104,7 +104,7 @@ const Media = ({ player }: { player: AstalMpris.Player }) => {
                         hexpand
                         sensitive={player ? bind(player, "canGoNext") : false}
                         cursor="pointer"
-                        onClicked={() => player.next()}
+                        onClicked={() => player?.next()}
                         label="󰒭"
                     />
                 </box>
