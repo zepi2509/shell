@@ -1,4 +1,5 @@
 import { desktopEntrySubs } from "@/utils/icons";
+import { setupCustomTooltip } from "@/utils/widgets";
 import { bind, GLib, register, timeout, Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
 import { notifpopups as config } from "config";
@@ -113,6 +114,7 @@ export default class Notification extends Widget.Box {
                                         wrap
                                         lines={compact ? 1 : -1}
                                         truncate={compact}
+                                        setup={self => compact && !popup && setupCustomTooltip(self, notification.body)}
                                     />
                                 )}
                             </box>
