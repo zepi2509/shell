@@ -119,9 +119,10 @@ export default () => {
                 <label label={bind(label)} />
                 <box hexpand />
                 <button
-                    className={bind(network.wifi, "scanning").as(s => (s ? "enabled" : ""))}
+                    sensitive={network.get_wifi() ? bind(network.wifi, "scanning").as(e => !e) : false}
+                    className={network.get_wifi() ? bind(network.wifi, "scanning").as(s => (s ? "enabled" : "")) : ""}
                     cursor="pointer"
-                    onClicked={() => network.wifi.scan()}
+                    onClicked={() => network.get_wifi()?.scan()}
                     label="󰀂 Scan"
                 />
             </box>
