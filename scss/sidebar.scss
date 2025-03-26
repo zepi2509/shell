@@ -284,6 +284,67 @@
         }
     }
 
+    .networks {
+        .list {
+            @include lib.spacing(10, true);
+        }
+
+        .network {
+            @include lib.rounded(20);
+
+            background-color: color.change(scheme.$surface1, $alpha: 0.4);
+            padding: lib.s(10) lib.s(15);
+
+            @include lib.spacing(5);
+
+            &.connected {
+                background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 50%), $alpha: 0.4);
+
+                & > button {
+                    background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 50%), $alpha: 0.5);
+
+                    &:hover,
+                    &:focus {
+                        background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 30%), $alpha: 0.5);
+                    }
+
+                    &:active {
+                        background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 20%), $alpha: 0.5);
+                    }
+                }
+            }
+
+            .icon {
+                font-size: lib.s(28);
+                margin-right: lib.s(12);
+            }
+
+            .sublabel {
+                font-size: lib.s(14);
+                color: scheme.$subtext0;
+            }
+
+            & > button {
+                @include lib.rounded(1000);
+                @include lib.element-decel;
+                @include font.icon;
+
+                font-size: lib.s(18);
+                min-width: lib.s(30);
+                min-height: lib.s(30);
+                background-color: color.change(scheme.$surface1, $alpha: 0.5);
+
+                &:hover,
+                &:focus {
+                    background-color: color.change(scheme.$surface2, $alpha: 0.5);
+                }
+
+                &:active {
+                    background-color: color.change(scheme.$overlay0, $alpha: 0.5);
+                }
+            }
+        }
+    }
 
     .bluetooth {
         .list {
