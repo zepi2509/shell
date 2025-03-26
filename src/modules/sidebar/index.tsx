@@ -2,12 +2,13 @@ import type { Monitor } from "@/services/monitors";
 import { bind, register, Variable } from "astal";
 import { App, Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import { sidebar } from "config";
+import Connectivity from "./connectivity";
 import Dashboard from "./dashboard";
 import NotifPane from "./notifpane";
 
 @register()
 export default class SideBar extends Widget.Window {
-    readonly shown: Variable<string> = Variable("dashboard");
+    readonly shown: Variable<string>;
 
     constructor({ monitor }: { monitor: Monitor }) {
         super({
@@ -20,7 +21,8 @@ export default class SideBar extends Widget.Window {
             visible: sidebar.showOnStartup.get(),
         });
 
-        const panes = [<Dashboard />, <NotifPane />];
+        const panes = [<Dashboard />, <Connectivity />, <NotifPane />];
+        this.shown = Variable(panes[0].name);
 
         this.add(
             <eventbox
