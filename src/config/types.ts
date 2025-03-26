@@ -49,6 +49,8 @@ export default {
     "osds.lock.spacing": NUM,
     "osds.lock.caps.hideDelay": NUM,
     "osds.lock.num.hideDelay": NUM,
+    // Sidebar
+    "sidebar.showOnStartup": BOOL,
     // Sideleft
     "sideleft.directories.left.top": STR,
     "sideleft.directories.left.middle": STR,

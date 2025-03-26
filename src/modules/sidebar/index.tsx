@@ -1,6 +1,7 @@
 import type { Monitor } from "@/services/monitors";
 import { bind, register, Variable } from "astal";
 import { App, Astal, Gdk, Gtk, Widget } from "astal/gtk3";
+import { sidebar } from "config";
 import Dashboard from "./dashboard";
 import NotifPane from "./notifpane";
 
@@ -16,7 +17,7 @@ export default class SideBar extends Widget.Window {
             monitor: monitor.id,
             anchor: Astal.WindowAnchor.LEFT | Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM,
             exclusivity: Astal.Exclusivity.EXCLUSIVE,
-            // visible: false,
+            visible: sidebar.showOnStartup.get(),
         });
 
         const panes = [<Dashboard />, <NotifPane />];

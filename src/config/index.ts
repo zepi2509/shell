@@ -9,6 +9,7 @@ export const {
     launcher,
     notifpopups,
     osds,
+    sidebar,
     sideleft,
     math,
     updates,

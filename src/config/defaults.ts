@@ -96,6 +96,9 @@ export default {
             },
         },
     },
+    sidebar: {
+        showOnStartup: true,
+    },
     sideleft: {
         directories: {
             left: {
