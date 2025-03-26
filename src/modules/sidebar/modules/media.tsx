@@ -1,6 +1,6 @@
 import Players from "@/services/players";
 import Slider from "@/widgets/slider";
-import { bind, Variable } from "astal";
+import { bind, timeout, Variable } from "astal";
 import { Gtk } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 
@@ -12,7 +12,7 @@ const lengthStr = (length: number) =>
 const noNull = (s: string | null) => s ?? "-";
 
 const NoMedia = () => (
-    <box vertical className="media" name="none">
+    <box vertical className="player" name="none">
         <box homogeneous halign={Gtk.Align.CENTER} className="cover-art">
             <label xalign={0.4} label="" />
         </box>
@@ -50,7 +50,7 @@ const Player = ({ player }: { player: AstalMpris.Player }) => {
     const position = Variable.derive([bind(player, "position"), bind(player, "length")], (p, l) => p / l);
 
     return (
-        <box vertical className="media" name={player.busName} onDestroy={() => position.drop()}>
+        <box vertical className="player" name={player.busName} onDestroy={() => position.drop()}>
             <box
                 homogeneous
                 halign={Gtk.Align.CENTER}
@@ -131,19 +131,46 @@ const Player = ({ player }: { player: AstalMpris.Player }) => {
     );
 };
 
+const Indicator = ({ active, player }: { active: Variable<string>; player: AstalMpris.Player }) => (
+    <button
+        className={bind(active).as(a => (a === player.busName ? "active" : ""))}
+        cursor="pointer"
+        onClicked={() => active.set(player.busName)}
+    />
+);
+
 export default () => {
-    const active = Variable(Players.get_default().list[0]?.busName ?? "none");
+    const players = Players.get_default();
+    const active = Variable(players.lastPlayer?.busName ?? "none");
+
+    active.observe(players, "notify::list", () => {
+        const prev = active.get();
+        timeout(10, () => {
+            if (players.list.some(p => p.busName === prev)) active.set(prev);
+            else active.set(players.lastPlayer?.busName ?? "none");
+        });
+        return "none";
+    });
 
     return (
-        <box vertical>
+        <box vertical className="players" onDestroy={() => active.drop()}>
             <stack
                 transitionType={Gtk.StackTransitionType.SLIDE_LEFT_RIGHT}
                 transitionDuration={150}
                 shown={bind(active)}
             >
                 <NoMedia />
-                {bind(Players.get_default(), "list").as(ps => ps.map(p => <Player player={p} />))}
+                {bind(players, "list").as(ps => ps.map(p => <Player player={p} />))}
             </stack>
+            <revealer
+                transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                transitionDuration={120}
+                revealChild={bind(players, "list").as(l => l.length > 1)}
+            >
+                <box halign={Gtk.Align.CENTER} className="indicators">
+                    {bind(players, "list").as(ps => ps.map(p => <Indicator active={active} player={p} />))}
+                </box>
+            </revealer>
         </box>
     );
 };
