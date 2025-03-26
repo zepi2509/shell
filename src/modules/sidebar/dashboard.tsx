@@ -127,7 +127,7 @@ export default () => (
             <Media player={p} />
         ))}
         <box className="separator" />
-        <Notifications />
+        <Notifications compact />
         <box className="separator" />
         <Upcoming />
     </box>

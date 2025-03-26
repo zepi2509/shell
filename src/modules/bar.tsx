@@ -1,3 +1,4 @@
+import type SideBar from "@/modules/sidebar";
 import type { Monitor } from "@/services/monitors";
 import Players from "@/services/players";
 import Updates from "@/services/updates";
@@ -72,10 +73,19 @@ const togglePopup = (self: JSX.Element, event: Astal.ClickEvent, name: string) =
     }
 };
 
+const switchPane = (name: string) => {
+    const sidebar = App.get_window("sidebar") as SideBar | null;
+    if (sidebar) {
+        if (sidebar.visible && sidebar.shown.get() === name) sidebar.hide();
+        else sidebar.show();
+        sidebar.shown.set(name);
+    }
+};
+
 const OSIcon = () => (
     <button
         className="module os-icon"
-        onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideleft")}
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("dashboard")}
     >
         {osIcon}
     </button>
@@ -446,9 +456,7 @@ const PkgUpdates = () => (
 
 const NotifCount = () => (
     <button
-        onClick={(self, event) =>
-            event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "notifications")
-        }
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("notifpane")}
         setup={self =>
             setupCustomTooltip(
                 self,

@@ -73,6 +73,15 @@
         }
     }
 
+    .empty {
+        color: scheme.$subtext0;
+        font-size: lib.s(18);
+
+        .icon {
+            font-size: lib.s(48);
+        }
+    }
+
     .user {
         @include lib.spacing(15);
 

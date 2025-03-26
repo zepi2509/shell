@@ -3,7 +3,7 @@ import { bind } from "astal";
 import { Astal, Gtk } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
 
-const List = () => (
+const List = ({ compact }: { compact?: boolean }) => (
     <box
         vertical
         valign={Gtk.Align.START}
@@ -13,7 +13,7 @@ const List = () => (
             const map = new Map<number, Notification>();
 
             const addNotification = (notification: AstalNotifd.Notification) => {
-                const notif = (<Notification notification={notification} compact />) as Notification;
+                const notif = (<Notification notification={notification} compact={compact} />) as Notification;
                 notif.connect("destroy", () => map.get(notification.id) === notif && map.delete(notification.id));
                 map.get(notification.id)?.destroyWithAnims();
                 map.set(notification.id, notif);
@@ -42,7 +42,16 @@ const List = () => (
     />
 );
 
-export default () => (
+const NoNotifs = () => (
+    <box homogeneous name="empty">
+        <box vertical halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} className="empty">
+            <label className="icon" label="mark_email_unread" />
+            <label label="All caught up!" />
+        </box>
+    </box>
+);
+
+export default ({ compact }: { compact?: boolean }) => (
     <box vertical className="notifications">
         <box className="header-bar">
             <label
@@ -63,8 +72,15 @@ export default () => (
                 label="󰎟 Clear"
             />
         </box>
-        <scrollable expand hscroll={Gtk.PolicyType.NEVER}>
-            <List />
-        </scrollable>
+        <stack
+            transitionType={Gtk.StackTransitionType.CROSSFADE}
+            transitionDuration={200}
+            shown={bind(AstalNotifd.get_default(), "notifications").as(n => (n.length > 0 ? "list" : "empty"))}
+        >
+            <NoNotifs />
+            <scrollable expand hscroll={Gtk.PolicyType.NEVER} name="list">
+                <List compact={compact} />
+            </scrollable>
+        </stack>
     </box>
 );

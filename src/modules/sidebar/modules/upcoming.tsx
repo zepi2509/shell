@@ -61,6 +61,15 @@ const List = () => (
     </box>
 );
 
+const NoEvents = () => (
+    <box homogeneous name="empty">
+        <box vertical halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} className="empty">
+            <label className="icon" label="calendar_month" />
+            <label label="No upcoming events" />
+        </box>
+    </box>
+);
+
 export default () => (
     <box vertical className="upcoming">
         <box className="header-bar">
@@ -76,8 +85,15 @@ export default () => (
                 label="󰑓 Reload"
             />
         </box>
-        <scrollable className="list" hscroll={Gtk.PolicyType.NEVER}>
-            <List />
-        </scrollable>
+        <stack
+            transitionType={Gtk.StackTransitionType.CROSSFADE}
+            transitionDuration={200}
+            shown={bind(Calendar.get_default(), "numUpcoming").as(n => (n > 0 ? "list" : "empty"))}
+        >
+            <NoEvents />
+            <scrollable expand hscroll={Gtk.PolicyType.NEVER} name="list">
+                <List />
+            </scrollable>
+        </stack>
     </box>
 );
