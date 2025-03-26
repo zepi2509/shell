@@ -2,6 +2,7 @@ import type { Monitor } from "@/services/monitors";
 import { bind, idle, register, Variable } from "astal";
 import { App, Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import { sidebar as config } from "config";
+import Audio from "./audio";
 import Connectivity from "./connectivity";
 import Dashboard from "./dashboard";
 import NotifPane from "./notifpane";
@@ -21,7 +22,7 @@ export default class SideBar extends Widget.Window {
             visible: false,
         });
 
-        const panes = [<Dashboard />, <Connectivity />, <NotifPane />];
+        const panes = [<Dashboard />, <Audio />, <Connectivity />, <NotifPane />];
         this.shown = Variable(panes[0].name);
 
         this.add(

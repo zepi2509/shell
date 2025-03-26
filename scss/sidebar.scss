@@ -13,6 +13,57 @@
     }
 }
 
+@mixin button {
+    @include lib.element-decel;
+
+    background-color: color.change(scheme.$surface1, $alpha: 0.5);
+
+    &:hover,
+    &:focus {
+        background-color: color.change(scheme.$surface2, $alpha: 0.5);
+    }
+
+    &:active {
+        background-color: color.change(scheme.$overlay0, $alpha: 0.5);
+    }
+
+    &:disabled {
+        color: scheme.$subtext0;
+    }
+}
+
+@mixin button-active {
+    @include lib.element-decel;
+
+    background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 50%), $alpha: 0.5);
+
+    &:hover,
+    &:focus {
+        background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 30%), $alpha: 0.5);
+    }
+
+    &:active {
+        background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 20%), $alpha: 0.5);
+    }
+}
+
+@mixin media-button {
+    @include lib.element-decel;
+
+    &:disabled {
+        color: scheme.$overlay2;
+    }
+
+    &:hover,
+    &:focus {
+        color: color.mix(scheme.$subtext1, scheme.$subtext0, 50%);
+    }
+
+    &:active {
+        color: scheme.$subtext0;
+    }
+}
+
 .sidebar {
     @include font.mono;
 
@@ -155,21 +206,8 @@
                 margin-bottom: lib.s(5);
                 font-size: lib.s(24);
 
-                & > * {
-                    @include lib.element-decel;
-
-                    &:disabled {
-                        color: scheme.$overlay0;
-                    }
-
-                    &:hover,
-                    &:focus {
-                        color: scheme.$subtext0;
-                    }
-
-                    &:active {
-                        color: scheme.$overlay2;
-                    }
+                & > button {
+                    @include media-button;
                 }
             }
 
@@ -219,20 +257,10 @@
             @include lib.spacing;
 
             & > button {
+                @include button;
                 @include lib.rounded(10);
-                @include lib.element-decel;
 
                 padding: lib.s(5) lib.s(10);
-                background-color: color.change(scheme.$surface1, $alpha: 0.5);
-
-                &:hover,
-                &:focus {
-                    background-color: color.change(scheme.$surface2, $alpha: 0.5);
-                }
-
-                &:active {
-                    background-color: color.change(scheme.$overlay0, $alpha: 0.5);
-                }
             }
         }
     }
@@ -288,6 +316,95 @@
         }
     }
 
+    .audio .media {
+        @include lib.spacing(40, true);
+
+        .cover-art {
+            @include lib.rounded(10);
+            @include lib.element-decel;
+            @include lib.shadow(scheme.$mantle, $blur: 5, $spread: 2);
+
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-width: lib.s(256);
+            min-height: lib.s(256);
+            font-size: lib.s(96);
+            font-weight: bold;
+            background-color: scheme.$base;
+            color: scheme.$subtext0;
+            margin-top: lib.s(20);
+        }
+
+        .progress {
+            margin: 0 lib.s(40);
+
+            .slider {
+                @include lib.rounded(8);
+                @include lib.fluent-decel(1000ms);
+
+                min-height: lib.s(15);
+                background-color: scheme.$overlay0;
+                color: scheme.$subtext1;
+            }
+
+            .time {
+                margin-top: lib.s(5);
+                font-size: lib.s(13);
+                color: scheme.$subtext1;
+            }
+        }
+
+        .details {
+            font-size: lib.s(14);
+            margin-top: lib.s(20);
+
+            @include lib.spacing(3, true);
+
+            .title {
+                font-size: lib.s(18);
+                color: scheme.$text;
+                font-weight: bold;
+            }
+
+            .artist {
+                color: scheme.$green;
+            }
+
+            .album {
+                color: scheme.$subtext0;
+            }
+        }
+
+        .controls {
+            margin-top: lib.s(-20);
+            margin-bottom: lib.s(5);
+
+            button {
+                @include media-button;
+
+                // Cause some nerd font icons don't have the correct width
+                &.needs-adjustment {
+                    padding-right: lib.s(5);
+                }
+            }
+
+            .playback {
+                font-size: lib.s(32);
+
+                @include lib.spacing(40);
+            }
+
+            .options {
+                margin: 0 lib.s(40);
+                margin-top: lib.s(-10);
+                font-size: lib.s(20);
+
+                @include lib.spacing(20);
+            }
+        }
+    }
+
     .networks {
         .list {
             @include lib.spacing(10, true);
@@ -305,16 +422,7 @@
                 background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 50%), $alpha: 0.4);
 
                 & > button {
-                    background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 50%), $alpha: 0.5);
-
-                    &:hover,
-                    &:focus {
-                        background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 30%), $alpha: 0.5);
-                    }
-
-                    &:active {
-                        background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 20%), $alpha: 0.5);
-                    }
+                    @include button-active;
                 }
             }
 
@@ -329,27 +437,13 @@
             }
 
             & > button {
+                @include button;
                 @include lib.rounded(1000);
-                @include lib.element-decel;
                 @include font.icon;
 
                 font-size: lib.s(18);
                 min-width: lib.s(30);
                 min-height: lib.s(30);
-                background-color: color.change(scheme.$surface1, $alpha: 0.5);
-
-                &:hover,
-                &:focus {
-                    background-color: color.change(scheme.$surface2, $alpha: 0.5);
-                }
-
-                &:active {
-                    background-color: color.change(scheme.$overlay0, $alpha: 0.5);
-                }
-
-                &:disabled {
-                    color: scheme.$subtext0;
-                }
             }
         }
     }
@@ -371,16 +465,7 @@
                 background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 50%), $alpha: 0.4);
 
                 & > button {
-                    background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 50%), $alpha: 0.5);
-
-                    &:hover,
-                    &:focus {
-                        background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 30%), $alpha: 0.5);
-                    }
-
-                    &:active {
-                        background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 20%), $alpha: 0.5);
-                    }
+                    @include button-active;
                 }
             }
 
@@ -395,27 +480,13 @@
             }
 
             & > button {
+                @include button;
                 @include lib.rounded(1000);
-                @include lib.element-decel;
                 @include font.icon;
 
                 font-size: lib.s(18);
                 min-width: lib.s(30);
                 min-height: lib.s(30);
-                background-color: color.change(scheme.$surface1, $alpha: 0.5);
-
-                &:hover,
-                &:focus {
-                    background-color: color.change(scheme.$surface2, $alpha: 0.5);
-                }
-
-                &:active {
-                    background-color: color.change(scheme.$overlay0, $alpha: 0.5);
-                }
-
-                &:disabled {
-                    color: scheme.$subtext0;
-                }
             }
         }
     }
