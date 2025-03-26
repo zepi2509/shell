@@ -44,10 +44,17 @@ const Network = (accessPoint: AstalNetwork.AccessPoint) => (
             valign={Gtk.Align.CENTER}
             cursor="pointer"
             onClicked={self => {
+                let destroyed = false;
+                const id = self.connect("destroy", () => (destroyed = true));
                 const cmd =
                     AstalNetwork.get_default().wifi.activeAccessPoint === accessPoint ? "c down id" : "d wifi connect";
                 execAsync(`nmcli ${cmd} '${accessPoint.ssid}'`)
-                    .then(() => (self.sensitive = true))
+                    .then(() => {
+                        if (!destroyed) {
+                            self.sensitive = true;
+                            self.disconnect(id);
+                        }
+                    })
                     .catch(console.error);
                 self.sensitive = false;
             }}

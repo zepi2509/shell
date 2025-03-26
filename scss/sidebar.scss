@@ -46,6 +46,10 @@
 
             padding: lib.s(3) lib.s(8);
 
+            &:disabled {
+                color: scheme.$overlay0;
+            }
+
             &:hover,
             &:focus {
                 color: scheme.$subtext0;
