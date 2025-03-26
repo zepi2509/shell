@@ -1,7 +1,7 @@
 import type { Monitor } from "@/services/monitors";
-import { bind, register, Variable } from "astal";
+import { bind, idle, register, Variable } from "astal";
 import { App, Astal, Gdk, Gtk, Widget } from "astal/gtk3";
-import { sidebar } from "config";
+import { sidebar as config } from "config";
 import Connectivity from "./connectivity";
 import Dashboard from "./dashboard";
 import NotifPane from "./notifpane";
@@ -18,7 +18,7 @@ export default class SideBar extends Widget.Window {
             monitor: monitor.id,
             anchor: Astal.WindowAnchor.LEFT | Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM,
             exclusivity: Astal.Exclusivity.EXCLUSIVE,
-            visible: sidebar.showOnStartup.get(),
+            visible: false,
         });
 
         const panes = [<Dashboard />, <Connectivity />, <NotifPane />];
@@ -46,5 +46,7 @@ export default class SideBar extends Widget.Window {
                 </box>
             </eventbox>
         );
+
+        if (config.showOnStartup.get()) idle(() => this.show());
     }
 }
