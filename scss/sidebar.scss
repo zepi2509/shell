@@ -342,6 +342,10 @@
                 &:active {
                     background-color: color.change(scheme.$overlay0, $alpha: 0.5);
                 }
+
+                &:disabled {
+                    color: scheme.$subtext0;
+                }
             }
         }
     }
@@ -403,6 +407,10 @@
 
                 &:active {
                     background-color: color.change(scheme.$overlay0, $alpha: 0.5);
+                }
+
+                &:disabled {
+                    color: scheme.$subtext0;
                 }
             }
         }

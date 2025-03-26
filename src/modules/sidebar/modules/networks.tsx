@@ -30,7 +30,7 @@ const Network = (accessPoint: AstalNetwork.AccessPoint) => (
             valign={Gtk.Align.CENTER}
             visible={false}
             cursor="pointer"
-            onClicked={() => execAsync(`nmcli c delete id '${accessPoint.ssid}'`).catch(() => {})}
+            onClicked={() => execAsync(`nmcli c delete id '${accessPoint.ssid}'`).catch(console.error)}
             label="delete_forever"
             setup={self => {
                 let destroyed = false;
