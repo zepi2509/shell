@@ -143,7 +143,7 @@ export default () => {
     const players = Players.get_default();
     const active = Variable(players.lastPlayer?.busName ?? "none");
 
-    active.observe(players, "notify::last-player", () => {
+    active.observe(players, "notify::list", () => {
         timeout(10, () => active.set(players.lastPlayer?.busName ?? "none"));
         return "none";
     });
