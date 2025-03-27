@@ -138,10 +138,9 @@ const MediaPlaying = () => {
         players.lastPlayer ? `${players.lastPlayer.title} - ${players.lastPlayer.artist}` : fallback;
     return (
         <button
-            onClick={(self, event) => {
-                if (event.button === Astal.MouseButton.PRIMARY) {
-                    togglePopup(self, event, "media");
-                } else if (event.button === Astal.MouseButton.SECONDARY) players.lastPlayer?.play_pause();
+            onClick={(_, event) => {
+                if (event.button === Astal.MouseButton.PRIMARY) switchPane("audio");
+                else if (event.button === Astal.MouseButton.SECONDARY) players.lastPlayer?.play_pause();
                 else if (event.button === Astal.MouseButton.MIDDLE) players.lastPlayer?.raise();
             }}
             setup={self => {
@@ -262,11 +261,10 @@ const Tray = () => (
 
 const Network = () => (
     <button
-        onClick={(self, event) => {
+        onClick={(_, event) => {
             const network = AstalNetwork.get_default();
-            if (event.button === Astal.MouseButton.PRIMARY) {
-                togglePopup(self, event, "networks");
-            } else if (event.button === Astal.MouseButton.SECONDARY) network.wifi.enabled = !network.wifi.enabled;
+            if (event.button === Astal.MouseButton.PRIMARY) switchPane("connectivity");
+            else if (event.button === Astal.MouseButton.SECONDARY) network.wifi.enabled = !network.wifi.enabled;
             else if (event.button === Astal.MouseButton.MIDDLE)
                 execAsync("uwsm app -- gnome-control-center wifi").catch(() => {
                     network.wifi.scan();
@@ -367,8 +365,8 @@ const Network = () => (
 const BluetoothDevice = (device: AstalBluetooth.Device) => (
     <button
         visible={bind(device, "connected")}
-        onClick={(self, event) => {
-            if (event.button === Astal.MouseButton.PRIMARY) togglePopup(self, event, "bluetooth-devices");
+        onClick={(_, event) => {
+            if (event.button === Astal.MouseButton.PRIMARY) switchPane("connectivity");
             else if (event.button === Astal.MouseButton.SECONDARY)
                 device.disconnect_device((_, res) => device.disconnect_device_finish(res));
             else if (event.button === Astal.MouseButton.MIDDLE)
@@ -387,8 +385,8 @@ const BluetoothDevice = (device: AstalBluetooth.Device) => (
 const Bluetooth = () => (
     <box vertical={bind(config.vertical)} className="bluetooth">
         <button
-            onClick={(self, event) => {
-                if (event.button === Astal.MouseButton.PRIMARY) togglePopup(self, event, "bluetooth-devices");
+            onClick={(_, event) => {
+                if (event.button === Astal.MouseButton.PRIMARY) switchPane("connectivity");
                 else if (event.button === Astal.MouseButton.SECONDARY) AstalBluetooth.get_default().toggle();
                 else if (event.button === Astal.MouseButton.MIDDLE)
                     execAsync("uwsm app -- blueman-manager").catch(console.error);
@@ -439,7 +437,7 @@ const StatusIcons = () => (
 
 const PkgUpdates = () => (
     <button
-        onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "updates")}
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("packages")}
         setup={self =>
             setupCustomTooltip(
                 self,
@@ -595,7 +593,7 @@ export default ({ monitor }: { monitor: Monitor }) => (
                     expand
                     onScroll={(_, event) => {
                         const speaker = AstalWp.get_default()?.audio.defaultSpeaker;
-                        if (!speaker) return;
+                        if (!speaker) return console.error("Unable to connect to WirePlumber.");
                         speaker.mute = false;
                         if (event.delta_y > 0) speaker.volume -= 0.1;
                         else speaker.volume += 0.1;
