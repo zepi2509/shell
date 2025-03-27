@@ -73,7 +73,7 @@ const NoSources = ({ icon, label }: { icon: string; label: string }) => (
 const NoWp = () => (
     <box vexpand homogeneous>
         <box vertical valign={Gtk.Align.CENTER}>
-            <NoSources icon="no_sound" label="Audio module unavailable" />
+            <NoSources icon="no_sound" label="Streams module unavailable" />
             <label className="no-wp-prompt" label="WirePlumber is required for this module" />
         </box>
     </box>
