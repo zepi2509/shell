@@ -99,7 +99,7 @@ export default () => (
         >
             <NoNews />
             <scrollable
-                expand={bind(Updates.get_default(), "news").as(n => !!n)}
+                className={bind(Updates.get_default(), "news").as(n => (n ? "expanded" : ""))}
                 hscroll={Gtk.PolicyType.NEVER}
                 name="list"
             >

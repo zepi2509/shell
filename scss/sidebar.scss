@@ -705,8 +705,46 @@
         }
     }
 
+    .updates {
+        .list {
+            @include lib.spacing(10, true);
+        }
+
+        .repo {
+            @include lib.rounded(20);
+            @include lib.element-decel;
+
+            background-color: color.change(scheme.$surface1, $alpha: 0.4);
+            padding: lib.s(10) lib.s(15);
+
+            @include lib.spacing(5);
+
+            .icon {
+                font-size: lib.s(28);
+
+                &:not(:last-child) {
+                    margin-right: lib.s(12);
+                }
+            }
+
+            .sublabel {
+                font-size: lib.s(14);
+                color: scheme.$subtext0;
+            }
+
+            .body {
+                margin-top: lib.s(10);
+                font-size: lib.s(14);
+            }
+        }
+    }
+
     .news {
         min-height: lib.s(200);
+
+        .expanded {
+            min-height: lib.s(400);
+        }
 
         .empty {
             margin-top: lib.s(40);
