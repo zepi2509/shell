@@ -104,7 +104,7 @@ const Selector = ({ input, audio }: { input?: boolean; audio: AstalWp.Audio }) =
 };
 
 const NoWp = () => (
-    <box vexpand homogeneous>
+    <box homogeneous>
         <box vertical valign={Gtk.Align.CENTER}>
             <label label="Device selector unavailable" />
             <label className="no-wp-prompt" label="WirePlumber is required for this module" />
