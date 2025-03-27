@@ -443,6 +443,70 @@
         }
     }
 
+    .no-wp-prompt {
+        font-size: lib.s(16);
+        color: scheme.$error;
+        margin-top: lib.s(8);
+    }
+
+    .streams {
+        .list {
+            @include lib.spacing(10, true);
+        }
+
+        .stream {
+            @include lib.rounded(20);
+            @include lib.element-decel;
+
+            background-color: color.change(scheme.$surface1, $alpha: 0.4);
+            padding: lib.s(10) lib.s(15);
+
+            @include lib.spacing(5);
+
+            &.playing {
+                background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 50%), $alpha: 0.4);
+            }
+
+            .icon {
+                font-size: lib.s(28);
+                margin-right: lib.s(12);
+            }
+
+            .sublabel {
+                font-size: lib.s(14);
+                color: scheme.$subtext0;
+            }
+
+            trough {
+                @include lib.rounded(10);
+
+                min-width: lib.s(100);
+                min-height: lib.s(10);
+                background-color: color.change(scheme.$error, $alpha: 0.3);
+
+                fill {
+                    @include lib.rounded(10);
+
+                    background-color: color.change(scheme.$overlay0, $alpha: 1);
+                }
+
+                highlight {
+                    @include lib.rounded(10);
+
+                    background-color: scheme.$subtext1;
+                }
+            }
+
+            & > button {
+                @include media-button;
+
+                font-size: lib.s(18);
+                min-width: lib.s(20);
+                min-height: lib.s(20);
+            }
+        }
+    }
+
     .networks {
         .list {
             @include lib.spacing(10, true);
@@ -450,6 +514,7 @@
 
         .network {
             @include lib.rounded(20);
+            @include lib.element-decel;
 
             background-color: color.change(scheme.$surface1, $alpha: 0.4);
             padding: lib.s(10) lib.s(15);
@@ -493,6 +558,7 @@
 
         .device {
             @include lib.rounded(20);
+            @include lib.element-decel;
 
             background-color: color.change(scheme.$surface1, $alpha: 0.4);
             padding: lib.s(10) lib.s(15);
