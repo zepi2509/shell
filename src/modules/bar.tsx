@@ -271,7 +271,7 @@ const Network = () => (
                 execAsync("uwsm app -- gnome-control-center wifi").catch(() => {
                     network.wifi.scan();
                     execAsync(
-                        "uwsm app -- foot -T nmtui fish -c 'sleep .1; set -e COLORTERM; TERM=xterm-old nmtui connect'"
+                        "uwsm app -- foot -T nmtui -- fish -c 'sleep .1; set -e COLORTERM; TERM=xterm-old nmtui connect'"
                     ).catch(() => {}); // Ignore errors
                 });
         }}
