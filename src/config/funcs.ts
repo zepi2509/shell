@@ -1,4 +1,4 @@
-import { GLib, monitorFile, readFileAsync, Variable } from "astal";
+import { GLib, monitorFile, readFileAsync, Variable, writeFileAsync } from "astal";
 import config from ".";
 import { loadStyleAsync } from "../../app";
 import defaults from "./defaults";
@@ -91,4 +91,12 @@ export const updateConfig = async () => {
 export const initConfig = () => {
     monitorFile(CONFIG, () => updateConfig().catch(e => console.warn(`Invalid config: ${e}`)));
     updateConfig().catch(e => console.warn(`Invalid config: ${e}`));
+};
+
+export const setConfig = async (path: string, value: any) => {
+    const conf = JSON.parse(await readFileAsync(CONFIG));
+    let obj = conf;
+    for (const p of path.split(".").slice(0, -1)) obj = obj[p];
+    obj[path.split(".").at(-1)!] = value;
+    await writeFileAsync(CONFIG, JSON.stringify(conf, null, 4));
 };

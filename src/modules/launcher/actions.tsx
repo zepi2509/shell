@@ -8,6 +8,7 @@ import { setupCustomTooltip, type FlowBox } from "@/utils/widgets";
 import { bind, execAsync, GLib, readFile, register, type Variable } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import { launcher as config } from "config";
+import { setConfig } from "config/funcs";
 import fuzzysort from "fuzzysort";
 import AstalHyprland from "gi://AstalHyprland";
 import { close, ContentBox, type LauncherContent, type Mode } from "./util";
@@ -23,6 +24,24 @@ interface IAction {
 interface ActionMap {
     [k: string]: IAction;
 }
+
+const transparencyActions = {
+    off: {
+        icon: "blur_off",
+        name: "Off",
+        description: "Completely opaque",
+    },
+    normal: {
+        icon: "blur_linear",
+        name: "Normal",
+        description: "Somewhat transparent",
+    },
+    high: {
+        icon: "blur_on",
+        name: "High",
+        description: "Extremely transparent",
+    },
+};
 
 const autocomplete = (entry: Widget.Entry, action: string) => {
     entry.set_text(`${config.actionPrefix.get()}${action} `);
@@ -88,6 +107,12 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
         name: "Wallpaper",
         description: "Change the current wallpaper",
         action: () => autocomplete(entry, "wallpaper"),
+    },
+    transparency: {
+        icon: "opacity",
+        name: "Transparency",
+        description: "Change shell's transparency",
+        action: () => autocomplete(entry, "transparency"),
     },
     todo: {
         icon: "checklist",
@@ -333,6 +358,17 @@ const Category = ({ path, wallpapers }: ICategory) => (
     </Gtk.FlowBoxChild>
 );
 
+const Transparency = ({ amount }: { amount: keyof typeof transparencyActions }) => (
+    <Action
+        {...transparencyActions[amount]}
+        args={[]}
+        action={() => {
+            setConfig("style.transparency", amount).catch(console.error);
+            close();
+        }}
+    />
+);
+
 @register()
 export default class Actions extends Widget.Box implements LauncherContent {
     #map: ActionMap;
@@ -380,6 +416,11 @@ export default class Actions extends Widget.Box implements LauncherContent {
 
             for (const { obj } of fuzzysort.go(term, list, { all: true, key: "path" }))
                 this.#content.add(random ? <Category {...(obj as ICategory)} /> : <Wallpaper {...obj} />);
+        } else if (action === "transparency") {
+            const list = Object.keys(transparencyActions);
+
+            for (const { target } of fuzzysort.go(args[1], list, { all: true }))
+                this.#content.add(<Transparency amount={target} />);
         } else {
             const list = this.#list.filter(
                 a => this.#map[a].available?.() ?? !config.disabledActions.get().includes(a)
