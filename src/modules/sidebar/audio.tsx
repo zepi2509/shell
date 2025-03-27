@@ -1,3 +1,4 @@
+import DeviceSelector from "./modules/deviceselector";
 import Media from "./modules/media";
 import Streams from "./modules/streams";
 
@@ -6,5 +7,7 @@ export default () => (
         <Media />
         <box className="separator" />
         <Streams />
+        <box className="separator" />
+        <DeviceSelector />
     </box>
 );

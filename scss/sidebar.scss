@@ -507,6 +507,116 @@
         }
     }
 
+    .device-selector {
+        @include lib.spacing(10, true);
+
+        .selector {
+            @include lib.rounded(20);
+
+            background-color: color.change(scheme.$surface1, $alpha: 0.4);
+            padding: lib.s(10) lib.s(15);
+
+            .icon {
+                font-size: lib.s(20);
+            }
+
+            .separator {
+                margin-bottom: lib.s(8);
+                margin-top: lib.s(5);
+                background-color: if(scheme.$light, scheme.$overlay1, scheme.$overlay0);
+            }
+
+            .list {
+                color: scheme.$subtext0;
+
+                @include lib.spacing(3, true);
+            }
+
+            .device {
+                @include lib.spacing;
+            }
+
+            .selected {
+                color: scheme.$text;
+
+                @include lib.spacing(10);
+
+                .icon {
+                    font-size: lib.s(32);
+                }
+
+                .sublabel {
+                    color: scheme.$subtext0;
+                }
+            }
+
+            button {
+                @include lib.element-decel;
+
+                &:hover,
+                &:focus {
+                    color: scheme.$subtext1;
+                }
+
+                &:active {
+                    color: scheme.$text;
+                }
+            }
+        }
+
+        .stream {
+            @include lib.rounded(20);
+            @include lib.element-decel;
+
+            background-color: color.change(scheme.$surface1, $alpha: 0.4);
+            padding: lib.s(10) lib.s(15);
+
+            @include lib.spacing(5);
+
+            &.playing {
+                background-color: color.change(color.mix(scheme.$surface1, scheme.$primary, 50%), $alpha: 0.4);
+            }
+
+            .icon {
+                font-size: lib.s(28);
+                margin-right: lib.s(12);
+            }
+
+            .sublabel {
+                font-size: lib.s(14);
+                color: scheme.$subtext0;
+            }
+
+            trough {
+                @include lib.rounded(10);
+
+                min-width: lib.s(100);
+                min-height: lib.s(10);
+                background-color: color.change(scheme.$error, $alpha: 0.3);
+
+                fill {
+                    @include lib.rounded(10);
+
+                    background-color: color.change(scheme.$overlay0, $alpha: 1);
+                }
+
+                highlight {
+                    @include lib.rounded(10);
+
+                    background-color: scheme.$subtext1;
+                }
+            }
+
+            & > button {
+                @include media-button;
+
+                font-size: lib.s(18);
+                min-width: lib.s(20);
+                min-height: lib.s(20);
+            }
+        }
+    }
+
     .networks {
         .list {
             @include lib.spacing(10, true);
