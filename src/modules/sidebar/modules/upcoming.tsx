@@ -82,7 +82,7 @@ export default () => (
                 sensitive={bind(Calendar.get_default(), "loading").as(l => !l)}
                 cursor="pointer"
                 onClicked={() => Calendar.get_default().updateCalendars().catch(console.error)}
-                label="󰑓 Reload"
+                label={bind(Calendar.get_default(), "loading").as(l => (l ? "󰑓 Loading" : "󰑓 Reload"))}
             />
         </box>
         <stack

@@ -6,6 +6,7 @@ import Audio from "./audio";
 import Connectivity from "./connectivity";
 import Dashboard from "./dashboard";
 import NotifPane from "./notifpane";
+import Packages from "./packages";
 
 @register()
 export default class SideBar extends Widget.Window {
@@ -22,7 +23,7 @@ export default class SideBar extends Widget.Window {
             visible: false,
         });
 
-        const panes = [<Dashboard />, <Audio />, <Connectivity />, <NotifPane />];
+        const panes = [<Dashboard />, <Audio />, <Connectivity />, <Packages />, <NotifPane />];
         this.shown = Variable(panes[0].name);
 
         this.add(
