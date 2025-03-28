@@ -55,7 +55,7 @@ export class Monitor extends GObject.Object {
             .then(out => {
                 this.isDdc = out.split("\n\n").some(display => {
                     if (!/^Display \d+/.test(display)) return false;
-                    const lines = display.split("\n");
+                    const lines = display.split("\n").map(l => l.trimStart());
                     if (lines.find(l => l.startsWith("Monitor:"))?.split(":")[3] !== monitor.serial) return false;
                     this.busNum = lines.find(l => l.startsWith("I2C bus:"))?.split("/dev/i2c-")[1];
                     return this.busNum !== undefined;
