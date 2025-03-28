@@ -31,6 +31,7 @@ const BluetoothDevice = (device: AstalBluetooth.Device) => (
                     };
                     self.hook(device, "notify::connected", update);
                     self.hook(device, "notify::paired", update);
+                    self.hook(device, "notify::battery-percentage", update);
                     update();
                 }}
             />
