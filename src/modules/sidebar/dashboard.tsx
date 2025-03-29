@@ -108,7 +108,7 @@ const Media = ({ player }: { player: AstalMpris.Player | null }) => {
                         label="󰒭"
                     />
                 </box>
-                <Slider value={bind(position)} />
+                <Slider value={bind(position)} onChange={(_, v) => player?.set_position(v * player.length)} />
                 <box className="time">
                     <label label={player ? bind(player, "position").as(lengthStr) : "-1:-1"} />
                     <box hexpand />

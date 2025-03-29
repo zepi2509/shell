@@ -27,7 +27,6 @@ const Stream = ({ stream, playing }: IStream) => (
             showFillLevel
             restrictToFillLevel={false}
             fillLevel={2 / 3}
-            cursor="pointer"
             value={bind(stream, "volume").as(v => v * (2 / 3))}
             setup={self => self.connect("value-changed", () => stream.set_volume(self.value * 1.5))}
         />

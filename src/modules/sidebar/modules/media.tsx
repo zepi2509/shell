@@ -60,7 +60,7 @@ const Player = ({ player }: { player: AstalMpris.Player }) => {
                 {bind(player, "coverArt").as(a => (a ? <box visible={false} /> : <label xalign={0.4} label="" />))}
             </box>
             <box vertical className="progress">
-                <Slider value={bind(position)} />
+                <Slider value={bind(position)} onChange={(_, v) => player.set_position(v * player.length)} />
                 <box className="time">
                     <label label={bind(player, "position").as(lengthStr)} />
                     <box hexpand />

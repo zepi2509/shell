@@ -1,8 +1,14 @@
 import { bind, type Binding } from "astal";
-import { Gtk } from "astal/gtk3";
+import { Gdk, Gtk, type Widget } from "astal/gtk3";
 import type cairo from "cairo";
 
-export default ({ value }: { value: Binding<number> }) => (
+export default ({
+    value,
+    onChange,
+}: {
+    value: Binding<number>;
+    onChange?: (self: Widget.DrawingArea, value: number) => void;
+}) => (
     <drawingarea
         hexpand
         valign={Gtk.Align.CENTER}
@@ -48,6 +54,11 @@ export default ({ value }: { value: Binding<number> }) => (
                 cr.arc(radius, height - radius, radius, halfPi, Math.PI); // Bottom left
                 cr.fill();
             });
+
+            self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK);
+            self.connect("button-press-event", (_, event: Gdk.Event) =>
+                onChange?.(self, event.get_coords()[1] / self.get_allocated_width())
+            );
         }}
     />
 );
