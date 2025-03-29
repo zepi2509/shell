@@ -76,6 +76,7 @@ export const bindCurrentTime = (
     return bind(time);
 };
 
+const monitors = new Set();
 export const monitorDirectory = (
     path: string,
     callback: (
@@ -101,6 +102,10 @@ export const monitorDirectory = (
                 monitor.connect("notify::cancelled", () => m.cancel());
             }
     }
+
+    // Keep ref to monitor so it doesn't get GCed
+    monitors.add(monitor);
+    monitor.connect("notify::cancelled", () => monitor.cancelled && monitors.delete(monitor));
 
     return monitor;
 };

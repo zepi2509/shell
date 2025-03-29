@@ -32,7 +32,6 @@ export default class Schemes extends GObject.Object {
     }
 
     readonly #schemeDir: string = `${DATA}/scripts/data/schemes`;
-    readonly #monitor;
 
     #map: { [k: string]: Scheme } = {};
 
@@ -106,7 +105,7 @@ export default class Schemes extends GObject.Object {
         super();
 
         this.update().catch(console.error);
-        this.#monitor = monitorDirectory(this.#schemeDir, (_m, file, _f, type) => {
+        monitorDirectory(this.#schemeDir, (_m, file, _f, type) => {
             if (type !== Gio.FileMonitorEvent.DELETED) this.updateFile(file).catch(console.error);
         });
     }
