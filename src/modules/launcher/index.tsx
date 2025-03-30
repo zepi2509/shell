@@ -67,6 +67,7 @@ export default class Launcher extends PopupWindow {
             anchor:
                 Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.RIGHT,
             keymode: Astal.Keymode.EXCLUSIVE,
+            exclusivity: Astal.Exclusivity.IGNORE,
             borderWidth: 0,
             onKeyPressEvent(_, event) {
                 const keyval = event.get_keyval()[1];
