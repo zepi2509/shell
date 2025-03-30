@@ -216,8 +216,8 @@
                 @include lib.fluent-decel(1000ms);
 
                 min-height: lib.s(8);
-                background-color: scheme.$surface0;
-                color: scheme.$overlay0;
+                background-color: scheme.$overlay0;
+                color: scheme.$subtext1;
             }
 
             .time {
