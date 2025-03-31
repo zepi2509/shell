@@ -123,7 +123,11 @@ export default () => {
                     className={network.get_wifi() ? bind(network.wifi, "scanning").as(s => (s ? "enabled" : "")) : ""}
                     cursor="pointer"
                     onClicked={() => network.get_wifi()?.scan()}
-                    label="󰀂 Scan"
+                    label={
+                        network.get_wifi()
+                            ? bind(network.wifi, "scanning").as(s => (s ? "󰀂 Scanning" : "󰀂 Scan"))
+                            : "󰀂 Scan"
+                    }
                 />
             </box>
             {network.get_wifi() ? (
