@@ -9,6 +9,7 @@ export default {
     "style.vibrant": BOOL,
     // Bar
     "bar.vertical": BOOL,
+    "bar.style": ["gaps", "panel", "embedded"],
     "bar.modules.osIcon.enabled": BOOL,
     "bar.modules.activeWindow.enabled": BOOL,
     "bar.modules.mediaPlaying.enabled": BOOL,
