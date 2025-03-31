@@ -3,26 +3,25 @@
 @use "scheme";
 @use "font";
 
+@mixin bar-spacing($vertical: false) {
+    @include lib.spacing(10, $vertical);
+
+    & > * {
+        @include lib.spacing(10, $vertical);
+    }
+}
+
 .bar {
     @include font.mono;
 
     font-size: lib.s(14);
-
-    .module {
-        @include lib.rounded(8);
-
-        background-color: scheme.$base;
-    }
 
     label.icon {
         font-size: lib.s(18);
     }
 
     .os-icon {
-        @include lib.border(scheme.$yellow);
-
         color: scheme.$yellow;
-        font-size: lib.s(14);
     }
 
     .active-window {
@@ -88,23 +87,25 @@
     }
 
     .power {
-        @include lib.border(scheme.$red);
         @include lib.element-decel;
         @include font.icon;
 
         color: scheme.$red;
         font-weight: bold;
         font-size: lib.s(16);
+
+        &:hover,
+        &:focus {
+            color: color.change(scheme.$red, $alpha: 0.8);
+        }
+
+        &:active {
+            color: color.change(scheme.$red, $alpha: 0.6);
+        }
     }
 
     &.horizontal {
         margin: 10px 10px 0 10px;
-
-        @include lib.spacing(10);
-
-        & > * {
-            @include lib.spacing(10);
-        }
 
         .module {
             padding: lib.s(5) lib.s(10);
@@ -147,12 +148,6 @@
     &.vertical {
         margin: 10px 0 10px 10px;
 
-        @include lib.spacing(10, true);
-
-        & > * {
-            @include lib.spacing(10, true);
-        }
-
         .module {
             padding: lib.s(8);
 
@@ -183,6 +178,53 @@
 
         .status-icons .bluetooth {
             @include lib.spacing(10, true);
+        }
+    }
+
+    &.gaps {
+        .module {
+            @include lib.rounded(8);
+
+            background-color: scheme.$base;
+        }
+
+        .os-icon {
+            @include lib.border(scheme.$yellow);
+        }
+
+        .power {
+            @include lib.border(scheme.$red);
+        }
+
+        &.horizontal {
+            @include bar-spacing;
+        }
+
+        &.vertical {
+            @include bar-spacing(true);
+        }
+    }
+
+    &.panel {
+        @include lib.rounded(20);
+        @include lib.border(scheme.$primary, 0.5, 2);
+
+        background-color: scheme.$mantle;
+
+        .os-icon {
+            font-size: lib.s(16);
+        }
+
+        &.horizontal {
+            padding: lib.s(5) lib.s(10);
+        }
+
+        &.vertical {
+            padding: lib.s(10) lib.s(5);
+
+            .os-icon > * {
+                margin-left: lib.s(-7);
+            }
         }
     }
 }

@@ -560,59 +560,63 @@ const bindWidget = (module: keyof typeof config.modules, Widget: () => JSX.Eleme
 const bindCompositeWidget = (module: keyof typeof config.modules, binding: Binding<JSX.Element>) =>
     bind(Variable.derive([config.modules[module].enabled, binding], (e, w) => (e ? w : <Dummy />)));
 
-export default ({ monitor }: { monitor: Monitor }) => (
-    <window
-        namespace="caelestia-bar"
-        monitor={monitor.id}
-        anchor={bind(config.vertical).as(
-            v =>
-                Astal.WindowAnchor.TOP |
-                Astal.WindowAnchor.LEFT |
-                (v ? Astal.WindowAnchor.BOTTOM : Astal.WindowAnchor.RIGHT)
-        )}
-        exclusivity={Astal.Exclusivity.EXCLUSIVE}
-    >
-        <centerbox
-            vertical={bind(config.vertical)}
-            className={bind(config.vertical).as(v => `bar ${v ? "vertical" : " horizontal"}`)}
+export default ({ monitor }: { monitor: Monitor }) => {
+    const className = Variable.derive(
+        [bind(config.vertical), bind(config.style)],
+        (v, s) => `bar ${v ? "vertical" : " horizontal"} ${s}`
+    );
+
+    return (
+        <window
+            namespace="caelestia-bar"
+            monitor={monitor.id}
+            anchor={bind(config.vertical).as(
+                v =>
+                    Astal.WindowAnchor.TOP |
+                    Astal.WindowAnchor.LEFT |
+                    (v ? Astal.WindowAnchor.BOTTOM : Astal.WindowAnchor.RIGHT)
+            )}
+            exclusivity={Astal.Exclusivity.EXCLUSIVE}
         >
-            <box vertical={bind(config.vertical)}>
-                {bindWidget("osIcon", OSIcon)}
-                {bindWidget("activeWindow", ActiveWindow)}
-                {bindWidget("mediaPlaying", MediaPlaying)}
-                <button
-                    expand
-                    onScroll={(_, event) =>
-                        event.delta_y > 0 ? (monitor.brightness -= 0.1) : (monitor.brightness += 0.1)
-                    }
-                />
-            </box>
-            {bindWidget("workspaces", Workspaces)}
-            <box vertical={bind(config.vertical)}>
-                <button
-                    expand
-                    onScroll={(_, event) => {
-                        const speaker = AstalWp.get_default()?.audio.defaultSpeaker;
-                        if (!speaker) return console.error("Unable to connect to WirePlumber.");
-                        speaker.mute = false;
-                        if (event.delta_y > 0) speaker.volume -= 0.1;
-                        else speaker.volume += 0.1;
-                    }}
-                />
-                {bindWidget("tray", Tray)}
-                {bindWidget("statusIcons", StatusIcons)}
-                {bindWidget("pkgUpdates", PkgUpdates)}
-                {bindWidget("notifCount", NotifCount)}
-                {bindCompositeWidget(
-                    "battery",
-                    bind(AstalBattery.get_default(), "isBattery").as(b => (b ? <Battery /> : <Dummy />))
-                )}
-                {bindCompositeWidget(
-                    "dateTime",
-                    bind(config.vertical).as(v => (v ? <DateTimeVertical /> : <DateTime />))
-                )}
-                {bindWidget("power", Power)}
-            </box>
-        </centerbox>
-    </window>
-);
+            <centerbox vertical={bind(config.vertical)} className={bind(className)} onDestroy={() => className.drop()}>
+                <box vertical={bind(config.vertical)}>
+                    {bindWidget("osIcon", OSIcon)}
+                    {bindWidget("activeWindow", ActiveWindow)}
+                    {bindWidget("mediaPlaying", MediaPlaying)}
+                    <button
+                        expand
+                        onScroll={(_, event) =>
+                            event.delta_y > 0 ? (monitor.brightness -= 0.1) : (monitor.brightness += 0.1)
+                        }
+                    />
+                </box>
+                {bindWidget("workspaces", Workspaces)}
+                <box vertical={bind(config.vertical)}>
+                    <button
+                        expand
+                        onScroll={(_, event) => {
+                            const speaker = AstalWp.get_default()?.audio.defaultSpeaker;
+                            if (!speaker) return;
+                            speaker.mute = false;
+                            if (event.delta_y > 0) speaker.volume -= 0.1;
+                            else speaker.volume += 0.1;
+                        }}
+                    />
+                    {bindWidget("tray", Tray)}
+                    {bindWidget("statusIcons", StatusIcons)}
+                    {bindWidget("pkgUpdates", PkgUpdates)}
+                    {bindWidget("notifCount", NotifCount)}
+                    {bindCompositeWidget(
+                        "battery",
+                        bind(AstalBattery.get_default(), "isBattery").as(b => (b ? <Battery /> : <Dummy />))
+                    )}
+                    {bindCompositeWidget(
+                        "dateTime",
+                        bind(config.vertical).as(v => (v ? <DateTimeVertical /> : <DateTime />))
+                    )}
+                    {bindWidget("power", Power)}
+                </box>
+            </centerbox>
+        </window>
+    );
+};

@@ -8,6 +8,7 @@ export default {
     // Modules
     bar: {
         vertical: true,
+        style: "gaps",
         modules: {
             osIcon: {
                 enabled: true,
