@@ -6,6 +6,12 @@ label.icon {
     @include font.icon;
 }
 
+.screen-corner {
+    @include lib.rounded(15);
+
+    background-color: scheme.$mantle;
+}
+
 .notification {
     .inner {
         @include lib.rounded(8);

@@ -2,6 +2,7 @@ import Bar from "@/modules/bar";
 import Launcher from "@/modules/launcher";
 import NotifPopups from "@/modules/notifpopups";
 import Osds from "@/modules/osds";
+import ScreenCorners from "@/modules/screencorners";
 import Session from "@/modules/session";
 import SideBar from "@/modules/sidebar";
 import Calendar from "@/services/calendar";
@@ -75,6 +76,7 @@ App.start({
         <Session />;
         Monitors.get_default().forEach(m => <SideBar monitor={m} />);
         Monitors.get_default().forEach(m => <Bar monitor={m} />);
+        Monitors.get_default().forEach(m => <ScreenCorners monitor={m} />);
 
         // Init services
         timeout(1000, () => {
