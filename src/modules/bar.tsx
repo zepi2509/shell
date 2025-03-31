@@ -596,7 +596,7 @@ export default ({ monitor }: { monitor: Monitor }) => {
                         expand
                         onScroll={(_, event) => {
                             const speaker = AstalWp.get_default()?.audio.defaultSpeaker;
-                            if (!speaker) return;
+                            if (!speaker) return console.error("Unable to connect to WirePlumber.");
                             speaker.mute = false;
                             if (event.delta_y > 0) speaker.volume -= 0.1;
                             else speaker.volume += 0.1;
