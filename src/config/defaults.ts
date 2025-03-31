@@ -97,7 +97,7 @@ export default {
         },
     },
     sidebar: {
-        showOnStartup: true,
+        showOnStartup: false,
     },
     sideleft: {
         directories: {
