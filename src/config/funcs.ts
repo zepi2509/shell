@@ -88,9 +88,9 @@ export const updateConfig = async () => {
     loadStyleAsync().catch(console.error);
 };
 
-export const initConfig = () => {
+export const initConfig = async () => {
     monitorFile(CONFIG, () => updateConfig().catch(e => console.warn(`Invalid config: ${e}`)));
-    updateConfig().catch(e => console.warn(`Invalid config: ${e}`));
+    await updateConfig().catch(e => console.warn(`Invalid config: ${e}`));
 };
 
 export const setConfig = async (path: string, value: any) => {
