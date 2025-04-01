@@ -1,4 +1,5 @@
 import { desktopEntrySubs } from "@/utils/icons";
+import Thumbnailer from "@/utils/thumbnailer";
 import { setupCustomTooltip } from "@/utils/widgets";
 import { bind, GLib, register, timeout, Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
@@ -58,9 +59,11 @@ const Image = ({ compact, icon }: { compact?: boolean; icon: string }) => {
             <box
                 valign={Gtk.Align.START}
                 className={`image ${compact ? "small" : ""}`}
-                css={`
-                    background-image: url("${icon}");
-                `}
+                setup={self =>
+                    Thumbnailer.thumbnail(icon)
+                        .then(p => (self.css = `background-image: url("${p}");`))
+                        .catch(console.error)
+                }
             />
         );
     if (Astal.Icon.lookup_icon(icon))

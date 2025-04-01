@@ -1,6 +1,6 @@
-import { basename } from "@/utils/strings";
 import { monitorDirectory } from "@/utils/system";
-import { execAsync, GLib, GObject, property, register } from "astal";
+import Thumbnailer from "@/utils/thumbnailer";
+import { execAsync, GObject, property, register } from "astal";
 import { wallpapers as config } from "config";
 
 export interface IWallpaper {
@@ -22,8 +22,6 @@ export default class Wallpapers extends GObject.Object {
         return this.instance;
     }
 
-    #thumbnailDir = `${CACHE}/thumbnails`;
-
     #list: IWallpaper[] = [];
     #categories: ICategory[] = [];
 
@@ -35,14 +33,6 @@ export default class Wallpapers extends GObject.Object {
     @property(Object)
     get categories() {
         return this.#categories;
-    }
-
-    async #thumbnail(path: string) {
-        const dir = path.slice(1, path.lastIndexOf("/")).replaceAll("/", "-");
-        const thumbPath = `${this.#thumbnailDir}/${dir}-${basename(path)}.jpg`;
-        if (!GLib.file_test(thumbPath, GLib.FileTest.EXISTS))
-            await execAsync(`magick -define jpeg:size=1000x500 ${path} -thumbnail 500x250 -unsharp 0x.5 ${thumbPath}`);
-        return thumbPath;
     }
 
     #listDir(path: { path: string; recursive: boolean }, type: "f" | "d") {
@@ -68,7 +58,7 @@ export default class Wallpapers extends GObject.Object {
         const files = successes.map(r => r.files.replaceAll("\n", " ")).join(" ");
         const list = (await execAsync(["fish", "-c", `identify -ping -format '%i\n' ${files} ; true`])).split("\n");
 
-        this.#list = await Promise.all(list.map(async p => ({ path: p, thumbnail: await this.#thumbnail(p) })));
+        this.#list = await Promise.all(list.map(async p => ({ path: p, thumbnail: await Thumbnailer.thumbnail(p) })));
         this.notify("list");
 
         const categories = await Promise.all(successes.map(r => this.#listDir(r.path, "d")));
@@ -81,8 +71,6 @@ export default class Wallpapers extends GObject.Object {
 
     constructor() {
         super();
-
-        GLib.mkdir_with_parents(this.#thumbnailDir, 0o755);
 
         this.update().catch(console.error);
 
