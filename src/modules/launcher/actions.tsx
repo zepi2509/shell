@@ -122,21 +122,6 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
             // If no args, autocomplete cmd
             if (args.length === 0) return autocomplete(entry, "todo");
 
-            // If tod not installed, notify
-            if (!GLib.find_program_in_path("tod")) {
-                notify({
-                    summary: "Tod not installed",
-                    body: "The launcher todo subcommand requires `tod`. Install it with `yay -S tod-bin`",
-                    icon: "dialog-warning-symbolic",
-                    urgency: "critical",
-                    actions: {
-                        Install: () => execAsync("uwsm app -T -- yay -S tod-bin").catch(console.error),
-                    },
-                });
-                close();
-                return;
-            }
-
             // If tod not configured, notify
             let token = null;
             try {
@@ -172,6 +157,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
 
             close();
         },
+        available: () => !!GLib.find_program_in_path("tod"),
     },
     reload: {
         icon: "refresh",
