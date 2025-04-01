@@ -78,7 +78,7 @@ const updateSection = (from: { [k: string]: any }, to: { [k: string]: any }, pat
     for (const [k, v] of Object.entries(from)) {
         if (to.hasOwnProperty(k)) {
             if (isObject(v)) updateSection(v, to[k], `${path}${k}.`);
-            else to[k].set(v);
+            else if (!Array.isArray(v) || JSON.stringify(to[k].get()) !== JSON.stringify(v)) to[k].set(v);
         } else console.warn(`Unknown config key: ${path}${k}`);
     }
 };

@@ -13,7 +13,7 @@ export default class Thumbnailer {
     static readonly #running = new Set<string>();
 
     static getThumbPath(path: string) {
-        const dir = path.slice(1, path.lastIndexOf("/")).replaceAll("/", "-");
+        const dir = path.slice(path.indexOf("/") + 1, path.lastIndexOf("/")).replaceAll("/", "-");
         return `${this.thumbnailDir}/${dir}-${basename(path)}.jpg`;
     }
 
