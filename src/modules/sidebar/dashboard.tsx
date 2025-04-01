@@ -34,7 +34,6 @@ const FaceFallback = () => (
 const User = () => {
     const uptime = Variable("").poll(5000, "uptime -p");
     const hasFace = Variable(GLib.file_test(HOME + "/.face", GLib.FileTest.EXISTS));
-    monitorFile(HOME + "/.face", () => hasFace.set(GLib.file_test(HOME + "/.face", GLib.FileTest.EXISTS)));
 
     return (
         <box className="user">
@@ -43,9 +42,12 @@ const User = () => {
                 className="face"
                 setup={self => {
                     self.css = `background-image: url("${HOME}/.face");`;
-                    monitorFile(HOME + "/.face", () => (self.css = `background-image: url("${HOME}/.face");`));
+                    const monitor = monitorFile(HOME + "/.face", () => {
+                        hasFace.set(GLib.file_test(HOME + "/.face", GLib.FileTest.EXISTS));
+                        self.css = `background-image: url("${HOME}/.face");`;
+                    });
+                    self.connect("destroy", () => monitor.cancel());
                 }}
-                onDestroy={() => hasFace.drop()}
             >
                 {bind(hasFace).as(h => (h ? <box visible={false} /> : <FaceFallback />))}
             </box>
