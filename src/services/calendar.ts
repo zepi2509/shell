@@ -1,5 +1,16 @@
+import { pathToFileName } from "@/utils/strings";
 import { notify } from "@/utils/system";
-import { execAsync, GLib, GObject, property, register, timeout, type AstalIO } from "astal";
+import {
+    execAsync,
+    GLib,
+    GObject,
+    property,
+    readFileAsync,
+    register,
+    timeout,
+    writeFileAsync,
+    type AstalIO,
+} from "astal";
 import { calendar as config } from "config";
 import ical from "ical.js";
 
@@ -16,6 +27,8 @@ export default class Calendar extends GObject.Object {
 
         return this.instance;
     }
+
+    readonly #cacheDir = `${CACHE}/calendars`;
 
     #calCount: number = 1;
     #reminders: AstalIO.Time[] = [];
@@ -55,12 +68,24 @@ export default class Calendar extends GObject.Object {
         this.#calCount = 1;
 
         const cals = await Promise.allSettled(config.webcals.get().map(c => execAsync(["curl", c])));
-        for (const cal of cals) {
+        for (let i = 0; i < cals.length; i++) {
+            const cal = cals[i];
+            const webcal = pathToFileName(config.webcals.get()[i]);
+
+            let icalStr;
             if (cal.status === "fulfilled") {
-                const comp = new ical.Component(ical.parse(cal.value));
+                icalStr = cal.value;
+            } else {
+                console.error(`Failed to get calendar from ${config.webcals.get()[i]}:\n${cal.reason}`);
+                icalStr = await readFileAsync(`${this.#cacheDir}/${webcal}`);
+            }
+
+            if (icalStr) {
+                const comp = new ical.Component(ical.parse(icalStr));
                 const name = (comp.getFirstPropertyValue("x-wr-calname") ?? `Calendar ${this.#calCount++}`) as string;
                 this.#calendars[name] = comp;
-            } else console.error(`Failed to get calendar: ${cal.reason}`);
+                writeFileAsync(`${this.#cacheDir}/${webcal}`, icalStr).catch(console.error);
+            }
         }
         this.notify("calendars");
 
@@ -159,6 +184,8 @@ export default class Calendar extends GObject.Object {
 
     constructor() {
         super();
+
+        GLib.mkdir_with_parents(this.#cacheDir, 0o755);
 
         this.updateCalendars().catch(console.error);
         config.webcals.subscribe(() => this.updateCalendars().catch(console.error));

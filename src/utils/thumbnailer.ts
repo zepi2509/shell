@@ -1,5 +1,5 @@
 import { execAsync, Gio, GLib } from "astal";
-import { basename } from "./strings";
+import { pathToFileName } from "./strings";
 
 export default class Thumbnailer {
     static readonly thumbnailDir = `${CACHE}/thumbnails`;
@@ -13,8 +13,7 @@ export default class Thumbnailer {
     static readonly #running = new Set<string>();
 
     static getThumbPath(path: string) {
-        const dir = path.slice(path.indexOf("/") + 1, path.lastIndexOf("/")).replaceAll("/", "-");
-        return `${this.thumbnailDir}/${dir}-${basename(path)}.png`;
+        return `${this.thumbnailDir}/${pathToFileName(path, "png")}`;
     }
 
     static async shouldThumbnail(path: string) {
