@@ -14,7 +14,12 @@ export default class Thumbnailer {
 
     static getThumbPath(path: string) {
         const dir = path.slice(path.indexOf("/") + 1, path.lastIndexOf("/")).replaceAll("/", "-");
-        return `${this.thumbnailDir}/${dir}-${basename(path)}.jpg`;
+        return `${this.thumbnailDir}/${dir}-${basename(path)}.png`;
+    }
+
+    static async shouldThumbnail(path: string) {
+        const [width, height] = (await execAsync(`identify -ping -format "%w %h" ${path}`)).split(" ").map(parseInt);
+        return width > this.thumbWidth || height > this.thumbHeight;
     }
 
     static async #thumbnail(path: string, attempts: number): Promise<string> {
@@ -40,6 +45,8 @@ export default class Thumbnailer {
     }
 
     static async thumbnail(path: string): Promise<string> {
+        if (!(await this.shouldThumbnail(path))) return path;
+
         let thumbPath = this.getThumbPath(path);
 
         // If not lazy (i.e. force gen), delete existing thumbnail
