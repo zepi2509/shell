@@ -14,10 +14,8 @@ label.icon {
 
 .notification {
     .inner {
-        @include lib.rounded(8);
         @include font.main;
 
-        background-color: scheme.$base;
         color: scheme.$text;
         padding: lib.s(10) lib.s(12);
 

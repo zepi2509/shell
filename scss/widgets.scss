@@ -40,11 +40,10 @@ menu {
     font-size: lib.s(14);
 
     & > menuitem {
+        @include lib.element-decel;
         @include lib.rounded(8);
 
         padding: lib.s(5) lib.s(8);
-        background: transparent;
-        transition: 0.2s ease background-color;
 
         &:hover,
         &:focus {
@@ -84,17 +83,23 @@ menu {
 
 tooltip,
 .tooltip {
-    @include lib.rounded(5);
+    @include lib.rounded(10);
     @include lib.border(scheme.$primary, 0.7);
     @include font.mono;
 
     background-color: scheme.$surface0;
     color: scheme.$text;
-    padding: lib.s(4) lib.s(8);
+    padding: lib.s(5) lib.s(10);
 }
 
 tooltip {
     @include -appear(200ms);
+}
+
+.tooltip {
+    @include lib.shadow;
+
+    margin: lib.s(3);
 }
 
 scrollbar {
@@ -125,7 +130,7 @@ popover {
     @include font.mono;
 
     padding: lib.s(8);
-    background-color: scheme.$base;
+    background-color: color.mix(scheme.$base, scheme.$yellow, 90%);
     color: scheme.$text;
     font-size: lib.s(14);
 }

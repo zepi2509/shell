@@ -15,6 +15,7 @@
     @include font.mono;
 
     font-size: lib.s(14);
+    padding-right: lib.s(3);
 
     label.icon {
         font-size: lib.s(18);
@@ -190,10 +191,24 @@
 
         .os-icon {
             @include lib.border(scheme.$yellow);
+
+            @if not scheme.$borders {
+                @include lib.shadow;
+
+                background-color: scheme.$yellow;
+                color: scheme.$base;
+            }
         }
 
         .power {
             @include lib.border(scheme.$red);
+
+            @if not scheme.$borders {
+                @include lib.shadow;
+
+                background-color: scheme.$red;
+                color: scheme.$base;
+            }
         }
 
         &.horizontal {

@@ -3,6 +3,7 @@ import { Astal } from "astal/gtk3";
 export default {
     style: {
         transparency: "normal", // One of "off", "normal", "high"
+        borders: true,
         vibrant: false, // Extra saturation
     },
     // Modules

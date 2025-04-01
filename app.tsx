@@ -28,6 +28,13 @@ const applyTransparency = (name: string, hex: string) => {
 
 const applyVibrancy = (hex: string) => (style.vibrant.get() ? `color.scale(${hex}, $saturation: 40%)` : hex);
 
+const getVars = () => {
+    const vars = { light: Palette.get_default().mode === "light", borders: style.borders.get() };
+    return Object.entries(vars)
+        .map(([k, v]) => `$${k}: ${v}`)
+        .join(";");
+};
+
 const styleLoader = new (class {
     #running = false;
     #dirty = false;
@@ -47,10 +54,7 @@ const styleLoader = new (class {
         const schemeColours = Object.entries(Palette.get_default().colours)
             .map(([name, hex]) => `$${name}: ${applyVibrancy(applyTransparency(name, hex))};`)
             .join("\n");
-        await writeFileAsync(
-            `${SRC}/scss/scheme/_index.scss`,
-            `@use "sass:color";\n$light: ${Palette.get_default().mode === "light"};\n${schemeColours}`
-        );
+        await writeFileAsync(`${SRC}/scss/scheme/_index.scss`, `@use "sass:color";\n${getVars()};\n${schemeColours}`);
         App.apply_css(await execAsync(`sass ${SRC}/style.scss`), true);
     }
 })();
@@ -66,7 +70,6 @@ App.start({
         await initConfig();
 
         loadStyleAsync().catch(console.error);
-        style.transparency.subscribe(() => loadStyleAsync().catch(console.error));
         Palette.get_default().connect("notify::colours", () => loadStyleAsync().catch(console.error));
         Palette.get_default().connect("notify::mode", () => loadStyleAsync().catch(console.error));
 

@@ -8,7 +8,7 @@
 
     .inner {
         @include lib.rounded(8);
-        @include lib.border(scheme.$overlay0, 0.1);
+        @include lib.border(scheme.$flamingo, 0.5, 2);
         @include lib.shadow;
         @include font.mono;
 

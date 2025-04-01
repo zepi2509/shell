@@ -5,6 +5,8 @@
 
 @mixin launcher($mode, $colour) {
     &.#{$mode} {
+        @include lib.border($colour, 0.7, 2);
+
         label.icon {
             color: $colour;
         }
@@ -24,7 +26,7 @@
         &.lines {
             .search-bar {
                 .mode {
-                    @include lib.border($colour, $width: 2);
+                    @include lib.border($colour, $width: 2, $force: true);
                 }
 
                 .entry {
@@ -66,6 +68,7 @@
 
 .launcher {
     @include lib.rounded(10);
+    @include lib.element-decel;
     @include lib.shadow;
     @include font.mono;
 
@@ -176,7 +179,7 @@
             min-height: lib.s(32);
 
             &.left {
-                @include lib.border(scheme.$overlay0, 0.3);
+                @include lib.border(scheme.$overlay0, 0.3, $force: true);
 
                 border-right: none;
                 border-top-right-radius: 0;

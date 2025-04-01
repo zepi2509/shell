@@ -6,6 +6,7 @@ const OBJ_ARR = (shape: object) => ARR(JSON.stringify(shape));
 
 export default {
     "style.transparency": ["off", "normal", "high"],
+    "style.borders": BOOL,
     "style.vibrant": BOOL,
     // Bar
     "bar.vertical": BOOL,

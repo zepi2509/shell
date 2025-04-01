@@ -240,6 +240,10 @@
 
             &.low {
                 @include notification(if(scheme.$light, scheme.$surface1, scheme.$overlay0));
+
+                @if not scheme.$borders {
+                    background-color: color.change(scheme.$surface0, $alpha: 0.4);
+                }
             }
 
             &.normal {
@@ -250,6 +254,10 @@
             &.critical {
                 @include lib.border(scheme.$error, 0.8);
                 @include notification(scheme.$error);
+
+                @if not scheme.$borders {
+                    background-color: color.change(color.mix(scheme.$surface1, scheme.$error, 80%), $alpha: 0.4);
+                }
             }
         }
 
