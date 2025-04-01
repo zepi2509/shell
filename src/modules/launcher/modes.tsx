@@ -186,7 +186,7 @@ class Math extends Widget.Box implements LauncherContent {
                             />
                         </box>
                     </box>
-                    <box className="separator" />
+                    <box visible={bind(config.style).as(s => s === "lines")} className="separator" />
                 </box>
             </revealer>
         );

@@ -25,6 +25,7 @@ export default {
     "bar.modules.dateTime.detailedFormat": STR,
     "bar.modules.power.enabled": BOOL,
     // Launcher
+    "launcher.style": ["lines", "round"],
     "launcher.actionPrefix": STR,
     "launcher.apps.maxResults": NUM,
     "launcher.files.maxResults": NUM,

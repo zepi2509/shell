@@ -304,7 +304,7 @@ const Scheme = ({ scheme, name, colours }: { scheme?: string; name: string; colo
 const Wallpaper = ({ path, thumbnail }: IWallpaper) => (
     <Gtk.FlowBoxChild visible canFocus={false}>
         <button
-            className="result"
+            className="result wallpaper-container"
             cursor="pointer"
             onClicked={() => {
                 execAsync(`caelestia wallpaper -f ${path}`).catch(console.error);
@@ -326,7 +326,7 @@ const Wallpaper = ({ path, thumbnail }: IWallpaper) => (
 const Category = ({ path, wallpapers }: ICategory) => (
     <Gtk.FlowBoxChild visible canFocus={false}>
         <button
-            className="result"
+            className="result wallpaper-container"
             cursor="pointer"
             onClicked={() => {
                 execAsync(`caelestia wallpaper -d ${path}`).catch(console.error);

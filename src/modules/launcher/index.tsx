@@ -24,7 +24,10 @@ const isAction = (text: string, action: string = "") => text.startsWith(config.a
 
 const SearchBar = ({ mode, entry }: { mode: Variable<Mode>; entry: Widget.Entry }) => (
     <box className="search-bar">
-        <label className="mode" label={bind(mode)} />
+        <box className="mode">
+            <label className="icon" label={bind(mode).as(getModeIcon)} />
+            <label label={bind(mode).as(getPrettyMode)} />
+        </box>
         {entry}
     </box>
 );
@@ -61,6 +64,7 @@ export default class Launcher extends PopupWindow {
         const mode = Variable<Mode>("apps");
         const content = Modes();
         const actions = new Actions(mode, entry);
+        const className = Variable.derive([mode, config.style], (m, s) => `launcher ${m} ${s}`);
 
         super({
             name: "launcher",
@@ -86,7 +90,8 @@ export default class Launcher extends PopupWindow {
                     vertical
                     halign={Gtk.Align.CENTER}
                     valign={Gtk.Align.CENTER}
-                    className={bind(mode).as(m => `launcher ${m}`)}
+                    className={bind(className)}
+                    onDestroy={() => className.drop()}
                 >
                     <SearchBar mode={mode} entry={entry} />
                     <stack

@@ -8,7 +8,7 @@ export default {
     // Modules
     bar: {
         vertical: true,
-        style: "gaps",
+        style: "gaps", // One of "gaps", "panel", "embedded"
         modules: {
             osIcon: {
                 enabled: true,
@@ -49,6 +49,7 @@ export default {
         },
     },
     launcher: {
+        style: "lines", // One of "lines", "round"
         actionPrefix: ">", // Prefix for launcher actions
         apps: {
             maxResults: 30, // Actual max results, -1 for infinite

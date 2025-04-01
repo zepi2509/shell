@@ -13,28 +13,52 @@
             background-color: color.change($colour, $alpha: 0.7);
         }
 
-        .search-bar {
-            .mode {
-                @include lib.border($colour, $width: 2);
+        .result:focus {
+            color: $colour;
+
+            .sublabel {
+                color: color.mix(scheme.$subtext0, $colour, 60%);
+            }
+        }
+
+        &.lines {
+            .search-bar {
+                .mode {
+                    @include lib.border($colour, $width: 2);
+                }
+
+                .entry {
+                    border-bottom: lib.s(2) solid $colour;
+                }
             }
 
-            .entry {
+            .mode-switcher .mode {
+                &.selected {
+                    border-top: lib.s(2) solid $colour;
+                }
+
+                &:hover,
+                &:focus {
+                    color: $colour;
+                }
+
+                &:active {
+                    color: color.mix($colour, scheme.$base, 80%);
+                }
+            }
+
+            .result:focus {
                 border-bottom: lib.s(2) solid $colour;
             }
         }
 
-        .mode-switcher .mode {
-            &.selected {
-                border-top: lib.s(2) solid $colour;
+        &.round {
+            .search-bar .mode {
+                background-color: $colour;
             }
 
-            &:hover,
-            &:focus {
+            .mode-switcher .mode.selected {
                 color: $colour;
-            }
-
-            &:active {
-                color: color.mix($colour, scheme.$base, 80%);
             }
         }
     }
@@ -65,14 +89,19 @@
             @include lib.rounded(5);
             @include lib.element-decel;
 
-            padding: lib.s(5);
+            padding: lib.s(5) lib.s(10);
+
+            @include lib.spacing(3);
+
+            .icon {
+                font-size: lib.s(20);
+            }
         }
     }
 
     .mode-switcher .mode {
         @include lib.element-decel;
 
-        border-top: lib.s(2) solid transparent;
         padding-top: lib.s(10);
 
         .icon {
@@ -87,7 +116,6 @@
     .result {
         @include lib.element-decel;
 
-        border-bottom: lib.s(2) solid transparent;
         padding-left: lib.s(10);
 
         .icon {
@@ -99,6 +127,8 @@
         }
 
         .sublabel {
+            @include lib.element-decel;
+
             color: scheme.$subtext0;
             font-size: lib.s(14);
         }
@@ -115,17 +145,8 @@
             background-color: scheme.$surface0;
         }
 
-        &:focus {
-            border-bottom: lib.s(2) solid scheme.$red;
-            color: scheme.$red;
-
-            .sublabel {
-                color: color.mix(scheme.$red, scheme.$base, 70%);
-            }
-        }
-
         &:active {
-            background-color: scheme.$surface1;
+            background-color: color.mix(scheme.$surface0, scheme.$surface1, 70%);
         }
     }
 
@@ -140,6 +161,8 @@
     }
 
     .swatches {
+        margin-bottom: lib.s(5);
+
         @include lib.spacing(3);
     }
 
@@ -168,8 +191,6 @@
     }
 
     .wallpaper {
-        margin: lib.s(3) 0;
-
         .thumbnail {
             background-size: cover;
             background-position: center;
@@ -209,6 +230,91 @@
 
         &.large .thumbnail {
             min-height: lib.s(160);
+        }
+    }
+
+    &.lines {
+        .mode-switcher .mode {
+            border-top: lib.s(2) solid transparent;
+        }
+
+        .result {
+            border-bottom: lib.s(2) solid transparent;
+        }
+    }
+
+    &.round {
+        .search-bar {
+            .mode {
+                @include lib.rounded(10);
+
+                color: color.change(scheme.$base, $alpha: 1);
+
+                .icon {
+                    color: color.change(scheme.$base, $alpha: 1);
+                }
+            }
+
+            .entry {
+                @include lib.rounded(10);
+
+                padding: lib.s(5) lib.s(10);
+                background-color: color.mix(scheme.$base, scheme.$surface0, 30%);
+            }
+        }
+
+        .mode-switcher {
+            padding-top: lib.s(10);
+
+            @include lib.spacing(10);
+
+            .mode {
+                @include lib.rounded(10);
+
+                padding: lib.s(5);
+                background-color: color.mix(scheme.$base, scheme.$surface0, 50%);
+
+                &:not(.selected) .icon {
+                    color: scheme.$text;
+                }
+
+                &:hover,
+                &:focus {
+                    background-color: scheme.$surface0;
+                }
+
+                &:active {
+                    background-color: color.mix(scheme.$surface0, scheme.$surface1, 70%);
+                }
+            }
+        }
+
+        .result {
+            @include lib.rounded(10);
+
+            padding-right: lib.s(10);
+            margin-bottom: lib.s(5);
+            margin-right: lib.s(5);
+
+            &:focus {
+                background-color: scheme.$surface0;
+            }
+        }
+
+        .math .preview .result {
+            @include lib.rounded(20);
+
+            background-color: scheme.$surface0;
+            padding: lib.s(5) lib.s(10);
+        }
+
+        .wallpaper-container {
+            padding-right: 0;
+
+            .wallpaper:not(.compact) {
+                padding-top: lib.s(8);
+                padding-bottom: lib.s(3);
+            }
         }
     }
 }
