@@ -102,20 +102,6 @@ export default {
     sidebar: {
         showOnStartup: false,
     },
-    sideleft: {
-        directories: {
-            left: {
-                top: "󰉍  Downloads",
-                middle: "󱧶  Documents",
-                bottom: "󱍙  Music",
-            },
-            right: {
-                top: "󰉏  Pictures",
-                middle: "󰉏  Videos",
-                bottom: "󱂵  Home",
-            },
-        },
-    },
     // Services
     math: {
         maxHistory: 100,

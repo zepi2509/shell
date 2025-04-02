@@ -54,13 +54,6 @@ export default {
     "osds.lock.num.hideDelay": NUM,
     // Sidebar
     "sidebar.showOnStartup": BOOL,
-    // Sideleft
-    "sideleft.directories.left.top": STR,
-    "sideleft.directories.left.middle": STR,
-    "sideleft.directories.left.bottom": STR,
-    "sideleft.directories.right.top": STR,
-    "sideleft.directories.right.middle": STR,
-    "sideleft.directories.right.bottom": STR,
     // Services
     "math.maxHistory": NUM,
     "updates.interval": NUM,
