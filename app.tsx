@@ -15,6 +15,7 @@ import { execAsync, idle, timeout, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
 import { style } from "config";
 import { initConfig, updateConfig } from "config/funcs";
+import AstalHyprland from "gi://AstalHyprland?version=0.1";
 
 const isLayer = (name: string) =>
     ["base", "mantle", "crust"].includes(name) || name.startsWith("surface") || name.startsWith("overlay");
@@ -75,9 +76,9 @@ App.start({
             Palette.get_default().connect("notify::mode", () => loadStyleAsync().catch(console.error));
 
             <Launcher />;
-            <NotifPopups />;
             <Osds />;
             <Session />;
+            Monitors.get_default().forEach(m => <NotifPopups monitor={m} />);
             Monitors.get_default().forEach(m => <SideBar monitor={m} />);
             Monitors.get_default().forEach(m => <Bar monitor={m} />);
             Monitors.get_default().forEach(m => <ScreenCorners monitor={m} />);
@@ -99,6 +100,8 @@ App.start({
         if (request === "reload-css") loadStyleAsync().catch(console.error);
         else if (request === "reload-config") updateConfig();
         else if (request.startsWith("show")) App.get_window(request.split(" ")[1])?.show();
+        else if (request.startsWith("toggle"))
+            App.toggle_window(request.split(" ")[1] + AstalHyprland.get_default().focusedMonitor.id);
         else if (request === "media play-pause") Players.get_default().lastPlayer?.play_pause();
         else if (request === "media next") Players.get_default().lastPlayer?.next();
         else if (request === "media previous") Players.get_default().lastPlayer?.previous();

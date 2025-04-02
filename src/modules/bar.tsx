@@ -25,6 +25,10 @@ interface SpacerClassNameProps {
     afterSpacer?: boolean;
 }
 
+interface ModuleProps extends SpacerClassNameProps {
+    monitor: Monitor;
+}
+
 const hyprland = AstalHyprland.get_default();
 
 const getBatteryIcon = (perc: number) => {
@@ -70,8 +74,8 @@ const hookFocusedClientProp = (
     callback(lastClient);
 };
 
-const switchPane = (name: string) => {
-    const sidebar = App.get_window("sidebar") as SideBar | null;
+const switchPane = (monitor: Monitor, name: string) => {
+    const sidebar = App.get_window(`sidebar${monitor.id}`) as SideBar | null;
     if (sidebar) {
         if (sidebar.visible && sidebar.shown.get() === name) sidebar.hide();
         else sidebar.show();
@@ -82,17 +86,17 @@ const switchPane = (name: string) => {
 const spacerClassName = ({ beforeSpacer, afterSpacer }: SpacerClassNameProps) =>
     `${beforeSpacer ? "before-spacer" : ""} ${afterSpacer ? "after-spacer" : ""}`;
 
-const OSIcon = (props: SpacerClassNameProps) => (
+const OSIcon = ({ monitor, ...props }: ModuleProps) => (
     <button
         visible={bind(config.modules.osIcon.enabled)}
         className={`module os-icon ${spacerClassName(props)}`}
-        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("dashboard")}
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane(monitor, "dashboard")}
     >
         {osIcon}
     </button>
 );
 
-const ActiveWindow = (props: SpacerClassNameProps) => (
+const ActiveWindow = ({ monitor, ...props }: ModuleProps) => (
     <box
         visible={bind(config.modules.activeWindow.enabled)}
         vertical={bind(config.vertical)}
@@ -134,7 +138,7 @@ const ActiveWindow = (props: SpacerClassNameProps) => (
     </box>
 );
 
-const MediaPlaying = (props: SpacerClassNameProps) => {
+const MediaPlaying = ({ monitor, ...props }: ModuleProps) => {
     const players = Players.get_default();
     const getLabel = (fallback = "") =>
         players.lastPlayer ? `${players.lastPlayer.title} - ${players.lastPlayer.artist}` : fallback;
@@ -142,7 +146,7 @@ const MediaPlaying = (props: SpacerClassNameProps) => {
         <button
             visible={bind(config.modules.mediaPlaying.enabled)}
             onClick={(_, event) => {
-                if (event.button === Astal.MouseButton.PRIMARY) switchPane("audio");
+                if (event.button === Astal.MouseButton.PRIMARY) switchPane(monitor, "audio");
                 else if (event.button === Astal.MouseButton.SECONDARY) players.lastPlayer?.play_pause();
                 else if (event.button === Astal.MouseButton.MIDDLE) players.lastPlayer?.raise();
             }}
@@ -222,7 +226,7 @@ const Workspace = ({ idx }: { idx: number }) => {
     );
 };
 
-const Workspaces = (props: SpacerClassNameProps) => (
+const Workspaces = ({ monitor, ...props }: ModuleProps) => (
     <eventbox
         visible={bind(config.modules.workspaces.enabled)}
         onScroll={(_, event) => {
@@ -253,7 +257,7 @@ const TrayItem = (item: AstalTray.TrayItem) => (
     </menubutton>
 );
 
-const Tray = (props: SpacerClassNameProps) => {
+const Tray = ({ monitor, ...props }: ModuleProps) => {
     const visible = Variable.derive(
         [config.modules.tray.enabled, bind(AstalTray.get_default(), "items")],
         (e, i) => e && i.length > 0
@@ -275,7 +279,7 @@ const Network = () => (
     <button
         onClick={(_, event) => {
             const network = AstalNetwork.get_default();
-            if (event.button === Astal.MouseButton.PRIMARY) switchPane("connectivity");
+            if (event.button === Astal.MouseButton.PRIMARY) switchPane(monitor, "connectivity");
             else if (event.button === Astal.MouseButton.SECONDARY) network.wifi.enabled = !network.wifi.enabled;
             else if (event.button === Astal.MouseButton.MIDDLE)
                 execAsync("uwsm app -- gnome-control-center wifi").catch(() => {
@@ -378,7 +382,7 @@ const BluetoothDevice = (device: AstalBluetooth.Device) => (
     <button
         visible={bind(device, "connected")}
         onClick={(_, event) => {
-            if (event.button === Astal.MouseButton.PRIMARY) switchPane("connectivity");
+            if (event.button === Astal.MouseButton.PRIMARY) switchPane(monitor, "connectivity");
             else if (event.button === Astal.MouseButton.SECONDARY)
                 device.disconnect_device((_, res) => device.disconnect_device_finish(res));
             else if (event.button === Astal.MouseButton.MIDDLE)
@@ -398,7 +402,7 @@ const Bluetooth = () => (
     <box vertical={bind(config.vertical)} className="bluetooth">
         <button
             onClick={(_, event) => {
-                if (event.button === Astal.MouseButton.PRIMARY) switchPane("connectivity");
+                if (event.button === Astal.MouseButton.PRIMARY) switchPane(monitor, "connectivity");
                 else if (event.button === Astal.MouseButton.SECONDARY) AstalBluetooth.get_default().toggle();
                 else if (event.button === Astal.MouseButton.MIDDLE)
                     execAsync("uwsm app -- blueman-manager").catch(console.error);
@@ -440,7 +444,7 @@ const Bluetooth = () => (
     </box>
 );
 
-const StatusIcons = (props: SpacerClassNameProps) => (
+const StatusIcons = ({ monitor, ...props }: ModuleProps) => (
     <box
         visible={bind(config.modules.statusIcons.enabled)}
         vertical={bind(config.vertical)}
@@ -451,10 +455,10 @@ const StatusIcons = (props: SpacerClassNameProps) => (
     </box>
 );
 
-const PkgUpdates = (props: SpacerClassNameProps) => (
+const PkgUpdates = ({ monitor, ...props }: ModuleProps) => (
     <button
         visible={bind(config.modules.pkgUpdates.enabled)}
-        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("packages")}
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane(monitor, "packages")}
         setup={self =>
             setupCustomTooltip(
                 self,
@@ -469,10 +473,10 @@ const PkgUpdates = (props: SpacerClassNameProps) => (
     </button>
 );
 
-const NotifCount = (props: SpacerClassNameProps) => (
+const NotifCount = ({ monitor, ...props }: ModuleProps) => (
     <button
         visible={bind(config.modules.notifCount.enabled)}
-        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("notifpane")}
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane(monitor, "notifpane")}
         setup={self =>
             setupCustomTooltip(
                 self,
@@ -500,7 +504,7 @@ const NotifCount = (props: SpacerClassNameProps) => (
     </button>
 );
 
-const Battery = (props: SpacerClassNameProps) => {
+const Battery = ({ monitor, ...props }: ModuleProps) => {
     const visible = Variable.derive(
         [config.modules.battery.enabled, bind(AstalBattery.get_default(), "isBattery")],
         (e, i) => e && i
@@ -553,10 +557,10 @@ const DateTimeVertical = (props: SpacerClassNameProps) => (
     </box>
 );
 
-const DateTime = (props: SpacerClassNameProps) => (
+const DateTime = ({ monitor, ...props }: ModuleProps) => (
     <button
         visible={bind(config.modules.dateTime.enabled)}
-        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("time")}
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane(monitor, "time")}
         setup={self =>
             setupCustomTooltip(self, bindCurrentTime(bind(config.modules.dateTime.detailedFormat), undefined, self))
         }
@@ -565,7 +569,7 @@ const DateTime = (props: SpacerClassNameProps) => (
     </button>
 );
 
-const Power = (props: SpacerClassNameProps) => (
+const Power = ({ monitor, ...props }: ModuleProps) => (
     <button
         visible={bind(config.modules.power.enabled)}
         className={`module power ${spacerClassName(props)}`}
@@ -609,21 +613,21 @@ const Bar = ({ monitor }: { monitor: Monitor }) => {
     return (
         <centerbox vertical={bind(config.vertical)} className={bind(className)} onDestroy={() => className.drop()}>
             <box vertical={bind(config.vertical)}>
-                <OSIcon />
-                <ActiveWindow />
-                <MediaPlaying beforeSpacer />
+                <OSIcon monitor={monitor} />
+                <ActiveWindow monitor={monitor} />
+                <MediaPlaying monitor={monitor} beforeSpacer />
                 <BrightnessSpacer monitor={monitor} />
             </box>
-            <Workspaces beforeSpacer afterSpacer />
+            <Workspaces monitor={monitor} beforeSpacer afterSpacer />
             <box vertical={bind(config.vertical)}>
                 <VolumeSpacer />
-                <Tray afterSpacer />
-                <StatusIcons />
-                <PkgUpdates />
-                <NotifCount />
-                <Battery />
-                <DateTime />
-                <Power />
+                <Tray monitor={monitor} afterSpacer />
+                <StatusIcons monitor={monitor} />
+                <PkgUpdates monitor={monitor} />
+                <NotifCount monitor={monitor} />
+                <Battery monitor={monitor} />
+                <DateTime monitor={monitor} />
+                <Power monitor={monitor} />
             </box>
         </centerbox>
     );

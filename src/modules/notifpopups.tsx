@@ -1,11 +1,15 @@
+import type { Monitor } from "@/services/monitors";
+import { idle, timeout } from "astal";
 import { App, Astal, Gtk } from "astal/gtk3";
 import { notifpopups as config } from "config";
 import AstalNotifd from "gi://AstalNotifd";
 import { setupChildClickthrough } from "../utils/widgets";
 import Notification from "../widgets/notification";
+import type SideBar from "./sidebar";
 
-export default () => (
+export default ({ monitor }: { monitor: Monitor }) => (
     <window
+        monitor={monitor.id}
         namespace="caelestia-notifpopups"
         anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.BOTTOM}
     >
@@ -16,10 +20,9 @@ export default () => (
             setup={self => {
                 const notifd = AstalNotifd.get_default();
                 const map = new Map<number, Notification>();
-                let notifsOpen = false;
 
                 self.hook(notifd, "notified", (self, id) => {
-                    if (notifsOpen || notifd.dontDisturb) return;
+                    if (notifd.dontDisturb) return;
 
                     const notification = notifd.get_notification(id);
 
@@ -35,7 +38,11 @@ export default () => (
                                 if (event.button === Astal.MouseButton.PRIMARY) {
                                     if (notification.actions.length === 1)
                                         notification.invoke(notification.actions[0].id);
-                                    else App.get_window("notifications")?.show();
+                                    else {
+                                        sidebar?.shown.set("notifpane");
+                                        sidebar?.show();
+                                        popup.destroyWithAnims();
+                                    }
                                 }
                                 // Dismiss on middle click
                                 else if (event.button === Astal.MouseButton.MIDDLE) notification.dismiss();
@@ -54,12 +61,13 @@ export default () => (
                 });
                 self.hook(notifd, "resolved", (_, id) => map.get(id)?.destroyWithAnims());
 
-                self.hook(App, "window-toggled", (_, window) => {
-                    if (window.name === "notifications") {
-                        notifsOpen = window.visible;
-                        map.forEach(n => n.destroyWithAnims());
-                    }
-                });
+                let sidebar: SideBar | null;
+
+                const awaitSidebar = () => {
+                    sidebar = App.get_window(`sidebar${monitor.id}`) as SideBar | null;
+                    if (!sidebar) timeout(100, awaitSidebar);
+                };
+                idle(awaitSidebar);
 
                 // Change input region to child region so can click through empty space
                 setupChildClickthrough(self);

@@ -16,7 +16,7 @@ export default class SideBar extends Widget.Window {
     constructor({ monitor }: { monitor: Monitor }) {
         super({
             application: App,
-            name: "sidebar",
+            name: `sidebar${monitor.id}`,
             namespace: "caelestia-sidebar",
             monitor: monitor.id,
             anchor: Astal.WindowAnchor.LEFT | Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM,
