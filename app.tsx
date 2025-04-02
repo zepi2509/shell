@@ -65,30 +65,34 @@ App.start({
     instanceName: "caelestia",
     icons: "assets/icons",
     async main() {
-        const now = Date.now();
+        try {
+            const now = Date.now();
 
-        await initConfig();
+            await initConfig();
 
-        loadStyleAsync().catch(console.error);
-        Palette.get_default().connect("notify::colours", () => loadStyleAsync().catch(console.error));
-        Palette.get_default().connect("notify::mode", () => loadStyleAsync().catch(console.error));
+            loadStyleAsync().catch(console.error);
+            Palette.get_default().connect("notify::colours", () => loadStyleAsync().catch(console.error));
+            Palette.get_default().connect("notify::mode", () => loadStyleAsync().catch(console.error));
 
-        <Launcher />;
-        <NotifPopups />;
-        <Osds />;
-        <Session />;
-        Monitors.get_default().forEach(m => <SideBar monitor={m} />);
-        Monitors.get_default().forEach(m => <Bar monitor={m} />);
-        Monitors.get_default().forEach(m => <ScreenCorners monitor={m} />);
+            <Launcher />;
+            <NotifPopups />;
+            <Osds />;
+            <Session />;
+            Monitors.get_default().forEach(m => <SideBar monitor={m} />);
+            Monitors.get_default().forEach(m => <Bar monitor={m} />);
+            Monitors.get_default().forEach(m => <ScreenCorners monitor={m} />);
 
-        // Init services
-        timeout(1000, () => {
-            idle(() => Schemes.get_default());
-            idle(() => Wallpapers.get_default());
-            idle(() => Calendar.get_default());
-        });
+            // Init services
+            timeout(1000, () => {
+                idle(() => Schemes.get_default());
+                idle(() => Wallpapers.get_default());
+                idle(() => Calendar.get_default());
+            });
 
-        console.log(`Caelestia started in ${Date.now() - now}ms`);
+            console.log(`Caelestia started in ${Date.now() - now}ms`);
+        } catch (e) {
+            console.error(e);
+        }
     },
     requestHandler(request, res) {
         if (request === "reload-css") loadStyleAsync().catch(console.error);
