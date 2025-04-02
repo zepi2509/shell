@@ -386,7 +386,8 @@ export default class Actions extends Widget.Box implements LauncherContent {
             const scheme = args[1] ?? "";
             const schemes = Object.values(Schemes.get_default().map)
                 .flatMap(s => (s.colours ? s.name : Object.values(s.flavours!).map(f => `${f.scheme}-${f.name}`)))
-                .filter(s => s !== undefined);
+                .filter(s => s !== undefined)
+                .sort();
             for (const { target } of fuzzysort.go(scheme, schemes, { all: true })) {
                 if (Schemes.get_default().map.hasOwnProperty(target))
                     this.#content.add(<Scheme {...Schemes.get_default().map[target]} />);

@@ -59,13 +59,15 @@ export default class Wallpapers extends GObject.Object {
         const list = (await execAsync(["fish", "-c", `identify -ping -format '%i\n' ${files} ; true`])).split("\n");
 
         this.#list = await Promise.all(list.map(async p => ({ path: p, thumbnail: await Thumbnailer.thumbnail(p) })));
+        this.#list.sort((a, b) => a.path.localeCompare(b.path));
         this.notify("list");
 
         const categories = await Promise.all(successes.map(r => this.#listDir(r.path, "d")));
         this.#categories = categories
             .flatMap(c => c.split("\n"))
             .map(c => ({ path: c, wallpapers: this.#list.filter(w => w.path.startsWith(c)) }))
-            .filter(c => c.wallpapers.length > 0);
+            .filter(c => c.wallpapers.length > 0)
+            .sort((a, b) => a.path.localeCompare(b.path));
         this.notify("categories");
     }
 
