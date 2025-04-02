@@ -16,7 +16,7 @@ const getDateHeader = (events: IEvent[]) => {
 const getEventHeader = (e: IEvent) => {
     const start = GLib.DateTime.new_from_unix_local(e.startDate.toUnixTime());
     const time = `${start.format("%-I")}${start.get_minute() > 0 ? `:${start.get_minute()}` : ""}${start.format("%P")}`;
-    return `${time} <b>${e.event.summary}</b>`;
+    return `${time} <b>${e.event.summary.replaceAll("&", "&amp;")}</b>`;
 };
 
 const getEventTooltip = (e: IEvent) => {
@@ -26,7 +26,7 @@ const getEventTooltip = (e: IEvent) => {
     const time = `${start.format(`%A, %-d %B • %-I:%M${sameAmPm ? "" : "%P"}`)} — ${end.format("%-I:%M%P")}`;
     const locIfExists = e.event.location ? ` ${e.event.location}\n` : "";
     const descIfExists = e.event.description ? `󰒿 ${e.event.description}\n` : "";
-    return `<b>${e.event.summary}</b>\n${time}\n${locIfExists}${descIfExists}󰃭 ${e.calendar}`;
+    return `<b>${e.event.summary}</b>\n${time}\n${locIfExists}${descIfExists}󰃭 ${e.calendar}`.replaceAll("&", "&amp;");
 };
 
 const Event = (event: IEvent) => (

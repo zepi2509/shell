@@ -1,4 +1,4 @@
-import Calendar from "@/services/calendar";
+import Calendar, { type IEvent } from "@/services/calendar";
 import { setupCustomTooltip } from "@/utils/widgets";
 import { bind, GLib, Variable } from "astal";
 import { Gtk } from "astal/gtk3";
@@ -110,6 +110,32 @@ const getDayTooltip = (day: ical.Time) => {
     return `${events.length} event${events.length === 1 ? "" : "s"}\n${eventsStr}`;
 };
 
+const getEventsHeader = (current: ical.Time) => {
+    const events = Calendar.get_default().getEventsForDay(current);
+    const isToday = current.toJSDate().toDateString() === new Date().toDateString();
+    return (
+        (isToday ? "Today • " : "") +
+        GLib.DateTime.new_from_unix_local(current.toUnixTime()).format("%B %-d • %A") +
+        ` • ${events.length} event${events.length === 1 ? "" : "s"}`
+    );
+};
+
+const getEventHeader = (e: IEvent) => {
+    const start = GLib.DateTime.new_from_unix_local(e.startDate.toUnixTime());
+    const time = `${start.format("%-I")}${start.get_minute() > 0 ? `:${start.get_minute()}` : ""}${start.format("%P")}`;
+    return `${time} <b>${e.event.summary.replaceAll("&", "&amp;")}</b>`;
+};
+
+const getEventTooltip = (e: IEvent) => {
+    const start = GLib.DateTime.new_from_unix_local(e.startDate.toUnixTime());
+    const end = GLib.DateTime.new_from_unix_local(e.event.endDate.toUnixTime());
+    const sameAmPm = start.format("%P") === end.format("%P");
+    const time = `${start.format(`%A, %-d %B • %-I:%M${sameAmPm ? "" : "%P"}`)} — ${end.format("%-I:%M%P")}`;
+    const locIfExists = e.event.location ? ` ${e.event.location}\n` : "";
+    const descIfExists = e.event.description ? `󰒿 ${e.event.description}\n` : "";
+    return `<b>${e.event.summary}</b>\n${time}\n${locIfExists}${descIfExists}󰃭 ${e.calendar}`.replaceAll("&", "&amp;");
+};
+
 const Day = ({ day, shown, current }: { day: ical.Time; shown: Variable<string>; current: Variable<ical.Time> }) => (
     <button
         className={bind(Calendar.get_default(), "calendars").as(() => getDayClassName(day, current))}
@@ -163,12 +189,52 @@ const CalendarView = ({ shown, current }: { shown: Variable<string>; current: Va
         </box>
     </box>
 );
+
+const Event = (event: IEvent) => (
+    <box className="event" setup={self => setupCustomTooltip(self, getEventTooltip(event), { useMarkup: true })}>
+        <box className={`calendar-indicator calendar-${Calendar.get_default().getCalendarIndex(event.calendar)}`} />
+        <box vertical>
+            <label truncate useMarkup xalign={0} label={getEventHeader(event)} />
+            {event.event.location && <label truncate xalign={0} label={event.event.location} className="sublabel" />}
+            {event.event.description && (
+                <label truncate useMarkup xalign={0} label={event.event.description} className="sublabel" />
+            )}
+        </box>
+    </box>
+);
+
+const List = ({ current }: { current: Variable<ical.Time> }) => (
+    <box vertical valign={Gtk.Align.START} className="list">
+        {bind(current).as(c => Calendar.get_default().getEventsForDay(c).map(Event))}
+    </box>
+);
+
+const NoEvents = () => (
+    <box homogeneous name="empty">
+        <box vertical halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} className="empty">
+            <label className="icon" label="calendar_month" />
+            <label label="Day all clear!" />
+        </box>
+    </box>
+);
+
 const Events = ({ shown, current }: { shown: Variable<string>; current: Variable<ical.Time> }) => (
-    <box className="events" name="events"></box>
+    <box vertical className="events" name="events">
+        <box className="header">
+            <button cursor="pointer" onClicked={() => shown.set("calendar")} label="" />
+            <label hexpand truncate xalign={0} label={bind(current).as(getEventsHeader)} />
+        </box>
+        <stack shown={bind(current).as(c => (Calendar.get_default().getEventsForDay(c).length > 0 ? "list" : "empty"))}>
+            <NoEvents />
+            <scrollable hscroll={Gtk.PolicyType.NEVER} name="list">
+                <List current={current} />
+            </scrollable>
+        </stack>
+    </box>
 );
 
 export default () => {
-    const shown = Variable("calendar");
+    const shown = Variable<"calendar" | "events">("calendar");
     const current = Variable(ical.Time.now());
 
     return (

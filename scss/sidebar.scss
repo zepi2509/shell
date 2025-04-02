@@ -52,7 +52,7 @@
     @include lib.element-decel;
 
     &:disabled {
-        color: scheme.$overlay2;
+        color: color.change(scheme.$overlay2, $alpha: 1);
     }
 
     &:hover,
@@ -99,7 +99,7 @@
             padding: lib.s(3) lib.s(8);
 
             &:disabled {
-                color: scheme.$overlay0;
+                color: color.change(scheme.$overlay0, $alpha: 1);
             }
 
             &:hover,
@@ -108,7 +108,7 @@
             }
 
             &:active {
-                color: scheme.$overlay2;
+                color: color.change(scheme.$overlay2, $alpha: 1);
             }
 
             &.enabled {
@@ -948,6 +948,71 @@
                                 background-color: color.mix($-colour, scheme.$base, 70%);
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        .events {
+            @include lib.spacing(10, true);
+
+            .header {
+                font-weight: bold;
+
+                @include lib.spacing(10);
+
+                & > button {
+                    @include lib.rounded(1000);
+                    @include lib.element-decel;
+
+                    min-width: lib.s(24);
+                    min-height: lib.s(24);
+
+                    &:hover,
+                    &:focus {
+                        color: scheme.$subtext0;
+                    }
+
+                    &:active {
+                        color: color.change(scheme.$overlay2, $alpha: 1);
+                    }
+                }
+            }
+
+            scrollable {
+                min-height: lib.s(315);
+            }
+
+            .date {
+                margin-left: lib.s(10);
+            }
+
+            .sublabel {
+                font-size: lib.s(14);
+                color: scheme.$subtext0;
+            }
+
+            .list {
+                padding: lib.s(5);
+
+                @include lib.spacing(10, true);
+            }
+
+            .event {
+                @include lib.spacing(8);
+            }
+
+            .calendar-indicator {
+                @include lib.rounded(5);
+
+                min-width: lib.s(1);
+
+                $-colours: scheme.$red, scheme.$sapphire, scheme.$flamingo, scheme.$maroon, scheme.$pink, scheme.$sky,
+                    scheme.$peach, scheme.$yellow, scheme.$green, scheme.$rosewater, scheme.$mauve, scheme.$teal,
+                    scheme.$blue;
+                @for $i from 1 through list.length($-colours) {
+                    &.calendar-#{$i} {
+                        background-color: list.nth($-colours, $i);
                     }
                 }
             }
