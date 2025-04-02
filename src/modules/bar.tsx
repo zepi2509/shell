@@ -9,7 +9,7 @@ import type { AstalWidget } from "@/utils/types";
 import { setupCustomTooltip } from "@/utils/widgets";
 import ScreenCorner from "@/widgets/screencorner";
 import { execAsync, Variable } from "astal";
-import Binding, { bind, kebabify } from "astal/binding";
+import { bind, kebabify } from "astal/binding";
 import { App, Astal, Gtk, type Widget } from "astal/gtk3";
 import { bar as config } from "config";
 import AstalBattery from "gi://AstalBattery";
@@ -84,6 +84,7 @@ const spacerClassName = ({ beforeSpacer, afterSpacer }: SpacerClassNameProps) =>
 
 const OSIcon = (props: SpacerClassNameProps) => (
     <button
+        visible={bind(config.modules.osIcon.enabled)}
         className={`module os-icon ${spacerClassName(props)}`}
         onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("dashboard")}
     >
@@ -93,6 +94,7 @@ const OSIcon = (props: SpacerClassNameProps) => (
 
 const ActiveWindow = (props: SpacerClassNameProps) => (
     <box
+        visible={bind(config.modules.activeWindow.enabled)}
         vertical={bind(config.vertical)}
         className={`module active-window ${spacerClassName(props)}`}
         setup={self => {
@@ -138,6 +140,7 @@ const MediaPlaying = (props: SpacerClassNameProps) => {
         players.lastPlayer ? `${players.lastPlayer.title} - ${players.lastPlayer.artist}` : fallback;
     return (
         <button
+            visible={bind(config.modules.mediaPlaying.enabled)}
             onClick={(_, event) => {
                 if (event.button === Astal.MouseButton.PRIMARY) switchPane("audio");
                 else if (event.button === Astal.MouseButton.SECONDARY) players.lastPlayer?.play_pause();
@@ -221,6 +224,7 @@ const Workspace = ({ idx }: { idx: number }) => {
 
 const Workspaces = (props: SpacerClassNameProps) => (
     <eventbox
+        visible={bind(config.modules.workspaces.enabled)}
         onScroll={(_, event) => {
             const activeWs = hyprland.focusedClient?.workspace.name;
             if (activeWs?.startsWith("special:")) hyprland.dispatch("togglespecialworkspace", activeWs.slice(8));
@@ -249,15 +253,23 @@ const TrayItem = (item: AstalTray.TrayItem) => (
     </menubutton>
 );
 
-const Tray = (props: SpacerClassNameProps) => (
-    <box
-        vertical={bind(config.vertical)}
-        className={`module tray ${spacerClassName(props)}`}
-        visible={bind(AstalTray.get_default(), "items").as(i => i.length > 0)}
-    >
-        {bind(AstalTray.get_default(), "items").as(i => i.map(TrayItem))}
-    </box>
-);
+const Tray = (props: SpacerClassNameProps) => {
+    const visible = Variable.derive(
+        [config.modules.tray.enabled, bind(AstalTray.get_default(), "items")],
+        (e, i) => e && i.length > 0
+    );
+
+    return (
+        <box
+            visible={bind(visible)}
+            vertical={bind(config.vertical)}
+            className={`module tray ${spacerClassName(props)}`}
+            onDestroy={() => visible.drop()}
+        >
+            {bind(AstalTray.get_default(), "items").as(i => i.map(TrayItem))}
+        </box>
+    );
+};
 
 const Network = () => (
     <button
@@ -429,7 +441,11 @@ const Bluetooth = () => (
 );
 
 const StatusIcons = (props: SpacerClassNameProps) => (
-    <box vertical={bind(config.vertical)} className={`module status-icons ${spacerClassName(props)}`}>
+    <box
+        visible={bind(config.modules.statusIcons.enabled)}
+        vertical={bind(config.vertical)}
+        className={`module status-icons ${spacerClassName(props)}`}
+    >
         <Network />
         <Bluetooth />
     </box>
@@ -437,6 +453,7 @@ const StatusIcons = (props: SpacerClassNameProps) => (
 
 const PkgUpdates = (props: SpacerClassNameProps) => (
     <button
+        visible={bind(config.modules.pkgUpdates.enabled)}
         onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("packages")}
         setup={self =>
             setupCustomTooltip(
@@ -454,6 +471,7 @@ const PkgUpdates = (props: SpacerClassNameProps) => (
 
 const NotifCount = (props: SpacerClassNameProps) => (
     <button
+        visible={bind(config.modules.notifCount.enabled)}
         onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("notifpane")}
         setup={self =>
             setupCustomTooltip(
@@ -483,6 +501,10 @@ const NotifCount = (props: SpacerClassNameProps) => (
 );
 
 const Battery = (props: SpacerClassNameProps) => {
+    const visible = Variable.derive(
+        [config.modules.battery.enabled, bind(AstalBattery.get_default(), "isBattery")],
+        (e, i) => e && i
+    );
     const className = Variable.derive(
         [bind(AstalBattery.get_default(), "percentage"), bind(AstalBattery.get_default(), "charging")],
         (p, c) => `module battery ${c ? "charging" : p < 0.2 ? "low" : ""} ${spacerClassName(props)}`
@@ -494,10 +516,12 @@ const Battery = (props: SpacerClassNameProps) => {
 
     return (
         <box
+            visible={bind(visible)}
             vertical={bind(config.vertical)}
             className={bind(className)}
             setup={self => setupCustomTooltip(self, bind(tooltip))}
             onDestroy={() => {
+                visible.drop();
                 className.drop();
                 tooltip.drop();
             }}
@@ -508,44 +532,42 @@ const Battery = (props: SpacerClassNameProps) => {
     );
 };
 
-const DateTime = (props: SpacerClassNameProps) => (
-    <button
-        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("time")}
-        setup={self =>
-            setupCustomTooltip(self, bindCurrentTime(bind(config.modules.dateTime.detailedFormat), undefined, self))
-        }
-    >
-        <box className={`module date-time ${spacerClassName(props)}`}>
-            <label className="icon" label="calendar_month" />
-            <label
-                setup={self =>
-                    self.hook(
-                        bindCurrentTime(bind(config.modules.dateTime.format), undefined, self),
-                        (_, t) => (self.label = t)
-                    )
-                }
-            />
-        </box>
-    </button>
+const DateTimeHoriz = (props: SpacerClassNameProps) => (
+    <box className={`module date-time ${spacerClassName(props)}`}>
+        <label className="icon" label="calendar_month" />
+        <label
+            setup={self => {
+                const time = bindCurrentTime(bind(config.modules.dateTime.format), undefined, self);
+                self.label = time.get();
+                self.hook(time, (_, t) => (self.label = t));
+            }}
+        />
+    </box>
 );
 
 const DateTimeVertical = (props: SpacerClassNameProps) => (
+    <box vertical className={`module date-time ${spacerClassName(props)}`}>
+        <label className="icon" label="calendar_month" />
+        <label label={bindCurrentTime("%H")} />
+        <label label={bindCurrentTime("%M")} />
+    </box>
+);
+
+const DateTime = (props: SpacerClassNameProps) => (
     <button
+        visible={bind(config.modules.dateTime.enabled)}
         onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("time")}
         setup={self =>
             setupCustomTooltip(self, bindCurrentTime(bind(config.modules.dateTime.detailedFormat), undefined, self))
         }
     >
-        <box vertical className={`module date-time ${spacerClassName(props)}`}>
-            <label className="icon" label="calendar_month" />
-            <label label={bindCurrentTime("%H")} />
-            <label label={bindCurrentTime("%M")} />
-        </box>
+        {bind(config.vertical).as(v => (v ? <DateTimeVertical {...props} /> : <DateTimeHoriz {...props} />))}
     </button>
 );
 
 const Power = (props: SpacerClassNameProps) => (
     <button
+        visible={bind(config.modules.power.enabled)}
         className={`module power ${spacerClassName(props)}`}
         label="power_settings_new"
         onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && App.toggle_window("session")}
@@ -562,13 +584,21 @@ const Spacer = ({ onScroll }: { onScroll: (self: Widget.EventBox, event: Astal.S
     </eventbox>
 );
 
-const Dummy = () => <box visible={false} />; // Invisible box cause otherwise shows as text
+const BrightnessSpacer = ({ monitor }: { monitor: Monitor }) => (
+    <Spacer onScroll={(_, event) => (event.delta_y > 0 ? (monitor.brightness -= 0.1) : (monitor.brightness += 0.1))} />
+);
 
-const bindWidget = (module: keyof typeof config.modules, Widget: () => JSX.Element) =>
-    bind(config.modules[module].enabled).as(e => (e ? <Widget /> : <Dummy />));
-
-const bindCompositeWidget = (module: keyof typeof config.modules, binding: Binding<JSX.Element>) =>
-    bind(Variable.derive([config.modules[module].enabled, binding], (e, w) => (e ? w : <Dummy />)));
+const VolumeSpacer = () => (
+    <Spacer
+        onScroll={(_, event) => {
+            const speaker = AstalWp.get_default()?.audio.defaultSpeaker;
+            if (!speaker) return console.error("Unable to connect to WirePlumber.");
+            speaker.mute = false;
+            if (event.delta_y > 0) speaker.volume -= 0.1;
+            else speaker.volume += 0.1;
+        }}
+    />
+);
 
 const Bar = ({ monitor }: { monitor: Monitor }) => {
     const className = Variable.derive(
@@ -579,57 +609,21 @@ const Bar = ({ monitor }: { monitor: Monitor }) => {
     return (
         <centerbox vertical={bind(config.vertical)} className={bind(className)} onDestroy={() => className.drop()}>
             <box vertical={bind(config.vertical)}>
-                {bindWidget("osIcon", () => (
-                    <OSIcon />
-                ))}
-                {bindWidget("activeWindow", () => (
-                    <ActiveWindow />
-                ))}
-                {bindWidget("mediaPlaying", () => (
-                    <MediaPlaying beforeSpacer />
-                ))}
-                <Spacer
-                    onScroll={(_, event) =>
-                        event.delta_y > 0 ? (monitor.brightness -= 0.1) : (monitor.brightness += 0.1)
-                    }
-                />
+                <OSIcon />
+                <ActiveWindow />
+                <MediaPlaying beforeSpacer />
+                <BrightnessSpacer monitor={monitor} />
             </box>
-            {bindWidget("workspaces", () => (
-                <Workspaces beforeSpacer afterSpacer />
-            ))}
+            <Workspaces beforeSpacer afterSpacer />
             <box vertical={bind(config.vertical)}>
-                <Spacer
-                    onScroll={(_, event) => {
-                        const speaker = AstalWp.get_default()?.audio.defaultSpeaker;
-                        if (!speaker) return console.error("Unable to connect to WirePlumber.");
-                        speaker.mute = false;
-                        if (event.delta_y > 0) speaker.volume -= 0.1;
-                        else speaker.volume += 0.1;
-                    }}
-                />
-                {bindWidget("tray", () => (
-                    <Tray afterSpacer />
-                ))}
-                {bindWidget("statusIcons", () => (
-                    <StatusIcons />
-                ))}
-                {bindWidget("pkgUpdates", () => (
-                    <PkgUpdates />
-                ))}
-                {bindWidget("notifCount", () => (
-                    <NotifCount />
-                ))}
-                {bindCompositeWidget(
-                    "battery",
-                    bind(AstalBattery.get_default(), "isBattery").as(b => (b ? <Battery /> : <Dummy />))
-                )}
-                {bindCompositeWidget(
-                    "dateTime",
-                    bind(config.vertical).as(v => (v ? <DateTimeVertical /> : <DateTime />))
-                )}
-                {bindWidget("power", () => (
-                    <Power />
-                ))}
+                <VolumeSpacer />
+                <Tray afterSpacer />
+                <StatusIcons />
+                <PkgUpdates />
+                <NotifCount />
+                <Battery />
+                <DateTime />
+                <Power />
             </box>
         </centerbox>
     );

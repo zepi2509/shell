@@ -276,6 +276,10 @@
                 border-bottom-left-radius: lib.s($-rounding);
             }
 
+            .workspaces {
+                margin-right: -1px;
+            }
+
             .power {
                 padding-right: lib.s(12);
             }
@@ -294,6 +298,10 @@
             .after-spacer {
                 border-top-right-radius: lib.s($-rounding);
                 padding-top: lib.s(15);
+            }
+
+            .workspaces {
+                margin-bottom: -1px;
             }
 
             .os-icon {
