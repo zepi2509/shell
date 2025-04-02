@@ -407,7 +407,7 @@ export default class Actions extends Widget.Box implements LauncherContent {
             const list = Object.keys(transparencyActions);
 
             for (const { target } of fuzzysort.go(args[1], list, { all: true }))
-                this.#content.add(<Transparency amount={target} />);
+                this.#content.add(<Transparency amount={target as keyof typeof transparencyActions} />);
         } else {
             const list = this.#list.filter(
                 a => this.#map[a].available?.() ?? !config.disabledActions.get().includes(a)
