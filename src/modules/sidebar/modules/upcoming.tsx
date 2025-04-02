@@ -4,7 +4,7 @@ import { bind, GLib } from "astal";
 import { Gtk } from "astal/gtk3";
 
 const getDateHeader = (events: IEvent[]) => {
-    const date = events[0].event.startDate;
+    const date = events[0].startDate;
     const isToday = date.toJSDate().toDateString() === new Date().toDateString();
     return (
         (isToday ? "Today • " : "") +
@@ -14,13 +14,13 @@ const getDateHeader = (events: IEvent[]) => {
 };
 
 const getEventHeader = (e: IEvent) => {
-    const start = GLib.DateTime.new_from_unix_local(e.event.startDate.toUnixTime());
+    const start = GLib.DateTime.new_from_unix_local(e.startDate.toUnixTime());
     const time = `${start.format("%-I")}${start.get_minute() > 0 ? `:${start.get_minute()}` : ""}${start.format("%P")}`;
     return `${time} <b>${e.event.summary}</b>`;
 };
 
 const getEventTooltip = (e: IEvent) => {
-    const start = GLib.DateTime.new_from_unix_local(e.event.startDate.toUnixTime());
+    const start = GLib.DateTime.new_from_unix_local(e.startDate.toUnixTime());
     const end = GLib.DateTime.new_from_unix_local(e.event.endDate.toUnixTime());
     const sameAmPm = start.format("%P") === end.format("%P");
     const time = `${start.format(`%A, %-d %B • %-I:%M${sameAmPm ? "" : "%P"}`)} — ${end.format("%-I:%M%P")}`;
@@ -31,7 +31,7 @@ const getEventTooltip = (e: IEvent) => {
 
 const Event = (event: IEvent) => (
     <box className="event" setup={self => setupCustomTooltip(self, getEventTooltip(event), { useMarkup: true })}>
-        <box className={`calendar-indicator c${Calendar.get_default().getCalendarIndex(event.calendar)}`} />
+        <box className={`calendar-indicator calendar-${Calendar.get_default().getCalendarIndex(event.calendar)}`} />
         <box vertical>
             <label truncate useMarkup xalign={0} label={getEventHeader(event)} />
             {event.event.location && <label truncate xalign={0} label={event.event.location} className="sublabel" />}
@@ -55,7 +55,7 @@ const List = () => (
     <box vertical valign={Gtk.Align.START}>
         {bind(Calendar.get_default(), "upcoming").as(u =>
             Object.values(u)
-                .sort((a, b) => a[0].event.startDate.compare(b[0].event.startDate))
+                .sort((a, b) => a[0].startDate.compare(b[0].startDate))
                 .map(e => <Day events={e} />)
         )}
     </box>

@@ -1,4 +1,5 @@
 @use "sass:color";
+@use "sass:list";
 @use "scheme";
 @use "lib";
 @use "font";
@@ -315,9 +316,9 @@
                 $-colours: scheme.$red, scheme.$sapphire, scheme.$flamingo, scheme.$maroon, scheme.$pink, scheme.$sky,
                     scheme.$peach, scheme.$yellow, scheme.$green, scheme.$rosewater, scheme.$mauve, scheme.$teal,
                     scheme.$blue;
-                @for $i from 1 through length($-colours) {
-                    &.c#{$i} {
-                        background-color: nth($-colours, $i);
+                @for $i from 1 through list.length($-colours) {
+                    &.calendar-#{$i} {
+                        background-color: list.nth($-colours, $i);
                     }
                 }
             }
@@ -787,6 +788,168 @@
             .body {
                 margin-top: lib.s(10);
                 font-size: lib.s(14);
+            }
+        }
+    }
+
+    .calendar {
+        @include lib.rounded(20);
+
+        background-color: color.change(scheme.$surface1, $alpha: 0.4);
+        padding: lib.s(15);
+
+        .calendar-view {
+            @include lib.spacing(10, true);
+
+            .header {
+                @include lib.spacing(10);
+
+                & > button {
+                    @include lib.rounded(1000);
+                    @include lib.element-decel;
+
+                    background-color: color.change(scheme.$surface2, $alpha: 0.4);
+                    min-width: lib.s(28);
+                    min-height: lib.s(28);
+                    font-size: lib.s(18);
+
+                    &:first-child {
+                        padding: 0 lib.s(10);
+                    }
+
+                    &:hover,
+                    &:focus {
+                        background-color: color.change(scheme.$surface2, $alpha: 0.6);
+                    }
+
+                    &:active {
+                        background-color: color.change(scheme.$surface2, $alpha: 0.8);
+                    }
+                }
+            }
+
+            .weekdays {
+                @include lib.spacing(10);
+
+                & > label {
+                    min-width: lib.s(40);
+                    font-weight: bold;
+                    color: scheme.$subtext1;
+                }
+            }
+
+            .month {
+                @include lib.spacing(10, true);
+            }
+
+            .week {
+                @include lib.spacing(10);
+            }
+
+            .day {
+                @include lib.rounded(1000);
+                @include lib.element-decel;
+
+                min-width: lib.s(40);
+                min-height: lib.s(40);
+
+                &.dim {
+                    color: scheme.$subtext0;
+                }
+
+                &.today:not(.dim) {
+                    background-color: scheme.$primary;
+                    color: color.change(scheme.$base, $alpha: 1);
+                }
+
+                &:hover,
+                &:focus {
+                    color: scheme.$subtext0;
+                }
+
+                &:active {
+                    color: color.change(scheme.$overlay2, $alpha: 1);
+                }
+
+                &.dim {
+                    color: scheme.$subtext0;
+
+                    &:hover,
+                    &:focus {
+                        color: color.change(scheme.$overlay2, $alpha: 1);
+                    }
+
+                    &:active {
+                        color: color.change(scheme.$overlay1, $alpha: 1);
+                    }
+                }
+
+                &.today:not(.dim) {
+                    background-color: scheme.$primary;
+                    color: color.change(scheme.$base, $alpha: 1);
+
+                    &:hover,
+                    &:focus {
+                        background-color: color.mix(scheme.$primary, scheme.$base, 80%);
+                    }
+
+                    &:active {
+                        background-color: color.mix(scheme.$primary, scheme.$base, 70%);
+                    }
+                }
+
+                label {
+                    margin-top: lib.s(8);
+                }
+
+                .indicator {
+                    @include lib.rounded(10);
+                    @include lib.element-decel;
+
+                    min-height: lib.s(3);
+                    margin: 0 lib.s(8);
+                }
+
+                $-max: 5;
+                @for $i from 1 through $-max {
+                    &.events-#{$i} {
+                        $-colour: color.mix(scheme.$red, scheme.$green, calc(100% / $-max) * $i);
+
+                        .indicator {
+                            background-color: $-colour;
+                        }
+
+                        &:hover .indicator,
+                        &:focus .indicator {
+                            background-color: color.mix($-colour, scheme.$base, 80%);
+                        }
+
+                        &:active .indicator {
+                            background-color: color.mix($-colour, scheme.$base, 70%);
+                        }
+
+                        &.dim .indicator {
+                            background-color: color.mix($-colour, scheme.$base, 60%);
+                        }
+
+                        &.today:not(.dim) {
+                            $-colour: color.mix($-colour, color.complement(scheme.$primary), 50%);
+
+                            .indicator {
+                                background-color: $-colour;
+                            }
+
+                            &:hover .indicator,
+                            &:focus .indicator {
+                                background-color: color.mix($-colour, scheme.$base, 80%);
+                            }
+
+                            &:active .indicator {
+                                background-color: color.mix($-colour, scheme.$base, 70%);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
