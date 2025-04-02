@@ -1,8 +1,24 @@
 const BOOL = "boolean";
 const STR = "string";
 const NUM = "number";
-const ARR = (type: string) => `array of ${type}`;
+const ARR = (type: string | string[]) => `array of ${typeof type === "string" ? type : JSON.stringify(type)}`;
 const OBJ_ARR = (shape: object) => ARR(JSON.stringify(shape));
+
+const barModules = [
+    "osIcon",
+    "activeWindow",
+    "mediaPlaying",
+    "brightnessSpacer",
+    "workspaces",
+    "volumeSpacer",
+    "tray",
+    "statusIcons",
+    "pkgUpdates",
+    "notifCount",
+    "battery",
+    "dateTime",
+    "power",
+];
 
 export default {
     "style.transparency": ["off", "normal", "high"],
@@ -11,20 +27,14 @@ export default {
     // Bar
     "bar.vertical": BOOL,
     "bar.style": ["gaps", "panel", "embedded"],
-    "bar.modules.osIcon.enabled": BOOL,
-    "bar.modules.activeWindow.enabled": BOOL,
-    "bar.modules.mediaPlaying.enabled": BOOL,
-    "bar.modules.workspaces.enabled": BOOL,
+    "bar.layout.type": ["centerbox", "flowbox"],
+    "bar.layout.centerbox.start": ARR(barModules),
+    "bar.layout.centerbox.center": ARR(barModules),
+    "bar.layout.centerbox.end": ARR(barModules),
+    "bar.layout.flowbox": ARR(barModules),
     "bar.modules.workspaces.shown": NUM,
-    "bar.modules.tray.enabled": BOOL,
-    "bar.modules.statusIcons.enabled": BOOL,
-    "bar.modules.pkgUpdates.enabled": BOOL,
-    "bar.modules.notifCount.enabled": BOOL,
-    "bar.modules.battery.enabled": BOOL,
-    "bar.modules.dateTime.enabled": BOOL,
     "bar.modules.dateTime.format": STR,
     "bar.modules.dateTime.detailedFormat": STR,
-    "bar.modules.power.enabled": BOOL,
     // Launcher
     "launcher.style": ["lines", "round"],
     "launcher.actionPrefix": STR,

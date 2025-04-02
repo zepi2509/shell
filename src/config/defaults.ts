@@ -10,42 +10,43 @@ export default {
     bar: {
         vertical: true,
         style: "gaps", // One of "gaps", "panel", "embedded"
+        layout: {
+            type: "centerbox", // One of "centerbox", "flowbox"
+            centerbox: {
+                start: ["osIcon", "activeWindow", "mediaPlaying", "brightnessSpacer"],
+                center: ["workspaces"],
+                end: [
+                    "volumeSpacer",
+                    "tray",
+                    "statusIcons",
+                    "pkgUpdates",
+                    "notifCount",
+                    "battery",
+                    "dateTime",
+                    "power",
+                ],
+            },
+            flowbox: [
+                "osIcon",
+                "workspaces",
+                "brightnessSpacer",
+                "activeWindow",
+                "volumeSpacer",
+                "dateTime",
+                "tray",
+                "battery",
+                "statusIcons",
+                "notifCount",
+                "power",
+            ],
+        },
         modules: {
-            osIcon: {
-                enabled: true,
-            },
-            activeWindow: {
-                enabled: true,
-            },
-            mediaPlaying: {
-                enabled: true,
-            },
             workspaces: {
-                enabled: true,
                 shown: 5,
             },
-            tray: {
-                enabled: true,
-            },
-            statusIcons: {
-                enabled: true,
-            },
-            pkgUpdates: {
-                enabled: true,
-            },
-            notifCount: {
-                enabled: true,
-            },
-            battery: {
-                enabled: true,
-            },
             dateTime: {
-                enabled: true,
                 format: "%d/%m/%y %R",
                 detailedFormat: "%c",
-            },
-            power: {
-                enabled: true,
             },
         },
     },

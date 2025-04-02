@@ -25,16 +25,20 @@ const isCorrectType = (v: any, type: string | string[] | number[], path: string)
             try {
                 // Recursively check type
                 const type = JSON.parse(arrType);
-                const valid = v.filter((item, i) =>
-                    Object.entries(type).some(([k, t]) => {
-                        if (!item[k]) {
-                            console.warn(`Invalid shape for ${path}[${i}]: ${JSON.stringify(item)} != ${arrType}`);
-                            return false;
-                        }
-                        return !isCorrectType(item[k], t as any, `${path}[${i}].${k}`);
-                    })
-                );
-                v.splice(0, v.length, ...valid); // In-place filter
+                if (Array.isArray(type)) {
+                    v.splice(0, v.length, ...v.filter((item, i) => isCorrectType(item, type, `${path}[${i}]`)));
+                } else {
+                    const valid = v.filter((item, i) =>
+                        Object.entries(type).some(([k, t]) => {
+                            if (!item[k]) {
+                                console.warn(`Invalid shape for ${path}[${i}]: ${JSON.stringify(item)} != ${arrType}`);
+                                return false;
+                            }
+                            return !isCorrectType(item[k], t as any, `${path}[${i}].${k}`);
+                        })
+                    );
+                    v.splice(0, v.length, ...valid); // In-place filter
+                }
             } catch {
                 const valid = v.filter((item, i) => {
                     if (typeof item !== arrType) {
