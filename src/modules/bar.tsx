@@ -3,7 +3,6 @@ import type { Monitor } from "@/services/monitors";
 import Players from "@/services/players";
 import Updates from "@/services/updates";
 import { getAppCategoryIcon } from "@/utils/icons";
-import { ellipsize } from "@/utils/strings";
 import { bindCurrentTime, osIcon } from "@/utils/system";
 import type { AstalWidget } from "@/utils/types";
 import { setupCustomTooltip } from "@/utils/widgets";
@@ -146,12 +145,11 @@ const ActiveWindow = ({ monitor, ...props }: ModuleProps) => (
             }
         />
         <label
+            truncate
             angle={bind(config.vertical).as(v => (v ? 270 : 0))}
             setup={self => {
                 const update = () =>
-                    (self.label = hyprland.focusedClient?.title
-                        ? ellipsize(hyprland.focusedClient.title, config.vertical.get() ? 25 : 40)
-                        : "Desktop");
+                    (self.label = hyprland.focusedClient?.title ? hyprland.focusedClient.title : "Desktop");
                 hookFocusedClientProp(self, "title", update);
                 self.hook(config.vertical, update);
             }}
@@ -192,11 +190,10 @@ const MediaPlaying = ({ monitor, ...props }: ModuleProps) => {
                     }
                 />
                 <label
+                    truncate
                     angle={bind(config.vertical).as(v => (v ? 270 : 0))}
                     setup={self => {
-                        // TODO: scroll text when playing or hover
-                        const update = () =>
-                            (self.label = ellipsize(getLabel("No media"), config.vertical.get() ? 25 : 40));
+                        const update = () => (self.label = getLabel("No media"));
                         players.hookLastPlayer(self, ["notify::title", "notify::artist"], update);
                         self.hook(config.vertical, update);
                     }}
@@ -255,7 +252,12 @@ const Workspaces = ({ monitor, ...props }: ModuleProps) => (
                 hyprland.dispatch("workspace", (event.delta_y < 0 ? "-" : "+") + 1);
         }}
     >
-        <box vertical={bind(config.vertical)} className={`module workspaces ${getClassName(props)}`}>
+        <box
+            vertical={bind(config.vertical)}
+            className={bind(config.modules.workspaces.shown).as(
+                s => `module workspaces ${s % 2 === 0 ? "even" : "odd"} ${getClassName(props)}`
+            )}
+        >
             {bind(config.modules.workspaces.shown).as(
                 n => Array.from({ length: n }).map((_, idx) => <Workspace idx={idx + 1} />) // Start from 1
             )}

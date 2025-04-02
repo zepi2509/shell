@@ -1,5 +1,3 @@
-export const ellipsize = (str: string, len: number) => (str.length > len ? `${str.slice(0, len - 1)}…` : str);
-
 export const basename = (path: string, stripExt = true) => {
     const lastSlash = path.lastIndexOf("/");
     const lastDot = path.lastIndexOf(".");

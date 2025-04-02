@@ -276,7 +276,7 @@
                 border-bottom-left-radius: lib.s($-rounding);
             }
 
-            .workspaces {
+            .workspaces.odd {
                 margin-right: -1px;
             }
 
@@ -300,7 +300,7 @@
                 padding-top: lib.s(15);
             }
 
-            .workspaces {
+            .workspaces.odd {
                 margin-bottom: -1px;
             }
 
