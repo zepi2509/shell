@@ -26,7 +26,7 @@ const BluetoothDevice = (device: AstalBluetooth.Device) => (
                     const update = () => {
                         self.label =
                             (device.connected ? "Connected" : "Paired") +
-                            (device.batteryPercentage !== -1 ? ` (${device.batteryPercentage * 100}%)` : "");
+                            (device.batteryPercentage >= 0 ? ` (${device.batteryPercentage * 100}%)` : "");
                         self.visible = device.connected || device.paired;
                     };
                     self.hook(device, "notify::connected", update);
