@@ -26,3 +26,26 @@ export default ({ monitor }: { monitor: Monitor }) => (
         </box>
     </window>
 );
+
+export const BarScreenCorners = ({ monitor }: { monitor: Monitor }) => (
+    <window
+        namespace="caelestia-screencorners"
+        monitor={monitor.id}
+        anchor={bind(bar.vertical).as(
+            v =>
+                Astal.WindowAnchor.TOP |
+                Astal.WindowAnchor.LEFT |
+                (v ? Astal.WindowAnchor.BOTTOM : Astal.WindowAnchor.RIGHT)
+        )}
+        visible={bind(bar.style).as(s => s === "embedded")}
+        setup={self =>
+            self.connect("size-allocate", () => self.get_window()?.input_shape_combine_region(new Cairo.Region(), 0, 0))
+        }
+    >
+        <box vertical={bind(bar.vertical)}>
+            <ScreenCorner place="topleft" />
+            <box expand />
+            <ScreenCorner place={bind(bar.vertical).as(v => (v ? "bottomleft" : "topright"))} />
+        </box>
+    </window>
+);

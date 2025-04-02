@@ -15,7 +15,6 @@
     @include font.mono;
 
     font-size: lib.s(14);
-    padding-right: lib.s(3);
 
     label.icon {
         font-size: lib.s(18);
@@ -183,10 +182,16 @@
     }
 
     &.gaps {
+        padding-right: lib.s(3);
+
         .module {
             @include lib.rounded(8);
 
             background-color: scheme.$base;
+        }
+
+        .screen-corner {
+            background-color: transparent;
         }
 
         .os-icon {
@@ -239,6 +244,64 @@
 
             .os-icon > * {
                 margin-left: lib.s(-7);
+            }
+        }
+    }
+
+    &.embedded {
+        $-rounding: 23;
+
+        margin: 0;
+
+        .module {
+            background-color: scheme.$mantle;
+        }
+
+        .screen-corner {
+            @include lib.rounded($-rounding);
+        }
+
+        &.horizontal {
+            .module {
+                padding: lib.s(10) lib.s(10);
+                padding-left: lib.s(15);
+            }
+
+            .before-spacer {
+                border-bottom-right-radius: lib.s($-rounding);
+                padding-right: lib.s(15);
+            }
+
+            .after-spacer {
+                border-bottom-left-radius: lib.s($-rounding);
+            }
+
+            .power {
+                padding-right: lib.s(12);
+            }
+        }
+
+        &.vertical {
+            .module {
+                padding: lib.s(8) lib.s(10);
+            }
+
+            .before-spacer {
+                border-bottom-right-radius: lib.s($-rounding);
+                padding-bottom: lib.s(15);
+            }
+
+            .after-spacer {
+                border-top-right-radius: lib.s($-rounding);
+                padding-top: lib.s(15);
+            }
+
+            .os-icon {
+                padding-top: lib.s(12);
+            }
+
+            .power {
+                padding-bottom: lib.s(12);
             }
         }
     }
