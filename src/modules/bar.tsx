@@ -7,7 +7,6 @@ import { ellipsize } from "@/utils/strings";
 import { bindCurrentTime, osIcon } from "@/utils/system";
 import type { AstalWidget } from "@/utils/types";
 import { setupCustomTooltip } from "@/utils/widgets";
-import type PopupWindow from "@/widgets/popupwindow";
 import ScreenCorner from "@/widgets/screencorner";
 import { execAsync, Variable } from "astal";
 import Binding, { bind, kebabify } from "astal/binding";
@@ -64,14 +63,6 @@ const hookFocusedClientProp = (
     });
     self.connect("destroy", () => id && lastClient?.disconnect(id));
     callback(lastClient);
-};
-
-const togglePopup = (self: JSX.Element, event: Astal.ClickEvent, name: string) => {
-    const popup = App.get_window(name) as PopupWindow | null;
-    if (popup) {
-        if (popup.visible) popup.hide();
-        else popup.popup_at_widget(self, event);
-    }
 };
 
 const switchPane = (name: string) => {
@@ -511,7 +502,7 @@ const Battery = () => {
 
 const DateTime = () => (
     <button
-        onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("time")}
         setup={self =>
             setupCustomTooltip(self, bindCurrentTime(bind(config.modules.dateTime.detailedFormat), undefined, self))
         }
@@ -532,7 +523,7 @@ const DateTime = () => (
 
 const DateTimeVertical = () => (
     <button
-        onClick={(self, event) => event.button === Astal.MouseButton.PRIMARY && togglePopup(self, event, "sideright")}
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane("time")}
         setup={self =>
             setupCustomTooltip(self, bindCurrentTime(bind(config.modules.dateTime.detailedFormat), undefined, self))
         }

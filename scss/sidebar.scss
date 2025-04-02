@@ -792,6 +792,29 @@
         }
     }
 
+    .time-date {
+        padding: lib.s(12) lib.s(8);
+        font-size: lib.s(48);
+        font-weight: bold;
+        color: scheme.$primary;
+
+        & > * {
+            @include lib.spacing(3);
+        }
+
+        .ampm {
+            font-size: lib.s(24);
+            font-weight: normal;
+            margin-top: lib.s(18);
+            color: scheme.$secondary;
+        }
+
+        .date {
+            font-size: lib.s(20);
+            color: scheme.$tertiary;
+        }
+    }
+
     .calendar {
         @include lib.rounded(20);
 
