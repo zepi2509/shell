@@ -46,7 +46,7 @@ const Device = ({
                     <label className="icon" label={input ? "mic" : "media_output"} />
                 )
             )}
-            <label label={bind(device, "description")} />
+            <label truncate label={bind(device, "description")} />
         </box>
     </button>
 );
