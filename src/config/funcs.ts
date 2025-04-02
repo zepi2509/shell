@@ -85,7 +85,8 @@ const updateSection = (from: { [k: string]: any }, to: { [k: string]: any }, pat
 
 export const updateConfig = async () => {
     updateSection(deepMerge(defaults, JSON.parse(await readFileAsync(CONFIG))), config);
-    loadStyleAsync().catch(console.error);
+    await loadStyleAsync();
+    console.log("[LOG] Config updated");
 };
 
 export const initConfig = async () => {
