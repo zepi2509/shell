@@ -20,6 +20,10 @@
         font-size: lib.s(18);
     }
 
+    .screen-corner {
+        background-color: transparent;
+    }
+
     .os-icon {
         color: scheme.$yellow;
     }
@@ -259,6 +263,8 @@
 
         .screen-corner {
             @include lib.rounded($-rounding);
+
+            background-color: scheme.$mantle;
         }
 
         &.horizontal {
