@@ -16,11 +16,11 @@ const execToCmd = (app: AstalApps.Application) => {
 
 export const launch = (app: AstalApps.Application) => {
     let now = Date.now();
-    execAsync(["uwsm", "app", "--", app.entry]).catch(() => {
+    execAsync(["app2unit", "--", app.entry]).catch(() => {
         // Try manual exec if launch fails (exits with error within 1 second)
         if (Date.now() - now < 1000) {
             now = Date.now();
-            execAsync(["uwsm", "app", "--", execToCmd(app)]).catch(() => {
+            execAsync(["app2unit", "--", execToCmd(app)]).catch(() => {
                 // Fallback to regular launch
                 if (Date.now() - now < 1000) {
                     app.frequency--; // Decrement frequency cause launch also increments it

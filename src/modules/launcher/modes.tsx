@@ -41,7 +41,7 @@ const FileResult = ({ path }: { path: string }) => (
                 execAsync([
                     "bash",
                     "-c",
-                    `dbus-send --session --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://${path}" string:"" || xdg-open "${path}"`,
+                    `dbus-send --session --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:'file://${path}' string:'' || app2unit -O '${path}'`,
                 ]).catch(console.error);
                 close();
             }}

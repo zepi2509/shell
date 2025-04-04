@@ -7,7 +7,7 @@ import { bindCurrentTime, osIcon } from "@/utils/system";
 import type { AstalWidget } from "@/utils/types";
 import { setupCustomTooltip } from "@/utils/widgets";
 import ScreenCorner from "@/widgets/screencorner";
-import { execAsync, Variable } from "astal";
+import { execAsync, GLib, Variable } from "astal";
 import { bind, kebabify } from "astal/binding";
 import { App, Astal, Gtk, Widget } from "astal/gtk3";
 import { bar as config } from "config";
@@ -294,13 +294,16 @@ const Network = ({ monitor }: { monitor: Monitor }) => (
             const network = AstalNetwork.get_default();
             if (event.button === Astal.MouseButton.PRIMARY) switchPane(monitor, "connectivity");
             else if (event.button === Astal.MouseButton.SECONDARY) network.wifi.enabled = !network.wifi.enabled;
-            else if (event.button === Astal.MouseButton.MIDDLE)
-                execAsync("uwsm app -- gnome-control-center wifi").catch(() => {
+            else if (event.button === Astal.MouseButton.MIDDLE) {
+                if (GLib.find_program_in_path("gnome-control-center"))
+                    execAsync("app2unit -- gnome-control-center wifi").catch(console.error);
+                else {
                     network.wifi.scan();
                     execAsync(
-                        "uwsm app -- foot -T nmtui -- fish -c 'sleep .1; set -e COLORTERM; TERM=xterm-old nmtui connect'"
+                        "app2unit -- foot -T nmtui -- fish -c 'sleep .1; set -e COLORTERM; TERM=xterm-old nmtui connect'"
                     ).catch(() => {}); // Ignore errors
-                });
+                }
+            }
         }}
         setup={self => {
             const network = AstalNetwork.get_default();
@@ -399,7 +402,7 @@ const BluetoothDevice = ({ monitor, device }: { monitor: Monitor; device: AstalB
             else if (event.button === Astal.MouseButton.SECONDARY)
                 device.disconnect_device((_, res) => device.disconnect_device_finish(res));
             else if (event.button === Astal.MouseButton.MIDDLE)
-                execAsync("uwsm app -- blueman-manager").catch(console.error);
+                execAsync("app2unit -- blueman-manager").catch(console.error);
         }}
         setup={self => setupCustomTooltip(self, bind(device, "alias"))}
     >
@@ -418,7 +421,7 @@ const Bluetooth = ({ monitor }: { monitor: Monitor }) => (
                 if (event.button === Astal.MouseButton.PRIMARY) switchPane(monitor, "connectivity");
                 else if (event.button === Astal.MouseButton.SECONDARY) AstalBluetooth.get_default().toggle();
                 else if (event.button === Astal.MouseButton.MIDDLE)
-                    execAsync("uwsm app -- blueman-manager").catch(console.error);
+                    execAsync("app2unit -- blueman-manager").catch(console.error);
             }}
             setup={self => {
                 const bluetooth = AstalBluetooth.get_default();

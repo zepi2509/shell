@@ -149,7 +149,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
                             View: () => {
                                 const client = AstalHyprland.get_default().clients.find(c => c.class === "Todoist");
                                 if (client) client.focus();
-                                else execAsync("uwsm app -- todoist").catch(console.error);
+                                else execAsync("app2unit -- todoist").catch(console.error);
                             },
                         },
                     });

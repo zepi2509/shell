@@ -9,11 +9,11 @@ const constructItem = (label: string, exec: string, quiet = true) =>
 
 const Update = (update: IUpdate) => {
     const menu = new Gtk.Menu();
-    menu.append(constructItem("Open info in browser", `xdg-open '${update.url}'`, false));
-    menu.append(constructItem("Open info in terminal", `uwsm app -- foot -H -- pacman -Qi ${update.name}`));
+    menu.append(constructItem("Open info in browser", `app2unit -O '${update.url}'`, false));
+    menu.append(constructItem("Open info in terminal", `app2unit -- foot -H -- pacman -Qi ${update.name}`));
     menu.append(new Gtk.SeparatorMenuItem({ visible: true }));
-    menu.append(constructItem("Reinstall", `uwsm app -- foot -H -- yay -S ${update.name}`));
-    menu.append(constructItem("Remove with dependencies", `uwsm app -- foot -H -- yay -Rns ${update.name}`));
+    menu.append(constructItem("Reinstall", `app2unit -- foot -H -- yay -S ${update.name}`));
+    menu.append(constructItem("Remove with dependencies", `app2unit -- foot -H -- yay -Rns ${update.name}`));
 
     return (
         <button

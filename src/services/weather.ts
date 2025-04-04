@@ -370,7 +370,7 @@ export default class Weather extends GObject.Object {
                 icon: "dialog-warning-symbolic",
                 urgency: "critical",
                 actions: {
-                    "Get API key": () => execAsync(["xdg-open", "https://www.weatherapi.com"]).catch(print),
+                    "Get API key": () => execAsync(`app2unit -O 'https://www.weatherapi.com'`).catch(print),
                 },
             });
     }
