@@ -29,12 +29,12 @@ const isCorrectType = (v: any, type: string | string[] | number[], path: string)
                     v.splice(0, v.length, ...v.filter((item, i) => isCorrectType(item, type, `${path}[${i}]`)));
                 } else {
                     const valid = v.filter((item, i) =>
-                        Object.entries(type).some(([k, t]) => {
-                            if (!item[k]) {
+                        Object.entries(type).every(([k, t]) => {
+                            if (!item.hasOwnProperty(k)) {
                                 console.warn(`Invalid shape for ${path}[${i}]: ${JSON.stringify(item)} != ${arrType}`);
                                 return false;
                             }
-                            return !isCorrectType(item[k], t as any, `${path}[${i}].${k}`);
+                            return isCorrectType(item[k], t as any, `${path}[${i}].${k}`);
                         })
                     );
                     v.splice(0, v.length, ...valid); // In-place filter

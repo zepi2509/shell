@@ -75,7 +75,7 @@ export default {
     "gpu.interval": NUM,
     "memory.interval": NUM,
     "storage.interval": NUM,
-    "wallpapers.paths": OBJ_ARR({ recursive: BOOL, path: STR }),
+    "wallpapers.paths": OBJ_ARR({ recursive: BOOL, path: STR, threshold: NUM }),
     "calendar.webcals": ARR(STR),
     "calendar.upcomingDays": NUM,
     "calendar.notify": BOOL,

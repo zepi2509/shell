@@ -133,6 +133,7 @@ export default {
             {
                 recursive: true, // Whether to search recursively
                 path: "~/Pictures/Wallpapers", // Path to search
+                threshold: 0.8, // The threshold to filter wallpapers by size (e.g. 0.8 means wallpaper must be at least 80% of the screen size), 0 to disable
             },
         ],
     },

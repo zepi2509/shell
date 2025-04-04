@@ -2,6 +2,7 @@ import { monitorDirectory } from "@/utils/system";
 import Thumbnailer from "@/utils/thumbnailer";
 import { execAsync, GObject, property, register } from "astal";
 import { wallpapers as config } from "config";
+import Monitors from "./monitors";
 
 export interface IWallpaper {
     path: string;
@@ -35,10 +36,35 @@ export default class Wallpapers extends GObject.Object {
         return this.#categories;
     }
 
-    #listDir(path: { path: string; recursive: boolean }, type: "f" | "d") {
+    async #listDir(path: { path: string; recursive: boolean; threshold: number }, type: "f" | "d") {
         const absPath = path.path.replace("~", HOME);
         const maxDepth = path.recursive ? "" : "-maxdepth 1";
-        return execAsync(`find ${absPath} ${maxDepth} -path '*/.*' -prune -o -type ${type} -print`);
+        const files = await execAsync(`find ${absPath} ${maxDepth} -path '*/.*' -prune -o -type ${type} -print`);
+
+        if (path.threshold > 0) {
+            const data = (
+                await execAsync([
+                    "fish",
+                    "-c",
+                    `identify -ping -format '%i %w %h\n' ${files.replaceAll("\n", " ")} ; true`,
+                ])
+            ).split("\n");
+
+            return data
+                .filter(l => l && this.#filterSize(l, path.threshold))
+                .map(l => l.split(" ").slice(0, -2).join(" "))
+                .join("\n");
+        }
+
+        return files;
+    }
+
+    #filterSize(line: string, threshold: number) {
+        const [width, height] = line.split(" ").slice(-2).map(Number);
+        const mWidth = Math.max(...Monitors.get_default().list.map(m => m.width));
+        const mHeight = Math.max(...Monitors.get_default().list.map(m => m.height));
+
+        return width >= mWidth * threshold && height >= mHeight * threshold;
     }
 
     async update() {
