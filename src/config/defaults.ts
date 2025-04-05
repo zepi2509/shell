@@ -68,6 +68,8 @@ export default {
             notify: true,
         },
         wallpaper: {
+            maxResults: 20, // Actual max results, -1 for infinite
+            showAllEmpty: true, // Show all wallpapers when search is empty
             style: "medium", // One of "compact", "medium", "large"
         },
         disabledActions: ["logout", "shutdown", "reboot", "hibernate"], // Actions to hide, see launcher/actions.tsx for available actions

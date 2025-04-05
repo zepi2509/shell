@@ -287,7 +287,7 @@ const Scheme = ({ scheme, name, colours }: { scheme?: string; name: string; colo
     );
 };
 
-const Wallpaper = ({ path, thumbnail }: IWallpaper) => (
+const Wallpaper = ({ path, thumbnails }: IWallpaper) => (
     <Gtk.FlowBoxChild visible canFocus={false}>
         <button
             className="result wallpaper-container"
@@ -302,11 +302,24 @@ const Wallpaper = ({ path, thumbnail }: IWallpaper) => (
                 vertical={config.wallpaper.style.get() !== "compact"}
                 className={`wallpaper ${config.wallpaper.style.get()}`}
             >
-                <box className="thumbnail" css={"background-image: url('" + (thumbnail ?? path) + "');"} />
+                <box
+                    className="thumbnail"
+                    css={bind(config.wallpaper.style).as(
+                        s => "background-image: url('" + thumbnails[s as keyof typeof thumbnails] + "');"
+                    )}
+                />
                 <label truncate label={basename(path)} />
             </box>
         </button>
     </Gtk.FlowBoxChild>
+);
+
+const CategoryThumbnail = ({ style, wallpapers }: { style: string; wallpapers: IWallpaper[] }) => (
+    <box className="thumbnail">
+        {wallpapers.slice(0, 3).map(w => (
+            <box hexpand css={"background-image: url('" + w.thumbnails[style as keyof typeof w.thumbnails] + "');"} />
+        ))}
+    </box>
 );
 
 const Category = ({ path, wallpapers }: ICategory) => (
@@ -328,14 +341,10 @@ const Category = ({ path, wallpapers }: ICategory) => (
                     s === "compact" ? (
                         <box
                             className="thumbnail"
-                            css={"background-image: url('" + (wallpapers[0].thumbnail ?? wallpapers[0].path) + "');"}
+                            css={"background-image: url('" + wallpapers[0].thumbnails.compact + "');"}
                         />
                     ) : (
-                        <box className="thumbnail">
-                            {wallpapers.slice(0, 3).map(w => (
-                                <box hexpand css={"background-image: url('" + (w.thumbnail ?? w.path) + "');"} />
-                            ))}
-                        </box>
+                        <CategoryThumbnail style={s} wallpapers={wallpapers} />
                     )
                 )}
                 <label truncate label={basename(path)} />
@@ -397,12 +406,19 @@ export default class Actions extends Widget.Box implements LauncherContent {
                 }
             }
         } else if (action === "wallpaper") {
-            const random = args[1]?.toLowerCase() === "random";
-            const term = (random ? args[2] : args[1]) ?? "";
-            const list = random ? Wallpapers.get_default().categories : Wallpapers.get_default().list;
+            if (args[1]?.toLowerCase() === "random") {
+                const list = Wallpapers.get_default().categories;
+                for (const { obj } of fuzzysort.go(args[2] ?? "", list, { all: true, key: "path" }))
+                    this.#content.add(<Category {...obj} />);
+            } else {
+                const list = Wallpapers.get_default().list;
+                let limit = undefined;
+                if ((args[1] || !config.wallpaper.showAllEmpty.get()) && config.wallpaper.maxResults.get() > 0)
+                    limit = config.wallpaper.maxResults.get();
 
-            for (const { obj } of fuzzysort.go(term, list, { all: true, key: "path" }))
-                this.#content.add(random ? <Category {...(obj as ICategory)} /> : <Wallpaper {...obj} />);
+                for (const { obj } of fuzzysort.go(args[1] ?? "", list, { all: true, key: "path", limit }))
+                    this.#content.add(<Wallpaper {...obj} />);
+            }
         } else if (action === "transparency") {
             const list = Object.keys(transparencyActions);
 

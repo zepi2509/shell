@@ -44,6 +44,8 @@ export default {
     "launcher.files.shortenThreshold": NUM,
     "launcher.math.maxResults": NUM,
     "launcher.todo.notify": BOOL,
+    "launcher.wallpaper.maxResults": NUM,
+    "launcher.wallpaper.showAllEmpty": BOOL,
     "launcher.wallpaper.style": ["compact", "medium", "large"],
     "launcher.disabledActions": ARR(STR),
     // Notif popups

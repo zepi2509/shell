@@ -1,35 +1,49 @@
 import { execAsync, Gio, GLib } from "astal";
 import { pathToFileName } from "./strings";
 
+export interface ThumbOpts {
+    width?: number;
+    height?: number;
+    exact?: boolean;
+}
+
 export default class Thumbnailer {
     static readonly thumbnailDir = `${CACHE}/thumbnails`;
 
-    static lazy = true;
-    static thumbWidth = 500;
-    static thumbHeight = 250;
-    static maxAttempts = 5;
-    static timeBetweenAttempts = 300;
+    static lazy: boolean = true;
+    static maxAttempts: number = 5;
+    static timeBetweenAttempts: number = 300;
+    static defaults: Required<ThumbOpts> = {
+        width: 100,
+        height: 100,
+        exact: true,
+    };
 
     static readonly #running = new Set<string>();
 
-    static getThumbPath(path: string) {
-        return `${this.thumbnailDir}/${pathToFileName(path, "png")}`;
+    static getOpt<T extends keyof ThumbOpts>(opt: T, opts: ThumbOpts) {
+        return opts[opt] ?? this.defaults[opt];
     }
 
-    static async shouldThumbnail(path: string) {
-        const [width, height] = (await execAsync(`identify -ping -format "%w %h" ${path}`)).split(" ").map(parseInt);
-        return width > this.thumbWidth || height > this.thumbHeight;
+    static getThumbPath(path: string, opts: ThumbOpts) {
+        const size = `${this.getOpt("width", opts)}x${this.getOpt("height", opts)}`;
+        const exact = this.getOpt("exact", opts) ? "-exact" : "";
+        return `${this.thumbnailDir}/${pathToFileName(path, "")}@${size}${exact}.png`;
     }
 
-    static async #thumbnail(path: string, attempts: number): Promise<string> {
-        const thumbPath = this.getThumbPath(path);
+    static async shouldThumbnail(path: string, opts: ThumbOpts) {
+        const [w, h] = (await execAsync(`identify -ping -format "%w %h" ${path}`)).split(" ").map(parseInt);
+        return w > this.getOpt("width", opts) || h > this.getOpt("height", opts);
+    }
+
+    static async #thumbnail(path: string, opts: ThumbOpts, attempts: number): Promise<string> {
+        const thumbPath = this.getThumbPath(path, opts);
 
         try {
-            await execAsync(
-                `magick -define jpeg:size=${this.thumbWidth * 2}x${this.thumbHeight * 2} ${path} -thumbnail ${
-                    this.thumbWidth
-                }x${this.thumbHeight} -unsharp 0x.5 ${thumbPath}`
-            );
+            const width = this.getOpt("width", opts);
+            const height = this.getOpt("height", opts);
+            const cropCmd = this.getOpt("exact", opts) ? `-gravity Center -extent ${width}x${height}` : "";
+            await execAsync(`magick ${path} -thumbnail ${width}x${height}^ ${cropCmd} -unsharp 0x.5 ${thumbPath}`);
         } catch {
             if (attempts >= this.maxAttempts) {
                 console.error(`Failed to generate thumbnail for ${path}`);
@@ -37,16 +51,16 @@ export default class Thumbnailer {
             }
 
             await new Promise(r => setTimeout(r, this.timeBetweenAttempts));
-            return this.#thumbnail(path, attempts + 1);
+            return this.#thumbnail(path, opts, attempts + 1);
         }
 
         return thumbPath;
     }
 
-    static async thumbnail(path: string): Promise<string> {
-        if (!(await this.shouldThumbnail(path))) return path;
+    static async thumbnail(path: string, opts: ThumbOpts = {}): Promise<string> {
+        if (!(await this.shouldThumbnail(path, opts))) return path;
 
-        let thumbPath = this.getThumbPath(path);
+        let thumbPath = this.getThumbPath(path, opts);
 
         // If not lazy (i.e. force gen), delete existing thumbnail
         if (!this.lazy) Gio.File.new_for_path(thumbPath).delete(null);
@@ -58,7 +72,7 @@ export default class Thumbnailer {
         if (!GLib.file_test(thumbPath, GLib.FileTest.EXISTS)) {
             this.#running.add(path);
 
-            thumbPath = await this.#thumbnail(path, 0);
+            thumbPath = await this.#thumbnail(path, opts, 0);
 
             this.#running.delete(path);
         }

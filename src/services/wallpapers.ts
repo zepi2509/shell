@@ -6,7 +6,11 @@ import Monitors from "./monitors";
 
 export interface IWallpaper {
     path: string;
-    thumbnail?: string;
+    thumbnails: {
+        compact: string;
+        medium: string;
+        large: string;
+    };
 }
 
 export interface ICategory {
@@ -84,7 +88,16 @@ export default class Wallpapers extends GObject.Object {
         const files = successes.map(r => r.files.replaceAll("\n", " ")).join(" ");
         const list = (await execAsync(["fish", "-c", `identify -ping -format '%i\n' ${files} ; true`])).split("\n");
 
-        this.#list = await Promise.all(list.map(async p => ({ path: p, thumbnail: await Thumbnailer.thumbnail(p) })));
+        this.#list = await Promise.all(
+            list.map(async p => ({
+                path: p,
+                thumbnails: {
+                    compact: await Thumbnailer.thumbnail(p, { width: 60, height: 60, exact: true }),
+                    medium: await Thumbnailer.thumbnail(p, { width: 400, height: 150, exact: true }),
+                    large: await Thumbnailer.thumbnail(p, { width: 400, height: 200, exact: true }),
+                },
+            }))
+        );
         this.#list.sort((a, b) => a.path.localeCompare(b.path));
         this.notify("list");
 
