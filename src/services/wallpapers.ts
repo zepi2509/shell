@@ -45,7 +45,7 @@ export default class Wallpapers extends GObject.Object {
         const maxDepth = path.recursive ? "" : "-maxdepth 1";
         const files = await execAsync(`find ${absPath} ${maxDepth} -path '*/.*' -prune -o -type ${type} -print`);
 
-        if (path.threshold > 0) {
+        if (type === "f" && path.threshold > 0) {
             const data = (
                 await execAsync([
                     "fish",
