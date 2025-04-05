@@ -1,4 +1,5 @@
-import { GLib, monitorFile, readFileAsync, Variable, writeFileAsync } from "astal";
+import { notify } from "@/utils/system";
+import { Gio, GLib, monitorFile, readFileAsync, Variable, writeFileAsync } from "astal";
 import config from ".";
 import { loadStyleAsync } from "../../app";
 import defaults from "./defaults";
@@ -8,13 +9,24 @@ type Settings<T> = { [P in keyof T]: T[P] extends object & { length?: never } ? 
 
 const CONFIG = `${GLib.get_user_config_dir()}/caelestia/shell.json`;
 
+const warn = (msg: string) => {
+    console.warn(`[CONFIG] ${msg}`);
+    if (config.config.notifyOnError.get())
+        notify({
+            summary: "Invalid config",
+            body: msg,
+            icon: "dialog-error-symbolic",
+            urgency: "critical",
+        });
+};
+
 const isObject = (o: any): o is object => typeof o === "object" && o !== null && !Array.isArray(o);
 
 const isCorrectType = (v: any, type: string | string[] | number[], path: string) => {
     if (Array.isArray(type)) {
         // type is array of valid values
         if (!type.includes(v as never)) {
-            console.warn(`Invalid value for ${path}: ${v} != ${type.map(v => `"${v}"`).join(" | ")}`);
+            warn(`Invalid value for ${path}: ${v} != ${type.map(v => `"${v}"`).join(" | ")}`);
             return false;
         }
     } else if (type.startsWith("array of ")) {
@@ -31,7 +43,7 @@ const isCorrectType = (v: any, type: string | string[] | number[], path: string)
                     const valid = v.filter((item, i) =>
                         Object.entries(type).every(([k, t]) => {
                             if (!item.hasOwnProperty(k)) {
-                                console.warn(`Invalid shape for ${path}[${i}]: ${JSON.stringify(item)} != ${arrType}`);
+                                warn(`Invalid shape for ${path}[${i}]: ${JSON.stringify(item)} != ${arrType}`);
                                 return false;
                             }
                             return isCorrectType(item[k], t as any, `${path}[${i}].${k}`);
@@ -42,7 +54,7 @@ const isCorrectType = (v: any, type: string | string[] | number[], path: string)
             } catch {
                 const valid = v.filter((item, i) => {
                     if (typeof item !== arrType) {
-                        console.warn(`Invalid type for ${path}[${i}]: ${typeof item} != ${arrType}`);
+                        warn(`Invalid type for ${path}[${i}]: ${typeof item} != ${arrType}`);
                         return false;
                     }
                     return true;
@@ -51,12 +63,12 @@ const isCorrectType = (v: any, type: string | string[] | number[], path: string)
             }
         } else {
             // Type is array but value is not
-            console.warn(`Invalid type for ${path}: ${typeof v} != ${type}`);
+            warn(`Invalid type for ${path}: ${typeof v} != ${type}`);
             return false;
         }
     } else if (typeof v !== type) {
         // Value is not correct type
-        console.warn(`Invalid type for ${path}: ${typeof v} != ${type}`);
+        warn(`Invalid type for ${path}: ${typeof v} != ${type}`);
         return false;
     }
 
@@ -83,7 +95,7 @@ const updateSection = (from: { [k: string]: any }, to: { [k: string]: any }, pat
         if (to.hasOwnProperty(k)) {
             if (isObject(v)) updateSection(v, to[k], `${path}${k}.`);
             else if (!Array.isArray(v) || JSON.stringify(to[k].get()) !== JSON.stringify(v)) to[k].set(v);
-        } else console.warn(`Unknown config key: ${path}${k}`);
+        } else warn(`Unknown config key: ${path}${k}`);
     }
 };
 
@@ -94,8 +106,11 @@ export const updateConfig = async () => {
 };
 
 export const initConfig = async () => {
-    monitorFile(CONFIG, () => updateConfig().catch(e => console.warn(`Invalid config: ${e}`)));
-    await updateConfig().catch(e => console.warn(`Invalid config: ${e}`));
+    monitorFile(CONFIG, (_, e) => {
+        if (e === Gio.FileMonitorEvent.CHANGES_DONE_HINT || e === Gio.FileMonitorEvent.DELETED)
+            updateConfig().catch(warn);
+    });
+    await updateConfig().catch(warn);
 };
 
 export const setConfig = async (path: string, value: any) => {

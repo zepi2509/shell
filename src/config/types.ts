@@ -24,6 +24,7 @@ export default {
     "style.transparency": ["off", "normal", "high"],
     "style.borders": BOOL,
     "style.vibrant": BOOL,
+    "config.notifyOnError": BOOL,
     // Bar
     "bar.vertical": BOOL,
     "bar.style": ["gaps", "panel", "embedded"],

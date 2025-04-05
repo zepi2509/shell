@@ -6,6 +6,9 @@ export default {
         borders: true,
         vibrant: false, // Extra saturation
     },
+    config: {
+        notifyOnError: true,
+    },
     // Modules
     bar: {
         vertical: true,
