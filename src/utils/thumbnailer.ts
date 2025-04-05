@@ -1,4 +1,5 @@
-import { execAsync, Gio, GLib } from "astal";
+import { execAsync, GLib, type Variable } from "astal";
+import { thumbnailer as config } from "config";
 
 export interface ThumbOpts {
     width?: number;
@@ -9,19 +10,10 @@ export interface ThumbOpts {
 export default class Thumbnailer {
     static readonly thumbnailDir = `${CACHE}/thumbnails`;
 
-    static lazy: boolean = true;
-    static maxAttempts: number = 5;
-    static timeBetweenAttempts: number = 300;
-    static defaults: Required<ThumbOpts> = {
-        width: 100,
-        height: 100,
-        exact: true,
-    };
-
     static readonly #running = new Set<string>();
 
     static getOpt<T extends keyof ThumbOpts>(opt: T, opts: ThumbOpts) {
-        return opts[opt] ?? this.defaults[opt];
+        return opts[opt] ?? (config.defaults[opt] as Variable<NonNullable<ThumbOpts[T]>>).get();
     }
 
     static async getThumbPath(path: string, opts: ThumbOpts) {
@@ -45,12 +37,12 @@ export default class Thumbnailer {
             const cropCmd = this.getOpt("exact", opts) ? `-gravity Center -extent ${width}x${height}` : "";
             await execAsync(`magick ${path} -thumbnail ${width}x${height}^ ${cropCmd} -unsharp 0x.5 ${thumbPath}`);
         } catch {
-            if (attempts >= this.maxAttempts) {
+            if (attempts >= config.maxAttempts.get()) {
                 console.error(`Failed to generate thumbnail for ${path}`);
                 return path;
             }
 
-            await new Promise(r => setTimeout(r, this.timeBetweenAttempts));
+            await new Promise(r => setTimeout(r, config.timeBetweenAttempts.get()));
             return this.#thumbnail(path, opts, attempts + 1);
         }
 
@@ -61,9 +53,6 @@ export default class Thumbnailer {
         if (!(await this.shouldThumbnail(path, opts))) return path;
 
         let thumbPath = await this.getThumbPath(path, opts);
-
-        // If not lazy (i.e. force gen), delete existing thumbnail
-        if (!this.lazy) Gio.File.new_for_path(thumbPath).delete(null);
 
         // Wait for existing thumbnail for path to finish
         while (this.#running.has(path)) await new Promise(r => setTimeout(r, 100));

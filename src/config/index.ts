@@ -10,7 +10,6 @@ export const {
     notifpopups,
     osds,
     sidebar,
-    sideleft,
     math,
     updates,
     weather,
@@ -20,5 +19,6 @@ export const {
     storage,
     wallpapers,
     calendar,
+    thumbnailer,
 } = config;
 export default config;

@@ -147,4 +147,13 @@ export default {
         upcomingDays: 7, // Number of days which count as upcoming
         notify: true,
     },
+    thumbnailer: {
+        maxAttempts: 5,
+        timeBetweenAttempts: 300,
+        defaults: {
+            width: 100,
+            height: 100,
+            exact: true,
+        },
+    },
 };

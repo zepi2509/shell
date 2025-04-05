@@ -82,4 +82,9 @@ export default {
     "calendar.webcals": ARR(STR),
     "calendar.upcomingDays": NUM,
     "calendar.notify": BOOL,
+    "thumbnailer.maxAttempts": NUM,
+    "thumbnailer.timeBetweenAttempts": NUM,
+    "thumbnailer.defaults.width": NUM,
+    "thumbnailer.defaults.height": NUM,
+    "thumbnailer.defaults.exact": BOOL,
 } as { [k: string]: string | string[] | number[] };
