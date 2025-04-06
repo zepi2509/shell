@@ -34,7 +34,9 @@ export default class Thumbnailer {
         try {
             const width = this.getOpt("width", opts);
             const height = this.getOpt("height", opts);
-            const cropCmd = this.getOpt("exact", opts) ? `-gravity Center -extent ${width}x${height}` : "";
+            const cropCmd = this.getOpt("exact", opts)
+                ? `-background none -gravity center -extent ${width}x${height}`
+                : "";
             await execAsync(`magick ${path} -thumbnail ${width}x${height}^ ${cropCmd} -unsharp 0x.5 ${thumbPath}`);
         } catch {
             if (attempts >= config.maxAttempts.get()) {
