@@ -49,6 +49,7 @@ export default {
                 showLabels: false,
                 labels: ["󰮯", "󰮯", "󰮯", "󰮯", "󰮯"],
                 xalign: -1,
+                showWindows: false,
             },
             dateTime: {
                 format: "%d/%m/%y %R",

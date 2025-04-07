@@ -37,6 +37,7 @@ export default {
     "bar.modules.workspaces.showLabels": BOOL,
     "bar.modules.workspaces.labels": ARR(STR),
     "bar.modules.workspaces.xalign": NUM,
+    "bar.modules.workspaces.showWindows": BOOL,
     "bar.modules.dateTime.format": STR,
     "bar.modules.dateTime.detailedFormat": STR,
     // Launcher

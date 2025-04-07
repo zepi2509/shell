@@ -70,12 +70,21 @@
         &.labels-shown > button {
             color: color.change(scheme.$overlay1, $alpha: 1);
 
+            .icon {
+                font-size: lib.s(13);
+                color: color.change(scheme.$subtext0, $alpha: 1);
+            }
+
             &.occupied {
                 color: color.mix(scheme.$text, scheme.$mauve, 50%);
             }
 
             &.focused {
                 color: color.change(scheme.$base, $alpha: 1);
+
+                .icon {
+                    color: color.change(scheme.$surface0, $alpha: 1);
+                }
             }
         }
     }
@@ -163,6 +172,14 @@
                     padding-left: lib.s(20);
                     padding-right: lib.s(20);
                 }
+
+                .icon {
+                    margin-left: lib.s(5);
+
+                    &:nth-child(2) {
+                        margin-left: lib.s(12);
+                    }
+                }
             }
         }
 
@@ -211,6 +228,14 @@
                     min-height: 0;
                     padding-top: lib.s(15);
                     padding-bottom: lib.s(15);
+                }
+
+                .icon {
+                    margin-top: lib.s(2);
+
+                    &:nth-child(2) {
+                        margin-top: lib.s(3);
+                    }
                 }
             }
         }

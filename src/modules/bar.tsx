@@ -204,47 +204,61 @@ const MediaPlaying = ({ monitor, ...props }: ModuleProps) => {
 };
 
 const Workspace = ({ idx }: { idx: number }) => {
-    let wsId = hyprland.focusedWorkspace
-        ? Math.floor((hyprland.focusedWorkspace.id - 1) / config.modules.workspaces.shown.get()) *
-              config.modules.workspaces.shown.get() +
-          idx
-        : idx;
+    const wsId = Variable.derive([bind(hyprland, "focusedWorkspace"), config.modules.workspaces.shown], (f, s) =>
+        f ? Math.floor((f.id - 1) / s) * s + idx : idx
+    );
+
+    const label = (
+        <label
+            css={bind(config.modules.workspaces.xalign).as(a => `margin-left: ${a}px; margin-right: ${-a}px;`)}
+            label={bind(config.modules.workspaces.labels).as(l => l[idx - 1] ?? String(idx))}
+        />
+    );
 
     return (
         <button
             halign={Gtk.Align.CENTER}
             valign={Gtk.Align.CENTER}
-            onClicked={() => hyprland.dispatch("workspace", String(wsId))}
+            onClicked={() => hyprland.dispatch("workspace", String(wsId.get()))}
             setup={self => {
-                const update = () =>
-                    self.toggleClassName(
-                        "occupied",
-                        hyprland.clients.some(c => c.workspace?.id === wsId)
-                    );
-                const updateWs = () => {
-                    if (!hyprland.focusedWorkspace) return;
-                    wsId =
-                        Math.floor((hyprland.focusedWorkspace.id - 1) / config.modules.workspaces.shown.get()) *
-                            config.modules.workspaces.shown.get() +
-                        idx;
-                    self.toggleClassName("focused", hyprland.focusedWorkspace.id === wsId);
-                    update();
+                const updateOccupied = () => {
+                    const occupied = hyprland.clients.some(c => c.workspace?.id === wsId.get());
+                    self.toggleClassName("occupied", occupied);
+                };
+                const updateFocused = () => {
+                    self.toggleClassName("focused", hyprland.focusedWorkspace?.id === wsId.get());
+                    updateOccupied();
                 };
 
-                self.hook(config.modules.workspaces.shown, updateWs);
-                self.hook(hyprland, "notify::focused-workspace", updateWs);
-                self.hook(hyprland, "client-added", update);
-                self.hook(hyprland, "client-moved", update);
-                self.hook(hyprland, "client-removed", update);
-
-                self.toggleClassName("focused", hyprland.focusedWorkspace?.id === wsId);
-                update();
+                self.hook(hyprland, "client-added", updateOccupied);
+                self.hook(hyprland, "client-moved", updateOccupied);
+                self.hook(hyprland, "client-removed", updateOccupied);
+                self.hook(hyprland, "notify::focused-workspace", updateFocused);
+                updateFocused();
             }}
+            onDestroy={() => wsId.drop()}
         >
-            <label
+            <box
                 visible={bind(config.modules.workspaces.showLabels)}
-                css={bind(config.modules.workspaces.xalign).as(a => `margin-left: ${a}px; margin-right: ${-a}px;`)}
-                label={bind(config.modules.workspaces.labels).as(l => l[idx - 1] ?? String(idx))}
+                vertical={bind(config.vertical)}
+                setup={self => {
+                    const update = () => {
+                        if (config.modules.workspaces.showWindows.get()) {
+                            const clients = hyprland.clients.filter(c => c.workspace?.id === wsId.get());
+                            self.children = [
+                                label,
+                                ...clients.map(c => (
+                                    <label className="icon" label={bind(c, "class").as(getAppCategoryIcon)} />
+                                )),
+                            ];
+                        } else self.children = [label];
+                    };
+                    self.hook(wsId, update);
+                    self.hook(hyprland, "client-added", update);
+                    self.hook(hyprland, "client-moved", update);
+                    self.hook(hyprland, "client-removed", update);
+                    update();
+                }}
             />
         </button>
     );
