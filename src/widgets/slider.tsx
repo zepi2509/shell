@@ -13,7 +13,7 @@ export default ({
         hexpand
         valign={Gtk.Align.CENTER}
         className="slider"
-        css={bind(value).as(v => `font-size: ${v}px;`)}
+        css={bind(value).as(v => `font-size: ${Math.min(1, Math.max(0, v))}px;`)}
         setup={self => {
             const halfPi = Math.PI / 2;
 
