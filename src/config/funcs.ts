@@ -100,7 +100,9 @@ const updateSection = (from: { [k: string]: any }, to: { [k: string]: any }, pat
 };
 
 export const updateConfig = async () => {
-    updateSection(deepMerge(defaults, JSON.parse(await readFileAsync(CONFIG))), config);
+    if (GLib.file_test(CONFIG, GLib.FileTest.EXISTS))
+        updateSection(deepMerge(defaults, JSON.parse(await readFileAsync(CONFIG))), config);
+    else updateSection(defaults, config);
     await loadStyleAsync();
     console.log("[LOG] Config updated");
 };
