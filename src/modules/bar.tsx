@@ -209,6 +209,7 @@ const Workspace = ({ idx }: { idx: number }) => {
               config.modules.workspaces.shown.get() +
           idx
         : idx;
+
     return (
         <button
             halign={Gtk.Align.CENTER}
@@ -239,31 +240,39 @@ const Workspace = ({ idx }: { idx: number }) => {
                 self.toggleClassName("focused", hyprland.focusedWorkspace?.id === wsId);
                 update();
             }}
-        />
+        >
+            <label
+                visible={bind(config.modules.workspaces.showLabels)}
+                css={bind(config.modules.workspaces.xalign).as(a => `margin-left: ${a}px; margin-right: ${-a}px;`)}
+                label={bind(config.modules.workspaces.labels).as(l => l[idx - 1] ?? String(idx))}
+            />
+        </button>
     );
 };
 
-const Workspaces = ({ monitor, ...props }: ModuleProps) => (
-    <eventbox
-        onScroll={(_, event) => {
-            const activeWs = hyprland.focusedClient?.workspace.name;
-            if (activeWs?.startsWith("special:")) hyprland.dispatch("togglespecialworkspace", activeWs.slice(8));
-            else if (event.delta_y > 0 || hyprland.focusedWorkspace?.id > 1)
-                hyprland.dispatch("workspace", (event.delta_y < 0 ? "-" : "+") + 1);
-        }}
-    >
-        <box
-            vertical={bind(config.vertical)}
-            className={bind(config.modules.workspaces.shown).as(
-                s => `module workspaces ${s % 2 === 0 ? "even" : "odd"} ${getClassName(props)}`
-            )}
+const Workspaces = ({ monitor, ...props }: ModuleProps) => {
+    const className = Variable.derive(
+        [config.modules.workspaces.shown, config.modules.workspaces.showLabels],
+        (s, l) => `module workspaces ${s % 2 === 0 ? "even" : "odd"} ${l ? "labels-shown" : ""} ${getClassName(props)}`
+    );
+
+    return (
+        <eventbox
+            onScroll={(_, event) => {
+                const activeWs = hyprland.focusedClient?.workspace.name;
+                if (activeWs?.startsWith("special:")) hyprland.dispatch("togglespecialworkspace", activeWs.slice(8));
+                else if (event.delta_y > 0 || hyprland.focusedWorkspace?.id > 1)
+                    hyprland.dispatch("workspace", (event.delta_y < 0 ? "-" : "+") + 1);
+            }}
         >
-            {bind(config.modules.workspaces.shown).as(
-                n => Array.from({ length: n }).map((_, idx) => <Workspace idx={idx + 1} />) // Start from 1
-            )}
-        </box>
-    </eventbox>
-);
+            <box vertical={bind(config.vertical)} className={bind(className)} onDestroy={() => className.drop()}>
+                {bind(config.modules.workspaces.shown).as(
+                    n => Array.from({ length: n }).map((_, idx) => <Workspace idx={idx + 1} />) // Start from 1
+                )}
+            </box>
+        </eventbox>
+    );
+};
 
 const TrayItem = (item: AstalTray.TrayItem) => (
     <menubutton

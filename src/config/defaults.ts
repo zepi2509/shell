@@ -46,6 +46,9 @@ export default {
         modules: {
             workspaces: {
                 shown: 5,
+                showLabels: false,
+                labels: ["󰮯", "󰮯", "󰮯", "󰮯", "󰮯"],
+                xalign: -1,
             },
             dateTime: {
                 format: "%d/%m/%y %R",

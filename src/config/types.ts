@@ -34,6 +34,9 @@ export default {
     "bar.layout.centerbox.end": ARR(barModules),
     "bar.layout.flowbox": ARR(barModules),
     "bar.modules.workspaces.shown": NUM,
+    "bar.modules.workspaces.showLabels": BOOL,
+    "bar.modules.workspaces.labels": ARR(STR),
+    "bar.modules.workspaces.xalign": NUM,
     "bar.modules.dateTime.format": STR,
     "bar.modules.dateTime.detailedFormat": STR,
     // Launcher

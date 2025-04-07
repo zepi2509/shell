@@ -40,20 +40,43 @@
         }
     }
 
-    .workspaces > * {
-        @include lib.rounded(100);
-        @include lib.element-decel;
+    .workspaces {
+        & > button {
+            @include lib.rounded(100);
+            @include lib.element-decel;
 
-        min-width: lib.s(8);
-        min-height: lib.s(8);
-        background-color: scheme.$surface1;
+            font-size: lib.s(13);
+            font-weight: bold;
 
-        &.occupied {
-            background-color: scheme.$overlay1;
+            &.focused {
+                background-color: scheme.$mauve;
+            }
         }
 
-        &.focused {
-            background-color: scheme.$mauve;
+        &:not(.labels-shown) > button {
+            min-width: lib.s(8);
+            min-height: lib.s(8);
+            background-color: scheme.$surface1;
+
+            &.occupied {
+                background-color: scheme.$overlay1;
+            }
+
+            &.focused {
+                background-color: scheme.$mauve;
+            }
+        }
+
+        &.labels-shown > button {
+            color: color.change(scheme.$overlay1, $alpha: 1);
+
+            &.occupied {
+                color: color.mix(scheme.$text, scheme.$mauve, 50%);
+            }
+
+            &.focused {
+                color: color.change(scheme.$base, $alpha: 1);
+            }
         }
     }
 
@@ -126,12 +149,20 @@
         }
 
         .workspaces {
-            padding: lib.s(3) lib.s(18);
-
             @include lib.spacing(10);
 
             & > .focused {
                 min-width: lib.s(30);
+            }
+
+            &.labels-shown > button {
+                padding: lib.s(3) lib.s(8);
+
+                &.focused {
+                    min-width: 0;
+                    padding-left: lib.s(20);
+                    padding-right: lib.s(20);
+                }
             }
         }
 
@@ -167,12 +198,20 @@
         }
 
         .workspaces {
-            padding: lib.s(18) lib.s(3);
-
             @include lib.spacing(10, true);
 
             & > .focused {
                 min-height: lib.s(30);
+            }
+
+            &.labels-shown > button {
+                padding: lib.s(3) lib.s(8);
+
+                &.focused {
+                    min-height: 0;
+                    padding-top: lib.s(15);
+                    padding-bottom: lib.s(15);
+                }
             }
         }
 
@@ -222,10 +261,18 @@
 
         &.horizontal {
             @include bar-spacing;
+
+            .workspaces {
+                padding: lib.s(6) lib.s(15);
+            }
         }
 
         &.vertical {
             @include bar-spacing(true);
+
+            .workspaces {
+                padding: lib.s(15) lib.s(6);
+            }
         }
     }
 
