@@ -36,7 +36,7 @@ export default class Updates extends GObject.Object {
         return this.instance;
     }
 
-    readonly #cachePath = `${CACHE}/updates.txt`;
+    readonly #cachePath = `${CACHE}/updates.json`;
 
     #timeout?: GLib.Source;
     #loading = false;
