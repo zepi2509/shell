@@ -1,10 +1,15 @@
 import type { Monitor } from "@/services/monitors";
+import { capitalize } from "@/utils/strings";
 import type { AstalWidget } from "@/utils/types";
-import { Variable } from "astal";
+import { bind, execAsync, Variable } from "astal";
 import { Astal, Gtk } from "astal/gtk3";
 import { navbar as config } from "config";
 import AstalHyprland from "gi://AstalHyprland";
+import Pango from "gi://Pango";
 import SideBar, { awaitSidebar, paneNames, switchPane, type PaneName } from "./sidebar";
+
+const specialWsNames = ["sysmon", "communication", "music", "todo"] as const;
+type SpecialWsName = (typeof specialWsNames)[number];
 
 const getPaneIcon = (name: PaneName) => {
     if (name === "dashboard") return "dashboard";
@@ -15,13 +20,11 @@ const getPaneIcon = (name: PaneName) => {
     return "date_range";
 };
 
-const getPaneName = (name: PaneName) => {
-    if (name === "dashboard") return "Dash";
-    if (name === "audio") return "Audio";
-    if (name === "connectivity") return "Conn";
-    if (name === "packages") return "Pkgs";
-    if (name === "notifpane") return "Alrts";
-    return "Time";
+const getSpecialWsIcon = (name: SpecialWsName) => {
+    if (name === "sysmon") return "speed";
+    if (name === "communication") return "communication";
+    if (name === "music") return "music_note";
+    return "checklist";
 };
 
 const hookIsCurrent = (
@@ -50,17 +53,40 @@ const PaneButton = ({
 }) => (
     <button
         cursor="pointer"
-        onClick={() => switchPane(monitor, name)}
+        onClicked={() => switchPane(monitor, name)}
         setup={self => hookIsCurrent(self, sidebar, name, c => self.toggleClassName("current", c))}
     >
-        <box vertical className="pane-button">
+        <box vertical className="nav-button">
             <label className="icon" label={getPaneIcon(name)} />
             <revealer
                 transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
                 transitionDuration={150}
                 setup={self => hookIsCurrent(self, sidebar, name, c => self.set_reveal_child(c))}
             >
-                <label className="label" label={getPaneName(name)} />
+                <label truncate wrapMode={Pango.WrapMode.WORD_CHAR} className="label" label={capitalize(name)} />
+            </revealer>
+        </box>
+    </button>
+);
+
+const SpecialWsButton = ({ name }: { name: SpecialWsName }) => (
+    <button
+        className={bind(AstalHyprland.get_default(), "focusedClient").as(c =>
+            c?.get_workspace().get_name() === `special:${name}` ? "current" : ""
+        )}
+        cursor="pointer"
+        onClicked={() => execAsync(`caelestia toggle ${name}`).catch(console.error)}
+    >
+        <box vertical className="nav-button">
+            <label className="icon" label={getSpecialWsIcon(name)} />
+            <revealer
+                transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                transitionDuration={150}
+                revealChild={bind(AstalHyprland.get_default(), "focusedClient").as(
+                    c => c?.get_workspace().get_name() === `special:${name}`
+                )}
+            >
+                <label truncate wrapMode={Pango.WrapMode.WORD_CHAR} className="label" label={capitalize(name)} />
             </revealer>
         </box>
     </button>
@@ -112,6 +138,10 @@ export default ({ monitor }: { monitor: Monitor }) => {
                 <box vertical className="navbar">
                     {paneNames.map(n => (
                         <PaneButton monitor={monitor} name={n} sidebar={sidebar} />
+                    ))}
+                    <box vexpand />
+                    {specialWsNames.map(n => (
+                        <SpecialWsButton name={n} />
                     ))}
                 </box>
             </eventbox>

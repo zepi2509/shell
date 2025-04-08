@@ -21,36 +21,37 @@
         }
 
         &.current {
-            .pane-button {
+            .nav-button {
                 background-color: scheme.$primary;
                 color: color.change(scheme.$base, $alpha: 1);
             }
 
-            &:hover .pane-button,
-            &:focus .pane-button {
+            &:hover .nav-button,
+            &:focus .nav-button {
                 background-color: color.mix(scheme.$primary, scheme.$base, 80%);
             }
 
-            &:active .pane-button {
+            &:active .nav-button {
                 background-color: color.mix(scheme.$primary, scheme.$base, 70%);
             }
         }
 
-        &:first-child .pane-button {
+        &:first-child .nav-button {
             margin-top: lib.s(10);
         }
 
-        &:last-child .pane-button {
+        &:last-child .nav-button {
             margin-bottom: lib.s(10);
         }
     }
 
-    .pane-button {
+    .nav-button {
         @include lib.rounded(20);
         @include lib.element-decel;
 
         padding: lib.s(10) lib.s(8);
         margin: lib.s(5) lib.s(8);
+        min-width: lib.s(40);
 
         .icon {
             font-size: lib.s(28);
