@@ -217,8 +217,8 @@ export default class Weather extends GObject.Object {
     }
 
     readonly #cache: string = `${CACHE}/weather.json`;
+    #notified = false;
 
-    #key: string = "";
     #data: WeatherData = DEFAULT;
 
     #interval: Time | null = null;
@@ -322,15 +322,28 @@ export default class Weather extends GObject.Object {
 
     async getWeather() {
         const location = config.location || JSON.parse(await execAsync("curl ipinfo.io")).city;
-        return JSON.parse(
-            await execAsync([
-                "curl",
-                `https://api.weatherapi.com/v1/forecast.json?key=${this.#key}&q=${location}&days=1&aqi=no&alerts=no`,
-            ])
-        );
+        const opts = `key=${config.apiKey.get()}&q=${location}&days=1&aqi=no&alerts=no`;
+        const url = `https://api.weatherapi.com/v1/forecast.json?${opts}`;
+        return JSON.parse(await execAsync(["curl", url]));
     }
 
     async updateWeather() {
+        if (!config.apiKey.get()) {
+            if (!this.#notified) {
+                notify({
+                    summary: "Weather API key required",
+                    body: `A weather API key is required to get weather data. Get one from https://www.weatherapi.com.`,
+                    icon: "dialog-warning-symbolic",
+                    urgency: "critical",
+                    actions: {
+                        "Get API key": () => execAsync(`app2unit -O 'https://www.weatherapi.com'`).catch(print),
+                    },
+                });
+                this.#notified = true;
+            }
+            return;
+        }
+
         if (GLib.file_test(this.#cache, GLib.FileTest.EXISTS)) {
             const cache = await readFileAsync(this.#cache);
             const cache_data: WeatherData = JSON.parse(cache);
@@ -354,32 +367,13 @@ export default class Weather extends GObject.Object {
         this.#notify();
     }
 
-    #init(first: boolean) {
-        if (GLib.file_test(config.key.get(), GLib.FileTest.EXISTS))
-            readFileAsync(config.key.get())
-                .then(k => {
-                    this.#key = k.trim();
-                    this.updateWeather().catch(console.error);
-                    this.#interval = interval(config.interval.get(), () => this.updateWeather().catch(console.error));
-                })
-                .catch(console.error);
-        else if (first)
-            notify({
-                summary: "Weather API key required",
-                body: `A weather API key is required to get weather data. Get one from https://www.weatherapi.com and put it in ${config.key}.`,
-                icon: "dialog-warning-symbolic",
-                urgency: "critical",
-                actions: {
-                    "Get API key": () => execAsync(`app2unit -O 'https://www.weatherapi.com'`).catch(print),
-                },
-            });
-    }
-
     constructor() {
         super();
 
-        this.#init(true);
-        config.key.subscribe(() => this.#init(false));
+        this.updateWeather().catch(console.error);
+        this.#interval = interval(config.interval.get(), () => this.updateWeather().catch(console.error));
+
+        config.apiKey.subscribe(() => this.updateWeather());
 
         config.interval.subscribe(i => {
             this.#interval?.cancel();

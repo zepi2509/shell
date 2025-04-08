@@ -78,7 +78,7 @@ export default {
     "math.maxHistory": NUM,
     "updates.interval": NUM,
     "weather.interval": NUM,
-    "weather.key": STR,
+    "weather.apiKey": STR,
     "weather.location": STR,
     "weather.imperial": BOOL,
     "cpu.interval": NUM,

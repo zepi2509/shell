@@ -1,4 +1,3 @@
 @girs/
 node_modules/
 scss/scheme/_index.scss
-assets/weather-api-key.txt

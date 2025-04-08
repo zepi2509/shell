@@ -21,6 +21,7 @@ export default class News extends GObject.Object {
     }
 
     readonly #cachePath = `${CACHE}/news.json`;
+    #notified = false;
 
     #loading: boolean = false;
     #articles: Article[] = [];
@@ -37,15 +38,18 @@ export default class News extends GObject.Object {
 
     async getNews() {
         if (!config.apiKey.get()) {
-            notify({
-                summary: "A newsdata.io API key is required",
-                body: "You can get one by creating an account at https://newsdata.io",
-                icon: "dialog-error-symbolic",
-                urgency: "critical",
-                actions: {
-                    "Get API key": () => execAsync("app2unit -O -- https://newsdata.io").catch(console.error),
-                },
-            });
+            if (!this.#notified) {
+                notify({
+                    summary: "A newsdata.io API key is required",
+                    body: "You can get one by creating an account at https://newsdata.io",
+                    icon: "dialog-warning-symbolic",
+                    urgency: "critical",
+                    actions: {
+                        "Get API key": () => execAsync("app2unit -O -- https://newsdata.io").catch(console.error),
+                    },
+                });
+                this.#notified = true;
+            }
             return;
         }
 

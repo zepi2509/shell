@@ -125,7 +125,7 @@ export default {
     },
     weather: {
         interval: 600000,
-        key: "assets/weather-api-key.txt", // Path to file containing api key relative to the base directory. To get a key, visit https://weatherapi.com/
+        apiKey: "", // An API key from https://weatherapi.com for accessing weather data
         location: "", // Location as a string or empty to autodetect
         imperial: false,
     },
