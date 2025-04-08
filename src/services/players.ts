@@ -1,5 +1,5 @@
 import { isRealPlayer } from "@/utils/mpris";
-import { GLib, GObject, property, readFile, register, writeFileAsync } from "astal";
+import { GLib, GObject, property, readFileAsync, register, writeFileAsync } from "astal";
 import AstalMpris from "gi://AstalMpris";
 
 @register({ GTypeName: "Players" })
@@ -60,9 +60,9 @@ export default class Players extends GObject.Object {
     }
 
     makeCurrent(player: AstalMpris.Player) {
-        const index = this.#players.indexOf(player);
+        const index = this.#players.findIndex(p => p.busName === player.busName);
         // Ignore if already current
-        if (index === 0) return;
+        if (index === 0 || !isRealPlayer(player)) return;
         // Remove if present
         else if (index > 0) this.#players.splice(index, 1);
         // Connect signals if not already in list (i.e. new player)
@@ -71,6 +71,7 @@ export default class Players extends GObject.Object {
         // Add to front
         this.#players.unshift(player);
         this.#updatePlayer();
+        this.notify("list");
 
         // Save to file
         this.#save();
@@ -110,35 +111,28 @@ export default class Players extends GObject.Object {
 
         // Load players
         if (GLib.file_test(this.#path, GLib.FileTest.EXISTS)) {
-            this.#players = readFile(this.#path)
-                .split("\n")
-                .map(p => mpris.players.find(p2 => p2.busName === p))
-                .filter(isRealPlayer) as AstalMpris.Player[];
-            // Add new players from in between sessions
-            for (const player of mpris.players)
-                if (!this.#players.includes(player) && isRealPlayer(player)) this.#players.push(player);
+            readFileAsync(this.#path).then(out => {
+                for (const busName of out.split("\n").reverse()) {
+                    const player = mpris.get_players().find(p => p.busName === busName);
+                    if (player) this.makeCurrent(player);
+                }
+                // Add new players from in between sessions
+                for (const player of mpris.get_players()) this.makeCurrent(player);
+            });
         } else {
             const sortOrder = [
                 AstalMpris.PlaybackStatus.PLAYING,
                 AstalMpris.PlaybackStatus.PAUSED,
                 AstalMpris.PlaybackStatus.STOPPED,
             ];
-            this.#players = mpris.players
-                .filter(isRealPlayer)
-                .sort((a, b) => sortOrder.indexOf(a.playbackStatus) - sortOrder.indexOf(b.playbackStatus));
+            const players = mpris
+                .get_players()
+                .sort((a, b) => sortOrder.indexOf(b.playbackStatus) - sortOrder.indexOf(a.playbackStatus));
+            for (const player of players) this.makeCurrent(player);
         }
-        this.#updatePlayer();
-        this.#save();
-        // Connect signals to loaded players
-        for (const player of this.#players) this.#connectPlayerSignals(player);
 
         // Add and connect signals when added
-        mpris.connect("player-added", (_, player) => {
-            if (isRealPlayer(player)) {
-                this.makeCurrent(player);
-                this.notify("list");
-            }
-        });
+        mpris.connect("player-added", (_, player) => this.makeCurrent(player));
 
         // Remove when closed
         mpris.connect("player-closed", (_, player) => {
