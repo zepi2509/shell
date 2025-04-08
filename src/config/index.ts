@@ -21,5 +21,6 @@ export const {
     wallpapers,
     calendar,
     thumbnailer,
+    news,
 } = config;
 export default config;

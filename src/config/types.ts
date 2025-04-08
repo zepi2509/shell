@@ -94,4 +94,10 @@ export default {
     "thumbnailer.defaults.width": NUM,
     "thumbnailer.defaults.height": NUM,
     "thumbnailer.defaults.exact": BOOL,
+    "news.apiKey": STR,
+    "news.countries": ARR(STR),
+    "news.categories": ARR(STR),
+    "news.languages": ARR(STR),
+    "news.domains": ARR(STR),
+    "news.timezone": STR,
 } as { [k: string]: string | string[] | number[] };

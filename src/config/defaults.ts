@@ -164,4 +164,12 @@ export default {
             exact: true,
         },
     },
+    news: {
+        apiKey: "", // An API key from https://newsdata.io for accessing news
+        countries: ["current"], // A list of country codes or "current" for the current location
+        categories: [] as string[], // A list of news categories to filter by
+        languages: ["en"], // A list of languages codes to filter by
+        domains: [] as string[], // A list of news domains to pull from
+        timezone: "", // A timezone to filter by, e.g. "America/New_York"
+    },
 };
