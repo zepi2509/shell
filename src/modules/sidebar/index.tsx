@@ -9,9 +9,42 @@ import NotifPane from "./notifpane";
 import Packages from "./packages";
 import Time from "./time";
 
+export const paneNames = ["dashboard", "audio", "connectivity", "packages", "notifpane", "time"] as const;
+export type PaneName = (typeof paneNames)[number];
+
+export const switchPane = (monitor: Monitor, name: PaneName) => {
+    const sidebar = App.get_window(`sidebar${monitor.id}`) as SideBar | null;
+    if (sidebar) {
+        if (sidebar.visible && sidebar.shown.get() === name) sidebar.hide();
+        else sidebar.show();
+        sidebar.shown.set(name);
+    }
+};
+
+export const awaitSidebar = (monitor: Monitor) =>
+    new Promise<SideBar>(resolve => {
+        let sidebar: SideBar | null = null;
+
+        const awaitSidebar = () => {
+            sidebar = App.get_window(`sidebar${monitor.id}`) as SideBar | null;
+            if (sidebar) resolve(sidebar);
+            else idle(awaitSidebar);
+        };
+        idle(awaitSidebar);
+    });
+
+const getPane = (name: PaneName) => {
+    if (name === "dashboard") return <Dashboard />;
+    if (name === "audio") return <Audio />;
+    if (name === "connectivity") return <Connectivity />;
+    if (name === "packages") return <Packages />;
+    if (name === "notifpane") return <NotifPane />;
+    return <Time />;
+};
+
 @register()
 export default class SideBar extends Widget.Window {
-    readonly shown: Variable<string>;
+    readonly shown: Variable<PaneName>;
 
     constructor({ monitor }: { monitor: Monitor }) {
         super({
@@ -24,16 +57,15 @@ export default class SideBar extends Widget.Window {
             visible: false,
         });
 
-        const panes = [<Dashboard />, <Audio />, <Connectivity />, <Packages />, <NotifPane />, <Time />];
-        this.shown = Variable(panes[0].name);
+        this.shown = Variable(paneNames[0]);
 
         this.add(
             <eventbox
                 onScroll={(_, event) => {
                     if (event.modifier & Gdk.ModifierType.BUTTON1_MASK) {
-                        const index = panes.findIndex(p => p.name === this.shown.get()) + (event.delta_y < 0 ? -1 : 1);
-                        if (index < 0 || index >= panes.length) return;
-                        this.shown.set(panes[index].name);
+                        const index = paneNames.indexOf(this.shown.get()) + (event.delta_y < 0 ? -1 : 1);
+                        if (index < 0 || index >= paneNames.length) return;
+                        this.shown.set(paneNames[index]);
                     }
                 }}
             >
@@ -44,7 +76,7 @@ export default class SideBar extends Widget.Window {
                         transitionDuration={200}
                         shown={bind(this.shown)}
                     >
-                        {panes}
+                        {paneNames.map(getPane)}
                     </stack>
                 </box>
             </eventbox>

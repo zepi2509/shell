@@ -1,6 +1,6 @@
+import { isRealPlayer } from "@/utils/mpris";
 import { GLib, GObject, property, readFile, register, writeFileAsync } from "astal";
 import AstalMpris from "gi://AstalMpris";
-import { isRealPlayer } from "../utils/mpris";
 
 @register({ GTypeName: "Players" })
 export default class Players extends GObject.Object {

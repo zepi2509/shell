@@ -1,4 +1,3 @@
-import type SideBar from "@/modules/sidebar";
 import type { Monitor } from "@/services/monitors";
 import Players from "@/services/players";
 import Updates from "@/services/updates";
@@ -18,6 +17,7 @@ import AstalNetwork from "gi://AstalNetwork";
 import AstalNotifd from "gi://AstalNotifd";
 import AstalTray from "gi://AstalTray";
 import AstalWp from "gi://AstalWp";
+import { switchPane } from "./sidebar";
 
 interface ClassNameProps {
     beforeSpacer: boolean;
@@ -73,15 +73,6 @@ const hookFocusedClientProp = (
     });
     self.connect("destroy", () => id && lastClient?.disconnect(id));
     callback(lastClient);
-};
-
-const switchPane = (monitor: Monitor, name: string) => {
-    const sidebar = App.get_window(`sidebar${monitor.id}`) as SideBar | null;
-    if (sidebar) {
-        if (sidebar.visible && sidebar.shown.get() === name) sidebar.hide();
-        else sidebar.show();
-        sidebar.shown.set(name);
-    }
 };
 
 const getClassName = ({ beforeSpacer, afterSpacer, first, last }: ClassNameProps) =>

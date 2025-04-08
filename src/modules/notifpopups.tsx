@@ -1,11 +1,11 @@
 import type { Monitor } from "@/services/monitors";
-import { idle, timeout } from "astal";
-import { App, Astal, Gtk } from "astal/gtk3";
+import { setupChildClickthrough } from "@/utils/widgets";
+import Notification from "@/widgets/notification";
+import { Astal, Gtk } from "astal/gtk3";
 import { notifpopups as config } from "config";
 import AstalNotifd from "gi://AstalNotifd";
-import { setupChildClickthrough } from "../utils/widgets";
-import Notification from "../widgets/notification";
 import type SideBar from "./sidebar";
+import { awaitSidebar } from "./sidebar";
 
 export default ({ monitor }: { monitor: Monitor }) => (
     <window
@@ -61,13 +61,8 @@ export default ({ monitor }: { monitor: Monitor }) => (
                 });
                 self.hook(notifd, "resolved", (_, id) => map.get(id)?.destroyWithAnims());
 
-                let sidebar: SideBar | null;
-
-                const awaitSidebar = () => {
-                    sidebar = App.get_window(`sidebar${monitor.id}`) as SideBar | null;
-                    if (!sidebar) timeout(100, awaitSidebar);
-                };
-                idle(awaitSidebar);
+                let sidebar: SideBar | null = null;
+                awaitSidebar(monitor).then(s => (sidebar = s));
 
                 // Change input region to child region so can click through empty space
                 setupChildClickthrough(self);

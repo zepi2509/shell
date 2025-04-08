@@ -1,3 +1,4 @@
+import { capitalize } from "@/utils/strings";
 import { execAsync, GLib, GObject, property, readFileAsync, register, writeFileAsync } from "astal";
 import { updates as config } from "config";
 
@@ -124,7 +125,7 @@ export default class Updates extends GObject.Object {
                             repo: await this.getRepo(r),
                             updates: [],
                             icon: this.getRepoIcon(r),
-                            name: r[0].toUpperCase() + r.slice(1) + " repository",
+                            name: capitalize(r) + " repository",
                         }))
                     );
 

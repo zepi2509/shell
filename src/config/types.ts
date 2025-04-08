@@ -71,6 +71,9 @@ export default {
     "osds.lock.num.hideDelay": NUM,
     // Sidebar
     "sidebar.showOnStartup": BOOL,
+    // Navbar
+    "navbar.persistent": BOOL,
+    "navbar.appearWidth": NUM,
     // Services
     "math.maxHistory": NUM,
     "updates.interval": NUM,

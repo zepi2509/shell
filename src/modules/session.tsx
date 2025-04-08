@@ -1,6 +1,6 @@
+import PopupWindow from "@/widgets/popupwindow";
 import { execAsync } from "astal";
 import { App, Astal, Gtk } from "astal/gtk3";
-import PopupWindow from "../widgets/popupwindow";
 
 const Item = ({ icon, label, cmd, isDefault }: { icon: string; label: string; cmd: string; isDefault?: boolean }) => (
     <box vertical className="item">

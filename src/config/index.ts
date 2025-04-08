@@ -10,6 +10,7 @@ export const {
     notifpopups,
     osds,
     sidebar,
+    navbar,
     math,
     updates,
     weather,

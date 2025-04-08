@@ -1,5 +1,6 @@
 import Bar from "@/modules/bar";
 import Launcher from "@/modules/launcher";
+import NavBar from "@/modules/navbar";
 import NotifPopups from "@/modules/notifpopups";
 import Osds from "@/modules/osds";
 import ScreenCorners, { BarScreenCorners } from "@/modules/screencorners";
@@ -80,6 +81,7 @@ App.start({
             <Session />;
             Monitors.get_default().forEach(m => <NotifPopups monitor={m} />);
             Monitors.get_default().forEach(m => <SideBar monitor={m} />);
+            Monitors.get_default().forEach(m => <NavBar monitor={m} />);
             Monitors.get_default().forEach(m => <Bar monitor={m} />);
             Monitors.get_default().forEach(m => <ScreenCorners monitor={m} />);
             Monitors.get_default().forEach(m => <BarScreenCorners monitor={m} />);

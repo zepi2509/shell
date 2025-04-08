@@ -1,4 +1,5 @@
 import Monitors, { type Monitor } from "@/services/monitors";
+import { capitalize } from "@/utils/strings";
 import PopupWindow from "@/widgets/popupwindow";
 import { bind, execAsync, register, timeout, Variable, type Time } from "astal";
 import { App, Astal, Gtk, Widget } from "astal/gtk3";
@@ -282,7 +283,7 @@ class LockOsd extends Widget.Window {
         this.add(
             <box vertical halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} className={`lock ${type}`}>
                 <label vexpand className="icon" label={icon} />
-                <label vexpand className="text" label={type.slice(0, 1).toUpperCase() + type.slice(1) + "lock"} />
+                <label vexpand className="text" label={capitalize(type) + "lock"} />
             </box>
         );
 

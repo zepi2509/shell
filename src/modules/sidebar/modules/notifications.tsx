@@ -68,7 +68,11 @@ export default ({ compact }: { compact?: boolean }) => (
             />
             <button
                 cursor="pointer"
-                onClicked={() => AstalNotifd.get_default().notifications.forEach(n => n.dismiss())}
+                onClicked={() =>
+                    AstalNotifd.get_default()
+                        .get_notifications()
+                        .forEach(n => n.dismiss())
+                }
                 label="󰎟 Clear"
             />
         </box>

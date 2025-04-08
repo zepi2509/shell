@@ -112,6 +112,10 @@ export default {
     sidebar: {
         showOnStartup: false,
     },
+    navbar: {
+        persistent: false, // Whether to show all the time or only on hover
+        appearWidth: 10, // The width in pixels of the hover area for the navbar to show up
+    },
     // Services
     math: {
         maxHistory: 100,

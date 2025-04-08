@@ -9,3 +9,5 @@ export const pathToFileName = (path: string, ext?: string) => {
     const dir = path.slice(start, path.lastIndexOf("/")).replaceAll("/", "-");
     return `${dir}-${basename(path, ext !== undefined)}${ext ? `.${ext}` : ""}`;
 };
+
+export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);

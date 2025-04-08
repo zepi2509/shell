@@ -1,0 +1,64 @@
+@use "sass:color";
+@use "scheme";
+@use "lib";
+@use "font";
+
+.navbar {
+    @include font.mono;
+
+    background-color: scheme.$mantle;
+
+    button {
+        color: scheme.$subtext1;
+
+        &:hover,
+        &:focus {
+            color: scheme.$subtext0;
+        }
+
+        &:active {
+            color: color.change(scheme.$overlay2, $alpha: 1);
+        }
+
+        &.current {
+            .pane-button {
+                background-color: scheme.$primary;
+                color: color.change(scheme.$base, $alpha: 1);
+            }
+
+            &:hover .pane-button,
+            &:focus .pane-button {
+                background-color: color.mix(scheme.$primary, scheme.$base, 80%);
+            }
+
+            &:active .pane-button {
+                background-color: color.mix(scheme.$primary, scheme.$base, 70%);
+            }
+        }
+
+        &:first-child .pane-button {
+            margin-top: lib.s(10);
+        }
+
+        &:last-child .pane-button {
+            margin-bottom: lib.s(10);
+        }
+    }
+
+    .pane-button {
+        @include lib.rounded(20);
+        @include lib.element-decel;
+
+        padding: lib.s(10) lib.s(8);
+        margin: lib.s(5) lib.s(8);
+
+        .icon {
+            font-size: lib.s(28);
+        }
+
+        .label {
+            font-size: lib.s(12);
+            margin-bottom: lib.s(5);
+        }
+    }
+}
