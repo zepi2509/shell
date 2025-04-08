@@ -502,7 +502,7 @@ const PkgUpdates = ({ monitor, ...props }: ModuleProps) => (
 
 const NotifCount = ({ monitor, ...props }: ModuleProps) => (
     <button
-        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane(monitor, "notifpane")}
+        onClick={(_, event) => event.button === Astal.MouseButton.PRIMARY && switchPane(monitor, "alerts")}
         setup={self =>
             setupCustomTooltip(
                 self,

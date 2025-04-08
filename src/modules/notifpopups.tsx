@@ -39,7 +39,7 @@ export default ({ monitor }: { monitor: Monitor }) => (
                                     if (notification.actions.length === 1)
                                         notification.invoke(notification.actions[0].id);
                                     else {
-                                        sidebar?.shown.set("notifpane");
+                                        sidebar?.shown.set("alerts");
                                         sidebar?.show();
                                         popup.destroyWithAnims();
                                     }

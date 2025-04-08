@@ -16,7 +16,7 @@ const getPaneIcon = (name: PaneName) => {
     if (name === "audio") return "tune";
     if (name === "connectivity") return "settings_ethernet";
     if (name === "packages") return "package_2";
-    if (name === "notifpane") return "notifications";
+    if (name === "alerts") return "notifications";
     return "date_range";
 };
 

@@ -2,14 +2,14 @@ import type { Monitor } from "@/services/monitors";
 import { bind, idle, register, Variable } from "astal";
 import { App, Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import { sidebar as config } from "config";
+import Alerts from "./alerts";
 import Audio from "./audio";
 import Connectivity from "./connectivity";
 import Dashboard from "./dashboard";
-import NotifPane from "./notifpane";
 import Packages from "./packages";
 import Time from "./time";
 
-export const paneNames = ["dashboard", "audio", "connectivity", "packages", "notifpane", "time"] as const;
+export const paneNames = ["dashboard", "audio", "connectivity", "packages", "alerts", "time"] as const;
 export type PaneName = (typeof paneNames)[number];
 
 export const switchPane = (monitor: Monitor, name: PaneName) => {
@@ -38,7 +38,7 @@ const getPane = (name: PaneName) => {
     if (name === "audio") return <Audio />;
     if (name === "connectivity") return <Connectivity />;
     if (name === "packages") return <Packages />;
-    if (name === "notifpane") return <NotifPane />;
+    if (name === "alerts") return <Alerts />;
     return <Time />;
 };
 
