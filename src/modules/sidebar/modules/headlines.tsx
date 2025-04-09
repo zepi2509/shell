@@ -1,3 +1,4 @@
+import type { Monitor } from "@/services/monitors";
 import News, { type IArticle } from "@/services/news";
 import Palette, { type IPalette } from "@/services/palette";
 import { capitalize } from "@/utils/strings";
@@ -143,7 +144,7 @@ const NoNews = () => (
     </box>
 );
 
-export default () => (
+export default ({ monitor }: { monitor: Monitor }) => (
     <box vertical className="headlines">
         <box className="header-bar">
             <label label="Top news headlines" />
@@ -163,7 +164,9 @@ export default () => (
         >
             <NoNews />
             <scrollable
-                className={bind(News.get_default(), "articles").as(a => (a.length > 0 ? "expanded" : ""))}
+                css={bind(News.get_default(), "articles").as(a =>
+                    a.length > 0 ? `min-height: ${Math.round(monitor.height * 0.4)}px;` : ""
+                )}
                 hscroll={Gtk.PolicyType.NEVER}
                 name="list"
             >

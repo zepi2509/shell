@@ -751,10 +751,6 @@
     .news {
         min-height: lib.s(200);
 
-        .expanded {
-            min-height: lib.s(500);
-        }
-
         .empty {
             margin-top: lib.s(40);
         }
@@ -794,10 +790,6 @@
 
     .headlines {
         min-height: lib.s(200);
-
-        .expanded {
-            min-height: lib.s(500);
-        }
 
         .empty {
             margin-top: lib.s(40);

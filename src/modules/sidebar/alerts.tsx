@@ -1,10 +1,11 @@
+import type { Monitor } from "@/services/monitors";
 import Headlines from "./modules/headlines";
 import Notifications from "./modules/notifications";
 
-export default () => (
+export default ({ monitor }: { monitor: Monitor }) => (
     <box vertical className="pane alerts" name="alerts">
         <Notifications />
         <box className="separator" />
-        <Headlines />
+        <Headlines monitor={monitor} />
     </box>
 );

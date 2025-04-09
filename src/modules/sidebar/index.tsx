@@ -33,12 +33,12 @@ export const awaitSidebar = (monitor: Monitor) =>
         idle(awaitSidebar);
     });
 
-const getPane = (name: PaneName) => {
+const getPane = (monitor: Monitor, name: PaneName) => {
     if (name === "dashboard") return <Dashboard />;
     if (name === "audio") return <Audio />;
     if (name === "connectivity") return <Connectivity />;
-    if (name === "packages") return <Packages />;
-    if (name === "alerts") return <Alerts />;
+    if (name === "packages") return <Packages monitor={monitor} />;
+    if (name === "alerts") return <Alerts monitor={monitor} />;
     return <Time />;
 };
 
@@ -76,7 +76,7 @@ export default class SideBar extends Widget.Window {
                         transitionDuration={200}
                         shown={bind(this.shown)}
                     >
-                        {paneNames.map(getPane)}
+                        {paneNames.map(n => getPane(monitor, n))}
                     </stack>
                 </box>
             </eventbox>

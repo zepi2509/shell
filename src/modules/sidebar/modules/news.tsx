@@ -1,3 +1,4 @@
+import type { Monitor } from "@/services/monitors";
 import Palette from "@/services/palette";
 import Updates from "@/services/updates";
 import { setupCustomTooltip } from "@/utils/widgets";
@@ -75,7 +76,7 @@ const NoNews = () => (
     </box>
 );
 
-export default () => (
+export default ({ monitor }: { monitor: Monitor }) => (
     <box vertical className="news">
         <box className="header-bar">
             <label
@@ -99,7 +100,9 @@ export default () => (
         >
             <NoNews />
             <scrollable
-                className={bind(Updates.get_default(), "news").as(n => (n ? "expanded" : ""))}
+                css={bind(Updates.get_default(), "news").as(n =>
+                    n ? `min-height: ${Math.round(monitor.height * 0.4)}px;` : ""
+                )}
                 hscroll={Gtk.PolicyType.NEVER}
                 name="list"
             >

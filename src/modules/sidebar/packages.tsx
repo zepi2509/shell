@@ -1,10 +1,11 @@
+import type { Monitor } from "@/services/monitors";
 import News from "./modules/news";
 import Updates from "./modules/updates";
 
-export default () => (
+export default ({ monitor }: { monitor: Monitor }) => (
     <box vertical className="pane packages" name="packages">
         <Updates />
         <box className="separator" />
-        <News />
+        <News monitor={monitor} />
     </box>
 );
