@@ -244,6 +244,15 @@
         .result {
             border-bottom: lib.s(2) solid transparent;
         }
+
+        .wallpaper {
+            padding-top: lib.s(5);
+
+            &.compact {
+                padding-top: lib.s(3);
+                padding-bottom: lib.s(3);
+            }
+        }
     }
 
     &.round {
