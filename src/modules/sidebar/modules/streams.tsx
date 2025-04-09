@@ -83,16 +83,16 @@ export default () => {
 
     if (!audio) return <NoWp />;
 
-    const label = Variable("");
+    const label = Variable(`${header(audio, "streams")} • ${header(audio, "recorders")}`);
 
     label.observe(
-        ["streams", "speakers", "recorders"].map(k => [audio, `notify::${k}`]),
-        () => `${header(audio, "streams")} • ${header(audio, "speakers")} • ${header(audio, "recorders")}`
+        ["streams", "recorders"].map(k => [audio, `notify::${k}`]),
+        () => `${header(audio, "streams")} • ${header(audio, "recorders")}`
     );
 
     return (
         <box vertical className="streams" onDestroy={() => label.drop()}>
-            <box className="header-bar">
+            <box halign={Gtk.Align.CENTER} className="header-bar">
                 <label label={bind(label)} />
             </box>
             <stack
