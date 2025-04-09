@@ -134,7 +134,8 @@ export default class Calendar extends GObject.Object {
                 icalStr = cal.value;
             } else {
                 console.error(`Failed to get calendar from ${config.webcals.get()[i]}:\n${cal.reason}`);
-                icalStr = await readFileAsync(`${this.#cacheDir}/${webcal}`);
+                if (GLib.file_test(`${this.#cacheDir}/${webcal}`, GLib.FileTest.EXISTS))
+                    icalStr = await readFileAsync(`${this.#cacheDir}/${webcal}`);
             }
 
             if (icalStr) {
@@ -201,6 +202,23 @@ export default class Calendar extends GObject.Object {
         super();
 
         GLib.mkdir_with_parents(this.#cacheDir, 0o755);
+
+        const cals = config.webcals.get().map(async c => {
+            const webcal = pathToFileName(c);
+
+            if (GLib.file_test(`${this.#cacheDir}/${webcal}`, GLib.FileTest.EXISTS)) {
+                const data = await readFileAsync(`${this.#cacheDir}/${webcal}`);
+                const comp = new ical.Component(ical.parse(data));
+                const name = (comp.getFirstPropertyValue("x-wr-calname") ?? `Calendar ${this.#calCount++}`) as string;
+                this.#calendars[name] = comp;
+            }
+        });
+        Promise.allSettled(cals).then(() => {
+            this.#cachedEvents = {};
+            this.#cachedMonths.clear();
+            this.notify("calendars");
+            this.updateUpcoming();
+        });
 
         this.updateCalendars().catch(console.error);
         config.webcals.subscribe(() => this.updateCalendars().catch(console.error));

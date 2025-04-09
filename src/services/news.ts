@@ -106,6 +106,13 @@ export default class News extends GObject.Object {
         }
         this.notify("articles");
 
+        this.updateCategories();
+
+        this.#loading = false;
+        this.notify("loading");
+    }
+
+    updateCategories() {
         this.#categories = {};
         for (const article of this.#articles) {
             for (const category of article.category) {
@@ -114,13 +121,19 @@ export default class News extends GObject.Object {
             }
         }
         this.notify("categories");
-
-        this.#loading = false;
-        this.notify("loading");
     }
 
     constructor() {
         super();
+
+        if (GLib.file_test(this.#cachePath, GLib.FileTest.EXISTS))
+            readFileAsync(this.#cachePath)
+                .then(data => {
+                    this.#articles = JSON.parse(data);
+                    this.notify("articles");
+                    this.updateCategories();
+                })
+                .catch(console.error);
 
         this.getNews().catch(console.error);
         config.apiKey.subscribe(() => this.getNews().catch(console.error));
