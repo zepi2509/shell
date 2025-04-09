@@ -851,6 +851,10 @@
                 font-size: lib.s(15);
                 margin-top: lib.s(10);
                 color: scheme.$subtext1;
+
+                & > :last-child {
+                    margin-top: lib.s(8);
+                }
             }
 
             button:hover .article-body,

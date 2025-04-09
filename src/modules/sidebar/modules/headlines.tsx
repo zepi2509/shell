@@ -9,8 +9,6 @@ const fixGoogleNews = (colours: IPalette, title: string, desc: string) => {
     // Add separator, bold and split at domain (domain is at the end of each headline)
     const domain = title.split(" - ").at(-1);
     if (domain) desc = desc.replaceAll(domain, `— <span foreground="${colours.subtext0}">${domain}</span>\n\n`);
-    // Add spaces between sentences
-    desc = desc.replace(/\.([A-Z])/g, ". $1");
     // Split headlines
     desc = desc.replace(/(( |\.)[^A-Z][a-z]+)([A-Z])/g, "$1\n\n$3");
     desc = desc.replace(/( [A-Z]+)([A-Z](?![s])[a-z])/g, "$1\n\n$2");
@@ -18,6 +16,14 @@ const fixGoogleNews = (colours: IPalette, title: string, desc: string) => {
     desc = desc.replace(/ ([a-zA-Z.]+)\n\n/g, ` — <span foreground="${colours.subtext0}">$1</span>\n\n`);
     desc = desc.replace(/ ([a-zA-Z.]+)$/, ` — <span foreground="${colours.subtext0}">$1</span>`); // Last domain
     return desc.trim();
+};
+
+const fixNews = (colours: IPalette, title: string, desc: string, source: string) => {
+    // Add spaces between sentences
+    desc = desc.replace(/\.([A-Z])/g, ". $1");
+    // Google News needs some other fixes
+    if (source === "Google News") desc = fixGoogleNews(colours, title, desc);
+    return desc.replaceAll("&", "&amp;");
 };
 
 const getCategoryIcon = (category: string) => {
@@ -81,11 +87,7 @@ const Article = ({ title, description, creator, pubDate, source_name, link }: IA
                                 useMarkup
                                 xalign={0}
                                 label={bind(Palette.get_default(), "colours").as(c =>
-                                    `\n${
-                                        source_name === "Google News"
-                                            ? fixGoogleNews(c, title, description)
-                                            : description
-                                    }`.replaceAll("&", "&amp;")
+                                    fixNews(c, title, description, source_name)
                                 )}
                             />
                         )}
