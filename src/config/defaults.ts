@@ -171,5 +171,6 @@ export default {
         languages: ["en"], // A list of languages codes to filter by
         domains: [] as string[], // A list of news domains to pull from
         timezone: "", // A timezone to filter by, e.g. "America/New_York"
+        pages: 3, // Number of pages to pull (each page is 10 articles)
     },
 };

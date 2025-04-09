@@ -2,13 +2,15 @@ import { notify } from "@/utils/system";
 import { execAsync, GLib, GObject, property, readFileAsync, register, writeFileAsync } from "astal";
 import { news as config } from "config";
 
-export interface Article {
+export interface IArticle {
     title: string;
     link: string;
-    keywords: string;
-    creator: string;
-    description: string;
+    keywords: string[] | null;
+    creator: string[] | null;
+    description: string | null;
     pubDate: string;
+    source_name: string;
+    category: string[];
 }
 
 @register({ GTypeName: "News" })
@@ -24,7 +26,8 @@ export default class News extends GObject.Object {
     #notified = false;
 
     #loading: boolean = false;
-    #articles: Article[] = [];
+    #articles: IArticle[] = [];
+    #categories: { [category: string]: IArticle[] } = {};
 
     @property(Boolean)
     get loading() {
@@ -34,6 +37,11 @@ export default class News extends GObject.Object {
     @property(Object)
     get articles() {
         return this.#articles;
+    }
+
+    @property(Object)
+    get categories() {
+        return this.#categories;
     }
 
     async getNews() {
@@ -77,11 +85,14 @@ export default class News extends GObject.Object {
         const url = `https://newsdata.io/api/1/latest?apikey=${config.apiKey.get()}&${args}`;
         try {
             const res = JSON.parse(await execAsync(["curl", url]));
-            this.#articles = res.results;
+            if (res.status !== "success") throw new Error(`Failed to get news: ${res.results.message}`);
+
+            this.#articles = [...res.results];
 
             let page = res.nextPage;
-            for (let i = 0; i < 3; i++) {
+            for (let i = 1; i < config.pages.get(); i++) {
                 const res = JSON.parse(await execAsync(["curl", `${url}&page=${page}`]));
+                if (res.status !== "success") throw new Error(`Failed to get news: ${res.results.message}`);
                 this.#articles.push(...res.results);
                 page = res.nextPage;
             }
@@ -94,6 +105,15 @@ export default class News extends GObject.Object {
                 this.#articles = JSON.parse(await readFileAsync(this.#cachePath));
         }
         this.notify("articles");
+
+        this.#categories = {};
+        for (const article of this.#articles) {
+            for (const category of article.category) {
+                if (!this.#categories.hasOwnProperty(category)) this.#categories[category] = [];
+                this.#categories[category].push(article);
+            }
+        }
+        this.notify("categories");
 
         this.#loading = false;
         this.notify("loading");
@@ -109,5 +129,6 @@ export default class News extends GObject.Object {
         config.languages.subscribe(() => this.getNews().catch(console.error));
         config.domains.subscribe(() => this.getNews().catch(console.error));
         config.timezone.subscribe(() => this.getNews().catch(console.error));
+        config.pages.subscribe(() => this.getNews().catch(console.error));
     }
 }

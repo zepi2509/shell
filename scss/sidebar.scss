@@ -752,7 +752,7 @@
         min-height: lib.s(200);
 
         .expanded {
-            min-height: lib.s(400);
+            min-height: lib.s(500);
         }
 
         .empty {
@@ -788,6 +788,74 @@
             .body {
                 margin-top: lib.s(10);
                 font-size: lib.s(14);
+            }
+        }
+    }
+
+    .headlines {
+        min-height: lib.s(200);
+
+        .expanded {
+            min-height: lib.s(500);
+        }
+
+        .empty {
+            margin-top: lib.s(40);
+        }
+
+        .list {
+            @include lib.spacing(10, true);
+        }
+
+        .category {
+            @include lib.rounded(20);
+            @include lib.element-decel;
+
+            background-color: color.change(scheme.$surface0, $alpha: 0.5);
+            padding: lib.s(10) lib.s(15);
+
+            @include lib.spacing(5);
+
+            .icon {
+                font-size: lib.s(28);
+
+                &:not(:last-child) {
+                    margin-right: lib.s(12);
+                }
+            }
+
+            .sublabel {
+                font-size: lib.s(14);
+                color: scheme.$subtext0;
+            }
+
+            .body {
+                margin-top: lib.s(10);
+                font-size: lib.s(14);
+
+                @include lib.spacing(8, true);
+            }
+        }
+
+        .article {
+            @include lib.rounded(20);
+            @include lib.element-decel;
+
+            background-color: color.change(scheme.$surface1, $alpha: 0.3);
+            padding: lib.s(10) lib.s(15);
+
+            .article-body {
+                @include font.reading;
+                @include lib.element-decel;
+
+                font-size: lib.s(15);
+                margin-top: lib.s(10);
+                color: scheme.$subtext1;
+            }
+
+            button:hover .article-body,
+            button:focus .article-body {
+                color: color.mix(scheme.$subtext0, scheme.$blue, 60%);
             }
         }
     }

@@ -100,4 +100,5 @@ export default {
     "news.languages": ARR(STR),
     "news.domains": ARR(STR),
     "news.timezone": STR,
+    "news.pages": NUM,
 } as { [k: string]: string | string[] | number[] };

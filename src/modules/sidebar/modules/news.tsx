@@ -69,7 +69,7 @@ const List = () => (
 const NoNews = () => (
     <box homogeneous name="empty">
         <box vertical halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} className="empty">
-            <label className="icon" label="breaking_news_alt_1" />
+            <label className="icon" label="breaking_news" />
             <label label="No Arch news!" />
         </box>
     </box>
