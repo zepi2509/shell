@@ -111,6 +111,11 @@ export default {
     },
     sidebar: {
         showOnStartup: false,
+        modules: {
+            headlines: {
+                enabled: true,
+            },
+        },
     },
     navbar: {
         persistent: false, // Whether to show all the time or only on hover

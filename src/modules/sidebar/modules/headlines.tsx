@@ -5,6 +5,7 @@ import { capitalize } from "@/utils/strings";
 import { setupCustomTooltip } from "@/utils/widgets";
 import { bind, execAsync, Variable } from "astal";
 import { Gtk } from "astal/gtk3";
+import { sidebar } from "config";
 
 const fixGoogleNews = (colours: IPalette, title: string, desc: string) => {
     // Add separator, bold and split at domain (domain is at the end of each headline)
@@ -135,17 +136,30 @@ const List = () => (
     </box>
 );
 
-const NoNews = () => (
+const NoNews = ({ disabled }: { disabled?: boolean }) => (
     <box homogeneous name="empty">
         <box vertical halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} className="empty">
             <label className="icon" label="full_coverage" />
-            <label label="No news headlines!" />
+            <label label={disabled ? "Headlines disabled" : "No news headlines!"} />
         </box>
     </box>
 );
 
-export default ({ monitor }: { monitor: Monitor }) => (
-    <box vertical className="headlines">
+const HeadlinesDisabled = () => (
+    <>
+        <box vertical className="headlines">
+            <box className="header-bar">
+                <label label="Top news headlines" />
+                <box hexpand />
+                <button sensitive={false} label="󰑓 Reload" />
+            </box>
+            <NoNews disabled />
+        </box>
+    </>
+);
+
+const Headlines = ({ monitor }: { monitor: Monitor }) => (
+    <>
         <box className="header-bar">
             <label label="Top news headlines" />
             <box hexpand />
@@ -173,5 +187,11 @@ export default ({ monitor }: { monitor: Monitor }) => (
                 <List />
             </scrollable>
         </stack>
+    </>
+);
+
+export default ({ monitor }: { monitor: Monitor }) => (
+    <box vertical className="headlines">
+        {bind(sidebar.modules.headlines.enabled).as(e => (e ? <Headlines monitor={monitor} /> : <HeadlinesDisabled />))}
     </box>
 );

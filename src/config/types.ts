@@ -57,6 +57,7 @@ export default {
     "osds.lock.num.hideDelay": NUM,
     // Sidebar
     "sidebar.showOnStartup": BOOL,
+    "sidebar.modules.headlines.enabled": BOOL,
     // Navbar
     "navbar.persistent": BOOL,
     "navbar.appearWidth": NUM,
