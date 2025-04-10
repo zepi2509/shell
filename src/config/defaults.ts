@@ -169,8 +169,8 @@ export default {
         countries: ["current"], // A list of country codes or "current" for the current location
         categories: [] as string[], // A list of news categories to filter by
         languages: ["en"], // A list of languages codes to filter by
-        domains: [] as string[], // A list of news domains to pull from
-        timezone: "", // A timezone to filter by, e.g. "America/New_York"
+        domains: [] as string[], // A list of news domains to pull from, see https://newsdata.io/news-sources for available domains
+        timezone: "", // A timezone to filter by, e.g. "America/New_York", see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
         pages: 3, // Number of pages to pull (each page is 10 articles)
     },
 };

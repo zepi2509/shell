@@ -1,24 +1,10 @@
+import { BAR_MODULES, NEWS_CATEGORIES, NEWS_COUNTRIES, NEWS_LANGUAGES } from "./literals";
+
 const BOOL = "boolean";
 const STR = "string";
 const NUM = "number";
 const ARR = (type: string | string[]) => `array of ${typeof type === "string" ? type : JSON.stringify(type)}`;
 const OBJ_ARR = (shape: object) => ARR(JSON.stringify(shape));
-
-const barModules = [
-    "osIcon",
-    "activeWindow",
-    "mediaPlaying",
-    "brightnessSpacer",
-    "workspaces",
-    "volumeSpacer",
-    "tray",
-    "statusIcons",
-    "pkgUpdates",
-    "notifCount",
-    "battery",
-    "dateTime",
-    "power",
-];
 
 export default {
     "style.transparency": ["off", "normal", "high"],
@@ -29,10 +15,10 @@ export default {
     "bar.vertical": BOOL,
     "bar.style": ["gaps", "panel", "embedded"],
     "bar.layout.type": ["centerbox", "flowbox"],
-    "bar.layout.centerbox.start": ARR(barModules),
-    "bar.layout.centerbox.center": ARR(barModules),
-    "bar.layout.centerbox.end": ARR(barModules),
-    "bar.layout.flowbox": ARR(barModules),
+    "bar.layout.centerbox.start": ARR(BAR_MODULES),
+    "bar.layout.centerbox.center": ARR(BAR_MODULES),
+    "bar.layout.centerbox.end": ARR(BAR_MODULES),
+    "bar.layout.flowbox": ARR(BAR_MODULES),
     "bar.modules.workspaces.shown": NUM,
     "bar.modules.workspaces.showLabels": BOOL,
     "bar.modules.workspaces.labels": ARR(STR),
@@ -95,9 +81,9 @@ export default {
     "thumbnailer.defaults.height": NUM,
     "thumbnailer.defaults.exact": BOOL,
     "news.apiKey": STR,
-    "news.countries": ARR(STR),
-    "news.categories": ARR(STR),
-    "news.languages": ARR(STR),
+    "news.countries": ARR(NEWS_COUNTRIES),
+    "news.categories": ARR(NEWS_CATEGORIES),
+    "news.languages": ARR(NEWS_LANGUAGES),
     "news.domains": ARR(STR),
     "news.timezone": STR,
     "news.pages": NUM,
