@@ -849,6 +849,14 @@
                 & > :last-child {
                     margin-top: lib.s(8);
                 }
+
+                .title {
+                    @include font.title;
+
+                    font-size: lib.s(18);
+                    font-weight: 500;
+                    margin-bottom: lib.s(3);
+                }
             }
 
             button:hover .article-body,

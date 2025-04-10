@@ -2,7 +2,6 @@ import type { Monitor } from "@/services/monitors";
 import News, { type IArticle } from "@/services/news";
 import Palette, { type IPalette } from "@/services/palette";
 import { capitalize } from "@/utils/strings";
-import { setupCustomTooltip } from "@/utils/widgets";
 import { bind, execAsync, Variable } from "astal";
 import { Gtk } from "astal/gtk3";
 import { sidebar } from "config";
@@ -56,7 +55,7 @@ const Article = ({ title, description, creator, pubDate, source_name, link }: IA
             <button className="wrapper" cursor="pointer" onClicked={() => expanded.set(!expanded.get())}>
                 <box hexpand className="header">
                     <box vertical>
-                        <label truncate xalign={0} label={title} setup={self => setupCustomTooltip(self, title)} />
+                        <label truncate xalign={0} label={title} />
                         <label
                             truncate
                             xalign={0}
@@ -73,6 +72,7 @@ const Article = ({ title, description, creator, pubDate, source_name, link }: IA
             >
                 <button onClicked={() => execAsync(`app2unit -O -- ${link}`)}>
                     <box vertical className="article-body">
+                        <label wrap className="title" xalign={0} label={title} />
                         <label wrap xalign={0} label={`Published on ${new Date(pubDate).toLocaleString()}`} />
                         <label
                             wrap
@@ -119,9 +119,11 @@ const Category = ({ title, articles }: { title: string; articles: IArticle[] }) 
                 transitionDuration={200}
             >
                 <box vertical className="body">
-                    {articles.map(a => (
-                        <Article {...a} />
-                    ))}
+                    {articles
+                        .sort((a, b) => a.source_priority - b.source_priority)
+                        .map(a => (
+                            <Article {...a} />
+                        ))}
                 </box>
             </revealer>
         </box>

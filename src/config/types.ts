@@ -86,6 +86,7 @@ export default {
     "news.categories": ARR(NEWS_CATEGORIES),
     "news.languages": ARR(NEWS_LANGUAGES),
     "news.domains": ARR(STR),
+    "news.excludeDomains": ARR(STR),
     "news.timezone": STR,
     "news.pages": NUM,
 } as { [k: string]: string | string[] | number[] };

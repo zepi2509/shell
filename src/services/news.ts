@@ -10,6 +10,7 @@ export interface IArticle {
     description: string | null;
     pubDate: string;
     source_name: string;
+    source_priority: number;
     category: string[];
 }
 
@@ -68,6 +69,7 @@ export default class News extends GObject.Object {
         const categories = config.categories.get().join(",");
         const languages = config.languages.get().join(",");
         const domains = config.domains.get().join(",");
+        const excludeDomains = config.excludeDomains.get().join(",");
         const timezone = config.timezone.get();
 
         if (countries.includes("current")) {
@@ -80,6 +82,7 @@ export default class News extends GObject.Object {
         if (categories) args += `&category=${categories}`;
         if (languages) args += `&language=${languages}`;
         if (domains) args += `&domain=${domains}`;
+        if (excludeDomains) args += `&excludedomain=${excludeDomains}`;
         if (timezone) args += `&timezone=${timezone}`;
 
         const url = `https://newsdata.io/api/1/latest?apikey=${config.apiKey.get()}&${args}`;
@@ -141,6 +144,7 @@ export default class News extends GObject.Object {
         config.categories.subscribe(() => this.getNews().catch(console.error));
         config.languages.subscribe(() => this.getNews().catch(console.error));
         config.domains.subscribe(() => this.getNews().catch(console.error));
+        config.excludeDomains.subscribe(() => this.getNews().catch(console.error));
         config.timezone.subscribe(() => this.getNews().catch(console.error));
         config.pages.subscribe(() => this.getNews().catch(console.error));
     }
