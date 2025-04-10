@@ -23,8 +23,7 @@ const isLayer = (name: string) =>
 
 const applyTransparency = (name: string, hex: string) => {
     if (style.transparency.get() === "off" || !isLayer(name)) return hex;
-    let amount = style.transparency.get() === "high" ? 0.58 : 0.78;
-    if (Palette.get_default().mode === "light") amount = style.transparency.get() === "high" ? 0.53 : 0.63;
+    const amount = style.transparency.get() === "high" ? 0.58 : 0.78;
     return `color.change(${hex}, $alpha: ${amount})`;
 };
 
