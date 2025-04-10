@@ -5,6 +5,7 @@ import { capitalize } from "@/utils/strings";
 import { bind, execAsync, Variable } from "astal";
 import { Gtk } from "astal/gtk3";
 import { sidebar } from "config";
+import { setConfig } from "config/funcs";
 
 const fixGoogleNews = (colours: IPalette, title: string, desc: string) => {
     // Add separator, bold and split at domain (domain is at the end of each headline)
@@ -153,7 +154,11 @@ const HeadlinesDisabled = () => (
             <box className="header-bar">
                 <label label="Top news headlines" />
                 <box hexpand />
-                <button sensitive={false} label="󰑓 Reload" />
+                <button
+                    cursor="pointer"
+                    onClicked={() => setConfig("sidebar.modules.headlines.enabled", true)}
+                    label="󰞉 Enable"
+                />
             </box>
             <NoNews disabled />
         </box>

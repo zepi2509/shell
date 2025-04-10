@@ -1,6 +1,7 @@
 import { notify } from "@/utils/system";
 import { execAsync, GLib, GObject, property, readFileAsync, register, writeFileAsync } from "astal";
 import { news as config } from "config";
+import { setConfig } from "config/funcs";
 
 export interface IArticle {
     title: string;
@@ -55,6 +56,7 @@ export default class News extends GObject.Object {
                     urgency: "critical",
                     actions: {
                         "Get API key": () => execAsync("app2unit -O -- https://newsdata.io").catch(console.error),
+                        Disable: () => setConfig("sidebar.modules.headlines.enabled", false),
                     },
                 });
                 this.#notified = true;
