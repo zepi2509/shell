@@ -1,5 +1,5 @@
 import Players from "@/services/players";
-import { osIcon, osId } from "@/utils/system";
+import { bindCurrentTime, osIcon } from "@/utils/system";
 import Slider from "@/widgets/slider";
 import { bind, GLib, monitorFile, Variable } from "astal";
 import { Gtk } from "astal/gtk3";
@@ -52,9 +52,9 @@ const User = () => {
                 {bind(hasFace).as(h => (h ? <box visible={false} /> : <FaceFallback />))}
             </box>
             <box vertical hexpand valign={Gtk.Align.CENTER} className="details">
-                <label xalign={0} className="name" label={`${osIcon} ${GLib.get_user_name()}`} />
-                <label xalign={0} label={(GLib.getenv("XDG_CURRENT_DESKTOP") ?? osId).toUpperCase()} />
-                <label truncate xalign={0} className="uptime" label={bind(uptime)} onDestroy={() => uptime.drop()} />
+                <label truncate xalign={0} className="name" label={`${osIcon} ${GLib.get_user_name()}`} />
+                <label truncate xalign={0} label={bind(uptime)} onDestroy={() => uptime.drop()} />
+                <label truncate xalign={0} label={bindCurrentTime("%A, %e %B")} />
             </box>
         </box>
     );

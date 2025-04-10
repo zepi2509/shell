@@ -156,7 +156,6 @@
 
         .details {
             font-size: lib.s(14);
-            color: scheme.$yellow;
 
             @include lib.spacing(8, true);
 
@@ -166,8 +165,11 @@
                 margin-bottom: lib.s(10);
             }
 
-            .uptime {
-                color: scheme.$blue;
+            $-colours: scheme.$yellow, scheme.$blue;
+            @for $i from 1 through list.length($-colours) {
+                :nth-child(#{$i + 1}) {
+                    color: list.nth($-colours, $i);
+                }
             }
         }
     }
