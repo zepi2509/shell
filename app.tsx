@@ -16,7 +16,6 @@ import { execAsync, idle, timeout, writeFileAsync } from "astal";
 import { App } from "astal/gtk3";
 import { style } from "config";
 import { initConfig, updateConfig } from "config/funcs";
-import AstalHyprland from "gi://AstalHyprland?version=0.1";
 
 const isLayer = (name: string) =>
     ["base", "mantle", "crust"].includes(name) || name.startsWith("surface") || name.startsWith("overlay");
@@ -86,7 +85,7 @@ App.start({
             Monitors.get_default().forEach(m => <BarScreenCorners monitor={m} />);
 
             // Init services
-            timeout(1000, () => {
+            timeout(5000, () => {
                 idle(() => Schemes.get_default());
                 idle(() => Wallpapers.get_default());
                 idle(() => Calendar.get_default());
@@ -102,7 +101,7 @@ App.start({
         else if (request === "reload-config") updateConfig();
         else if (request.startsWith("show")) App.get_window(request.split(" ")[1])?.show();
         else if (request.startsWith("toggle"))
-            App.toggle_window(request.split(" ")[1] + AstalHyprland.get_default().focusedMonitor.id);
+            App.toggle_window(request.split(" ")[1] + Monitors.get_default().active.id);
         else if (request === "media play-pause") Players.get_default().lastPlayer?.play_pause();
         else if (request === "media next") Players.get_default().lastPlayer?.next();
         else if (request === "media previous") Players.get_default().lastPlayer?.previous();
