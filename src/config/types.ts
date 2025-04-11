@@ -61,6 +61,7 @@ export default {
     // Navbar
     "navbar.persistent": BOOL,
     "navbar.appearWidth": NUM,
+    "navbar.showLabels": BOOL,
     // Services
     "math.maxHistory": NUM,
     "updates.interval": NUM,

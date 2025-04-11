@@ -120,6 +120,7 @@ export default {
     navbar: {
         persistent: false, // Whether to show all the time or only on hover
         appearWidth: 10, // The width in pixels of the hover area for the navbar to show up
+        showLabels: false, // Whether to show labels for active buttons
     },
     // Services
     math: {

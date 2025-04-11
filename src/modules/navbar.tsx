@@ -61,7 +61,14 @@ const PaneButton = ({
             <revealer
                 transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
                 transitionDuration={150}
-                setup={self => hookIsCurrent(self, sidebar, name, c => self.set_reveal_child(c))}
+                setup={self => {
+                    let isCurrent = false;
+                    hookIsCurrent(self, sidebar, name, c => {
+                        isCurrent = c;
+                        self.set_reveal_child(config.showLabels.get() && c);
+                    });
+                    self.hook(config.showLabels, (_, v) => self.set_reveal_child(v && isCurrent));
+                }}
             >
                 <label truncate wrapMode={Pango.WrapMode.WORD_CHAR} className="label" label={capitalize(name)} />
             </revealer>
@@ -69,28 +76,34 @@ const PaneButton = ({
     </button>
 );
 
-const SpecialWsButton = ({ name }: { name: SpecialWsName }) => (
-    <button
-        className={bind(AstalHyprland.get_default(), "focusedClient").as(c =>
-            c?.get_workspace().get_name() === `special:${name}` ? "current" : ""
-        )}
-        cursor="pointer"
-        onClicked={() => execAsync(`caelestia toggle ${name}`).catch(console.error)}
-    >
-        <box vertical className="nav-button">
-            <label className="icon" label={getSpecialWsIcon(name)} />
-            <revealer
-                transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-                transitionDuration={150}
-                revealChild={bind(AstalHyprland.get_default(), "focusedClient").as(
-                    c => c?.get_workspace().get_name() === `special:${name}`
-                )}
-            >
-                <label truncate wrapMode={Pango.WrapMode.WORD_CHAR} className="label" label={capitalize(name)} />
-            </revealer>
-        </box>
-    </button>
-);
+const SpecialWsButton = ({ name }: { name: SpecialWsName }) => {
+    const revealChild = Variable.derive(
+        [config.showLabels, bind(AstalHyprland.get_default(), "focusedClient")],
+        (l, c) => l && c?.get_workspace().get_name() === `special:${name}`
+    );
+
+    return (
+        <button
+            className={bind(AstalHyprland.get_default(), "focusedClient").as(c =>
+                c?.get_workspace().get_name() === `special:${name}` ? "current" : ""
+            )}
+            cursor="pointer"
+            onClicked={() => execAsync(`caelestia toggle ${name}`).catch(console.error)}
+        >
+            <box vertical className="nav-button">
+                <label className="icon" label={getSpecialWsIcon(name)} />
+                <revealer
+                    transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                    transitionDuration={150}
+                    revealChild={bind(revealChild)}
+                    onDestroy={() => revealChild.drop()}
+                >
+                    <label truncate wrapMode={Pango.WrapMode.WORD_CHAR} className="label" label={capitalize(name)} />
+                </revealer>
+            </box>
+        </button>
+    );
+};
 
 export default ({ monitor }: { monitor: Monitor }) => {
     const sidebar = Variable<SideBar | null>(null);
