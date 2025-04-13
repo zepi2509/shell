@@ -62,7 +62,7 @@
             font-size: lib.s(28);
             padding: lib.s(3) lib.s(8);
 
-            @include lib.spacing;
+            @include lib.spacing(10);
 
             & > button {
                 @include lib.element-decel;
