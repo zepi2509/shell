@@ -1,13 +1,9 @@
 import Players from "@/services/players";
+import { lengthStr } from "@/utils/strings";
 import Slider from "@/widgets/slider";
 import { bind, timeout, Variable } from "astal";
 import { Gtk } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
-
-const lengthStr = (length: number) =>
-    `${Math.floor(length / 60)}:${Math.floor(length % 60)
-        .toString()
-        .padStart(2, "0")}`;
 
 const noNull = (s: string | null) => s ?? "-";
 

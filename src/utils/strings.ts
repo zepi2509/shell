@@ -11,3 +11,8 @@ export const pathToFileName = (path: string, ext?: string) => {
 };
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+export const lengthStr = (length: number) =>
+    `${Math.floor(length / 60)}:${Math.floor(length % 60)
+        .toString()
+        .padStart(2, "0")}`;

@@ -1,5 +1,6 @@
 import Bar from "@/modules/bar";
 import Launcher from "@/modules/launcher";
+import MediaDisplay from "@/modules/mediadisplay";
 import NavBar from "@/modules/navbar";
 import NotifPopups from "@/modules/notifpopups";
 import Osds from "@/modules/osds";
@@ -78,6 +79,7 @@ App.start({
             <Osds />;
             <Session />;
             Monitors.get_default().forEach(m => <NotifPopups monitor={m} />);
+            Monitors.get_default().forEach(m => <MediaDisplay monitor={m} />);
             Monitors.get_default().forEach(m => <SideBar monitor={m} />);
             Monitors.get_default().forEach(m => <NavBar monitor={m} />);
             Monitors.get_default().forEach(m => <Bar monitor={m} />);
