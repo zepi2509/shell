@@ -33,7 +33,7 @@ export default () => (
                     // Show error text if cava unavailable
                     const fg = self.get_style_context().get_color(Gtk.StateFlags.NORMAL);
                     cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
-                    const layout = self.create_pango_layout("Visualiser unavailable");
+                    const layout = self.create_pango_layout("Visualiser module requires Cava");
                     const [w, h] = layout.get_pixel_size();
                     cr.moveTo((width - w) / 2, (height - h) / 2);
                     cr.setAntialias(cairo.Antialias.BEST);

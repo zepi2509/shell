@@ -2,11 +2,14 @@ import type { Monitor } from "@/services/monitors";
 import { capitalize } from "@/utils/strings";
 import type { AstalWidget } from "@/utils/types";
 import { bind, execAsync, Variable } from "astal";
-import { Astal, Gtk } from "astal/gtk3";
+import { App, Astal, Gtk } from "astal/gtk3";
 import { navbar as config } from "config";
 import AstalHyprland from "gi://AstalHyprland";
 import Pango from "gi://Pango";
 import SideBar, { awaitSidebar, paneNames, switchPane, type PaneName } from "./sidebar";
+
+const layerNames = ["mediadisplay"] as const;
+type LayerName = `${(typeof layerNames)[number]}${number}`;
 
 const specialWsNames = ["sysmon", "communication", "music", "todo"] as const;
 type SpecialWsName = (typeof specialWsNames)[number];
@@ -18,6 +21,10 @@ const getPaneIcon = (name: PaneName) => {
     if (name === "packages") return "package_2";
     if (name === "alerts") return "notifications";
     return "date_range";
+};
+
+const getLayerIcon = (name: LayerName) => {
+    return "graphic_eq";
 };
 
 const getSpecialWsIcon = (name: SpecialWsName) => {
@@ -68,6 +75,36 @@ const PaneButton = ({
                         self.set_reveal_child(config.showLabels.get() && c);
                     });
                     self.hook(config.showLabels, (_, v) => self.set_reveal_child(v && isCurrent));
+                }}
+            >
+                <label truncate wrapMode={Pango.WrapMode.WORD_CHAR} className="label" label={capitalize(name)} />
+            </revealer>
+        </box>
+    </button>
+);
+
+const LayerButton = ({ name }: { name: LayerName }) => (
+    <button
+        cursor="pointer"
+        onClicked={() => App.toggle_window(name)}
+        setup={self =>
+            self.hook(App, "window-toggled", (_, window) => {
+                if (window.name === name) self.toggleClassName("current", window.visible);
+            })
+        }
+    >
+        <box vertical className="nav-button">
+            <label className="icon" label={getLayerIcon(name)} />
+            <revealer
+                transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+                transitionDuration={150}
+                setup={self => {
+                    let visible = false;
+                    self.hook(config.showLabels, (_, v) => self.toggleClassName(v && visible));
+                    self.hook(App, "window-toggled", (_, window) => {
+                        if (window.name === name)
+                            self.toggleClassName("current", config.showLabels.get() && window.visible);
+                    });
                 }}
             >
                 <label truncate wrapMode={Pango.WrapMode.WORD_CHAR} className="label" label={capitalize(name)} />
@@ -151,6 +188,9 @@ export default ({ monitor }: { monitor: Monitor }) => {
                 <box vertical className="navbar">
                     {paneNames.map(n => (
                         <PaneButton monitor={monitor} name={n} sidebar={sidebar} />
+                    ))}
+                    {layerNames.map(n => (
+                        <LayerButton name={`${n}${monitor.id}`} />
                     ))}
                     <box vexpand />
                     {specialWsNames.map(n => (
