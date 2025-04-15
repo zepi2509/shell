@@ -68,7 +68,7 @@
 .sidebar {
     @include font.mono;
 
-    background-color: scheme.$mantle;
+    background-color: scheme.$base;
     color: scheme.$text;
     padding: lib.s(18) lib.s(20);
     min-width: lib.s(380);

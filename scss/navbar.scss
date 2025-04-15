@@ -6,7 +6,7 @@
 .navbar {
     @include font.mono;
 
-    background-color: scheme.$mantle;
+    background-color: scheme.$base;
 
     button {
         color: scheme.$subtext1;

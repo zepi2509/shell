@@ -9,7 +9,7 @@ label.icon {
 .screen-corner {
     @include lib.rounded(15);
 
-    background-color: scheme.$mantle;
+    background-color: scheme.$base;
 }
 
 .notification {

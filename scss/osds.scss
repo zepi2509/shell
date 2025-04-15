@@ -27,7 +27,7 @@
 }
 
 .lock {
-    @include lib.rounded(8);
+    @include lib.rounded(10);
     @include lib.border(scheme.$overlay0, 0.1);
     @include lib.shadow;
     @include lib.element-decel;

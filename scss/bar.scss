@@ -305,7 +305,7 @@
         @include lib.rounded(20);
         @include lib.border(scheme.$primary, 0.5, 2);
 
-        background-color: scheme.$mantle;
+        background-color: scheme.$base;
 
         .os-icon {
             font-size: lib.s(16);
@@ -330,13 +330,13 @@
         margin: 0;
 
         .module {
-            background-color: scheme.$mantle;
+            background-color: scheme.$base;
         }
 
         .screen-corner {
             @include lib.rounded($-rounding);
 
-            background-color: scheme.$mantle;
+            background-color: scheme.$base;
         }
 
         &.horizontal {

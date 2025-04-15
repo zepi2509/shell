@@ -6,7 +6,7 @@
 .mediadisplay {
     @include font.mono;
 
-    background-color: scheme.$mantle;
+    background-color: scheme.$base;
     color: scheme.$text;
     padding: lib.s(20);
     min-height: lib.s(200);

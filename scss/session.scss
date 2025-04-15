@@ -4,10 +4,10 @@
 @use "font";
 
 .session {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3);
 
     .inner {
-        @include lib.rounded(8);
+        @include lib.rounded(10);
         @include lib.border(scheme.$flamingo, 0.5, 2);
         @include lib.shadow;
         @include font.mono;
@@ -31,18 +31,18 @@
                 @include lib.rounded(100);
                 @include lib.element-decel(300ms);
 
-                background-color: scheme.$base;
+                background-color: color.change(scheme.$surface0, $alpha: 0.4);
                 min-width: lib.s(100);
                 min-height: lib.s(100);
                 font-size: lib.s(32);
 
                 &:hover {
-                    background-color: scheme.$surface0;
+                    background-color: color.change(scheme.$surface1, $alpha: 0.4);
                 }
 
                 &:focus {
                     background-color: color.mix(scheme.$flamingo, scheme.$base, 70%);
-                    color: scheme.$base;
+                    color: color.change(scheme.$base, $alpha: 1);
                 }
 
                 &:active {
