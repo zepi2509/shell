@@ -22,7 +22,7 @@ export default () => (
                         .get_property("min-width", Gtk.StateFlags.NORMAL) as number;
                     const gaps = self.get_style_context().get_margin(Gtk.StateFlags.NORMAL).right;
                     const bars = Math.floor((width - gaps) / (barWidth + gaps));
-                    if (bars > 0) cava.set_bars(bars);
+                    if (bars > 0) cava.set_bars(bars % 2 ? bars : bars - 1);
                 });
             }
 
@@ -52,24 +52,19 @@ export default () => (
                 const radius = barWidth / 2;
                 const xOff = (width - len * (barWidth + gaps) - gaps) / 2 - radius;
                 const center = height / 2;
-                const half = Math.floor(len / 2);
+                const half = len / 2;
+
+                const renderPill = (x: number, value: number) => {
+                    x = x * (barWidth + gaps) + xOff;
+                    value *= center;
+                    cr.arc(x, center + value, radius, 0, Math.PI);
+                    cr.arc(x, center - value, radius, Math.PI, Math.PI * 2);
+                    cr.fill();
+                };
 
                 // Render channels facing each other
-                for (let i = half - 1; i >= 0; i--) {
-                    const x = (half - i) * (barWidth + gaps) + xOff;
-                    const value = center * values[i];
-                    cr.arc(x, center + value, radius, 0, Math.PI);
-                    cr.arc(x, center - value, radius, Math.PI, Math.PI * 2);
-                    cr.fill();
-                }
-
-                for (let i = half; i < len; i++) {
-                    const x = (i + 1) * (barWidth + gaps) + xOff;
-                    const value = center * values[i];
-                    cr.arc(x, center + value, radius, 0, Math.PI);
-                    cr.arc(x, center - value, radius, Math.PI, Math.PI * 2);
-                    cr.fill();
-                }
+                for (let i = half - 1; i >= 0; i--) renderPill(half - i, values[i]);
+                for (let i = half; i < len; i++) renderPill(i + 1, values[i]);
             });
         }}
     />
