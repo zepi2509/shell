@@ -7,7 +7,7 @@ const ARR = (type: string | string[]) => `array of ${typeof type === "string" ? 
 const OBJ_ARR = (shape: object) => ARR(JSON.stringify(shape));
 
 export default {
-    "style.transparency": ["off", "normal", "high"],
+    "style.transparency": ["off", "low", "normal", "high"],
     "style.borders": BOOL,
     "style.vibrant": BOOL,
     "config.notifyOnError": BOOL,

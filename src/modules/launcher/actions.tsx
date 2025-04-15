@@ -31,6 +31,11 @@ const transparencyActions = {
         name: "Off",
         description: "Completely opaque",
     },
+    low: {
+        icon: "blur_circular",
+        name: "Low",
+        description: "Less transparent",
+    },
     normal: {
         icon: "blur_linear",
         name: "Normal",

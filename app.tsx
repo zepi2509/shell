@@ -22,8 +22,11 @@ const isLayer = (name: string) =>
     ["base", "mantle", "crust"].includes(name) || name.startsWith("surface") || name.startsWith("overlay");
 
 const applyTransparency = (name: string, hex: string) => {
-    if (style.transparency.get() === "off" || !isLayer(name)) return hex;
-    const amount = style.transparency.get() === "high" ? 0.58 : 0.78;
+    const mode = style.transparency.get();
+    if (mode === "off" || !isLayer(name)) return hex;
+    let amount = 0.78;
+    if (mode === "low") amount = 0.88;
+    else if (mode === "high") amount = 0.58;
     return `color.change(${hex}, $alpha: ${amount})`;
 };
 
