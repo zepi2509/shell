@@ -80,7 +80,10 @@ export default class Schemes extends GObject.Object {
     }
 
     async updateFile(file: Gio.File) {
-        if (file.get_basename() !== "light.txt" && file.get_basename() !== "dark.txt") return;
+        if (file.get_basename() !== "light.txt" && file.get_basename() !== "dark.txt") {
+            await this.update();
+            return;
+        }
 
         const mode = file.get_basename()!.slice(0, -4) as "light" | "dark";
         const parent = file.get_parent()!;
@@ -99,6 +102,8 @@ export default class Schemes extends GObject.Object {
         super();
 
         this.update().catch(console.error);
-        monitorDirectory(this.#schemeDir, (_, file) => this.updateFile(file).catch(console.error));
+        monitorDirectory(this.#schemeDir, (_m, file, _f, type) => {
+            if (type !== Gio.FileMonitorEvent.DELETED) this.updateFile(file).catch(console.error);
+        });
     }
 }
