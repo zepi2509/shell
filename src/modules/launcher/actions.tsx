@@ -25,6 +25,55 @@ interface ActionMap {
     [k: string]: IAction;
 }
 
+const variantActions = {
+    vibrant: {
+        icon: "sentiment_very_dissatisfied",
+        name: "Vibrant",
+        description: "A high chroma palette. The primary palette's chroma is at maximum.",
+    },
+    tonalspot: {
+        icon: "android",
+        name: "Tonal Spot",
+        description: "Default for Material theme colours. A pastel palette with a low chroma.",
+    },
+    expressive: {
+        icon: "compare_arrows",
+        name: "Expressive",
+        description:
+            "A medium chroma palette. The primary palette's hue is different from the seed colour, for variety.",
+    },
+    fidelity: {
+        icon: "compare",
+        name: "Fidelity",
+        description: "Matches the seed colour, even if the seed colour is very bright (high chroma).",
+    },
+    content: {
+        icon: "sentiment_calm",
+        name: "Content",
+        description: "Almost identical to fidelity.",
+    },
+    fruitsalad: {
+        icon: "nutrition",
+        name: "Fruit Salad",
+        description: "A playful theme - the seed colour's hue does not appear in the theme.",
+    },
+    rainbow: {
+        icon: "looks",
+        name: "Rainbow",
+        description: "A playful theme - the seed colour's hue does not appear in the theme.",
+    },
+    neutral: {
+        icon: "contrast",
+        name: "Neutral",
+        description: "Close to grayscale, a hint of chroma.",
+    },
+    monochrome: {
+        icon: "filter_b_and_w",
+        name: "Monochrome",
+        description: "All colours are grayscale, no chroma.",
+    },
+};
+
 const transparencyActions = {
     off: {
         icon: "blur_off",
@@ -107,6 +156,13 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
         description: "Change the current colour scheme",
         action: () => autocomplete(entry, "scheme"),
     },
+    variant: {
+        icon: "colors",
+        name: "Variant",
+        description: "Change the current scheme variant",
+        action: () => autocomplete(entry, "variant"),
+        available: () => Palette.get_default().scheme === "dynamic",
+    },
     wallpaper: {
         icon: "image",
         name: "Wallpaper",
@@ -116,7 +172,7 @@ const actions = (mode: Variable<Mode>, entry: Widget.Entry): ActionMap => ({
     transparency: {
         icon: "opacity",
         name: "Transparency",
-        description: "Change shell's transparency",
+        description: "Change shell transparency",
         action: () => autocomplete(entry, "transparency"),
     },
     todo: {
@@ -292,6 +348,17 @@ const Scheme = ({ scheme, name, colours }: { scheme?: string; name: string; colo
     );
 };
 
+const Variant = ({ name }: { name: keyof typeof variantActions }) => (
+    <Action
+        {...variantActions[name]}
+        args={[]}
+        action={() => {
+            execAsync(`caelestia variant ${name}`).catch(console.error);
+            close();
+        }}
+    />
+);
+
 const Wallpaper = ({ path, thumbnails }: IWallpaper) => (
     <Gtk.FlowBoxChild visible canFocus={false}>
         <button
@@ -410,6 +477,11 @@ export default class Actions extends Widget.Box implements LauncherContent {
                     this.#content.add(<Scheme {...Schemes.get_default().map[scheme].flavours![flavour]} />);
                 }
             }
+        } else if (action === "variant") {
+            const list = Object.keys(variantActions);
+
+            for (const { target } of fuzzysort.go(args[1], list, { all: true }))
+                this.#content.add(<Variant name={target as keyof typeof variantActions} />);
         } else if (action === "wallpaper") {
             if (args[1]?.toLowerCase() === "random") {
                 const list = Wallpapers.get_default().categories;
