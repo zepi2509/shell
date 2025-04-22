@@ -103,7 +103,7 @@ export const monitorDirectory = (
             }
     }
 
-    // Keep ref to monitor so it doesn't get GCed
+    // Keep ref to monitor so it doesn't get GC'd
     monitors.add(monitor);
     monitor.connect("notify::cancelled", () => monitor.cancelled && monitors.delete(monitor));
 

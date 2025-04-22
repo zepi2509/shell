@@ -40,21 +40,20 @@ export default class Schemes extends GObject.Object {
         return this.#map;
     }
 
-    async parseMode(path: string): Promise<IPalette> {
-        const schemeColours = (await readFileAsync(path)).split("\n").map(l => l.split(" "));
-        return schemeColours.reduce((acc, [name, hex]) => ({ ...acc, [name]: `#${hex}` }), {} as IPalette);
+    async parseMode(path: string): Promise<IPalette | undefined> {
+        const schemeColours = (await readFileAsync(path).catch(() => undefined))?.split("\n").map(l => l.split(" "));
+        return schemeColours?.reduce((acc, [name, hex]) => ({ ...acc, [name]: `#${hex}` }), {} as IPalette);
+    }
+
+    async parseColours(path: string): Promise<Colours> {
+        const light = await this.parseMode(`${path}/light.txt`);
+        const dark = await this.parseMode(`${path}/dark.txt`);
+        return { light, dark };
     }
 
     async parseFlavour(scheme: string, name: string): Promise<Flavour> {
         const path = `${this.#schemeDir}/${scheme}/${name}`;
-
-        let light = undefined;
-        let dark = undefined;
-        if (GLib.file_test(`${path}/light.txt`, GLib.FileTest.EXISTS))
-            light = await this.parseMode(`${path}/light.txt`);
-        if (GLib.file_test(`${path}/dark.txt`, GLib.FileTest.EXISTS)) dark = await this.parseMode(`${path}/dark.txt`);
-
-        return { name, scheme, colours: { light, dark } };
+        return { name, scheme, colours: await this.parseColours(path) };
     }
 
     async parseScheme(name: string): Promise<Scheme> {
@@ -69,12 +68,7 @@ export default class Schemes extends GObject.Object {
                 ).reduce((acc, f) => ({ ...acc, [f.name]: f }), {} as { [k: string]: Flavour }),
             };
 
-        let light = undefined;
-        let dark = undefined;
-        if (GLib.file_test(`${path}/light.txt`, GLib.FileTest.EXISTS))
-            light = await this.parseMode(`${path}/light.txt`);
-        if (GLib.file_test(`${path}/dark.txt`, GLib.FileTest.EXISTS)) dark = await this.parseMode(`${path}/dark.txt`);
-        return { name, colours: { light, dark } };
+        return { name, colours: await this.parseColours(path) };
     }
 
     async update() {
@@ -105,8 +99,6 @@ export default class Schemes extends GObject.Object {
         super();
 
         this.update().catch(console.error);
-        monitorDirectory(this.#schemeDir, (_m, file, _f, type) => {
-            if (type !== Gio.FileMonitorEvent.DELETED) this.updateFile(file).catch(console.error);
-        });
+        monitorDirectory(this.#schemeDir, (_, file) => this.updateFile(file).catch(console.error));
     }
 }
