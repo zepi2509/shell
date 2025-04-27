@@ -5,17 +5,19 @@ import "root:/config"
 import QtQuick
 import QtQuick.Layouts
 
-Box {
+ClippingBoxLayout {
     id: root
-    property color colour: Appearance.colours.pink
+    readonly property color colour: Appearance.colours.pink
+
+    animated: true
 
     MaterialIcon {
         Layout.alignment: Qt.AlignCenter
-        text: Icons.getAppCategoryIcon(Hyprland.activeClient?.wmClass) ?? "desktop_windows"
+        text: Icons.getAppCategoryIcon(Hyprland.activeClient?.class) ?? "desktop_windows"
         color: root.colour
     }
 
-    Text {
+    Label {
         Layout.alignment: Qt.AlignCenter
 
         text: Hyprland.activeClient?.title ?? "Desktop"

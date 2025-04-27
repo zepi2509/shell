@@ -4,9 +4,9 @@ import "root:/config"
 import QtQuick
 import QtQuick.Layouts
 
-Box {
+BoxLayout {
     id: root
-    property color colour: Appearance.colours.peach
+    readonly property color colour: Appearance.colours.peach
 
     MaterialIcon {
         Layout.alignment: Qt.AlignCenter
@@ -14,7 +14,7 @@ Box {
         color: root.colour
     }
 
-    Text {
+    Label {
         Layout.alignment: Qt.AlignCenter
         horizontalAlignment: Text.AlignJustify
 

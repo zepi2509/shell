@@ -1,5 +1,6 @@
 import "root:/config"
 import QtQuick
+import QtQuick.Layouts
 
 Rectangle {
     id: root
@@ -19,8 +20,8 @@ Rectangle {
 
     color: "transparent"
 
-    implicitWidth: childrenRect.width + paddingX
-    implicitHeight: childrenRect.height + paddingY
+    implicitWidth: layout.implicitWidth + paddingX
+    implicitHeight: layout.implicitHeight + paddingY
 
     function getRealPadding() {
         const pad = {};
@@ -49,11 +50,21 @@ Rectangle {
         return pad;
     }
 
-    onChildrenChanged: {
-        for (const child of children) {
-            child.x = Qt.binding(() => paddingLeft);
-            child.y = Qt.binding(() => paddingTop);
-        }
+    default property alias children: layout.children
+
+    GridLayout {
+        id: layout
+
+        x: root.paddingLeft
+        y: root.paddingTop
+
+        flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
+        uniformCellWidths: root.homogenous || root.vertical
+        uniformCellHeights: root.homogenous || !root.vertical
+        rows: root.vertical ? -1 : 1
+        columns: root.vertical ? 1 : -1
+        rowSpacing: root.spacing
+        columnSpacing: root.spacing
     }
 
     Behavior on color {

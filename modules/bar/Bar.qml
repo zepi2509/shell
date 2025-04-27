@@ -2,6 +2,7 @@ import "root:/widgets"
 import "root:/config"
 import Quickshell
 import Quickshell.Wayland
+import QtQuick
 
 Variants {
     model: Quickshell.screens
@@ -9,12 +10,13 @@ Variants {
     WlrLayershell {
         id: win
 
-        property var modelData
-        property bool vertical: false
+        required property ShellScreen modelData
+        readonly property bool vertical: BarConfig.vertical
 
         screen: modelData
         namespace: "caelestia-bar"
-        color: Appearance.alpha(Appearance.colours.base, false)
+        // color: Appearance.alpha(Appearance.colours.base, false)
+        color: "transparent"
 
         anchors {
             top: true
@@ -23,25 +25,34 @@ Variants {
             bottom: vertical
         }
 
-        width: contents.implicitWidth + (vertical ? Appearance.padding.normal * 2 : 0)
-        height: contents.implicitHeight + (vertical ? 0 : Appearance.padding.smaller * 2)
+        width: contents.implicitWidth
+        height: contents.implicitHeight
 
         Box {
             id: contents
 
-            vertical: win.vertical
-            spacing: Appearance.spacing.larger
-            x: Appearance.padding.normal
-            y: vertical ? Appearance.padding.normal : Appearance.padding.smaller
+            padding: [Appearance.padding.normal, Appearance.padding.large, 0, Appearance.padding.large]
 
-            OsIcon {}
-
-            Clock {
+            BoxLayout {
                 vertical: win.vertical
-            }
+                spacing: Appearance.spacing.larger
+                padding: [Appearance.padding.smaller, Appearance.padding.large]
+                color: Appearance.alpha(Appearance.colours.base, false)
+                radius: Appearance.rounding.small
 
-            ActiveWindow {
-                vertical: win.vertical
+                OsIcon {}
+
+                Clock {
+                    vertical: win.vertical
+                }
+
+                ActiveWindow {
+                    vertical: win.vertical
+                }
+
+                // Workspaces {
+                //     vertical: win.vertical
+                // }
             }
         }
     }

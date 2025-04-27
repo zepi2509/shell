@@ -1,7 +1,8 @@
 import "root:/config"
+import Quickshell.Widgets
 import QtQuick
 
-Rectangle {
+ClippingRectangle {
     id: root
 
     property bool vertical: false
