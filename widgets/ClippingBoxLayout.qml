@@ -6,6 +6,8 @@ import QtQuick.Layouts
 ClippingRectangle {
     id: root
 
+    default property alias children: layout.children
+
     property bool vertical: false
     property bool homogenous: false
     property bool animated: false
@@ -18,11 +20,6 @@ ClippingRectangle {
     readonly property int paddingLeft: getRealPadding().left
     readonly property int paddingX: getRealPadding().x
     readonly property int paddingY: getRealPadding().y
-
-    color: "transparent"
-
-    implicitWidth: layout.implicitWidth + paddingX
-    implicitHeight: layout.implicitHeight + paddingY
 
     function getRealPadding() {
         const pad = {};
@@ -51,7 +48,10 @@ ClippingRectangle {
         return pad;
     }
 
-    default property alias children: layout.children
+    color: "transparent"
+
+    implicitWidth: layout.implicitWidth + paddingX
+    implicitHeight: layout.implicitHeight + paddingY
 
     GridLayout {
         id: layout

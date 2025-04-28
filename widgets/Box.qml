@@ -17,11 +17,6 @@ Rectangle {
     readonly property int paddingX: getRealPadding().x
     readonly property int paddingY: getRealPadding().y
 
-    color: "transparent"
-
-    implicitWidth: childrenRect.width + paddingX
-    implicitHeight: childrenRect.height + paddingY
-
     function getRealPadding() {
         const pad = {};
 
@@ -48,6 +43,11 @@ Rectangle {
 
         return pad;
     }
+
+    color: "transparent"
+
+    implicitWidth: childrenRect.width + paddingX
+    implicitHeight: childrenRect.height + paddingY
 
     onChildrenChanged: {
         for (const child of children) {

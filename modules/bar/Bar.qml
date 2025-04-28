@@ -15,15 +15,12 @@ Variants {
 
         screen: modelData
         namespace: "caelestia-bar"
-        // color: Appearance.alpha(Appearance.colours.base, false)
         color: "transparent"
 
-        anchors {
-            top: true
-            left: true
-            right: !vertical
-            bottom: vertical
-        }
+        anchors.top: true
+        anchors.left: true
+        anchors.right: !vertical
+        anchors.bottom: vertical
 
         width: contents.implicitWidth
         height: contents.implicitHeight

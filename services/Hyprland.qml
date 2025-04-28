@@ -15,8 +15,6 @@ Singleton {
     property HyprlandWorkspace activeWorkspace: null
     property HyprlandMonitor focusedMonitor: Hyprland.monitors.values.find(m => m.lastIpcObject.focused) ?? null
 
-    Component.onCompleted: reload()
-
     function reload() {
         Hyprland.refreshWorkspaces();
         Hyprland.refreshMonitors();
@@ -28,6 +26,8 @@ Singleton {
     function dispatch(request: string): void {
         Hyprland.dispatch(request);
     }
+
+    Component.onCompleted: reload()
 
     Connections {
         target: Hyprland
