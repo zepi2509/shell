@@ -19,7 +19,7 @@ Item {
     BoxLayout {
         id: layout
 
-        padding: [Appearance.padding.smaller / 2, 0]
+        padding: vertical ? [0, Appearance.padding.smaller / 2] : [Appearance.padding.smaller / 2, 0]
         anchors.centerIn: parent
         homogenous: true
         spacing: 0
@@ -32,10 +32,11 @@ Item {
 
                 text: index + 1
                 color: root.colour
-                horizontalAlignment: Label.AlignCenter
+                horizontalAlignment: Label.AlignHCenter
 
                 Layout.alignment: Layout.Center
-                Layout.preferredWidth: layout.homogenous ? layout.height : -1
+                Layout.preferredWidth: layout.homogenous && !layout.vertical ? layout.height : -1
+                Layout.preferredHeight: layout.homogenous && layout.vertical ? layout.width : -1
             }
         }
     }
@@ -43,16 +44,13 @@ Item {
     Rectangle {
         id: active
 
-        // property int lastIdx: 0
-        property int currentIdx: (Hyprland.activeWorkspace?.id ?? 1) - 1
-        readonly property real size: layout.children[currentIdx][root.vertical ? "height" : "width"]
-        readonly property real offset: {
-            const vertical = root.vertical;
-            const child = layout.children[currentIdx];
-            const size = child[vertical ? "height" : "width"];
-            const implicitSize = child[vertical ? "implicitHeight" : "implicitWidth"];
-            return child.x - (size - implicitSize) / 2;
-        }
+        property int currentIdx: 0
+        property int lastIdx: 0
+        property real leading: layout.children[currentIdx][root.vertical ? "y" : "x"]
+        property real trailing: layout.children[lastIdx][root.vertical ? "y" : "x"]
+        property real currentSize: layout.children[currentIdx][root.vertical ? "height" : "width"]
+        property real size: Math.abs(leading - trailing) + currentSize
+        property real offset: Math.min(leading, trailing)
 
         clip: true
         x: root.vertical ? 0 : offset
@@ -61,6 +59,15 @@ Item {
         height: root.vertical ? size : layout.height
         color: Appearance.colours.mauve
         radius: Appearance.rounding.full
+
+        Connections {
+            target: Hyprland
+
+            function onActiveWorkspaceChanged() {
+                active.currentIdx = (Hyprland.activeWorkspace?.id ?? 1) - 1;
+                active.lastIdx = active.currentIdx;
+            }
+        }
 
         Rectangle {
             id: base
@@ -78,28 +85,30 @@ Item {
             y: root.vertical ? -parent.offset : 0
             width: root.width
             height: root.height
+        }
 
-            Behavior on x {
-                Anim {}
+        Behavior on leading {
+            NumberAnimation {
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.emphasized
             }
+        }
 
-            Behavior on y {
-                Anim {}
+        Behavior on trailing {
+            NumberAnimation {
+                duration: Appearance.anim.durations.normal * 2
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.emphasized
             }
         }
 
-        Behavior on x {
-            Anim {}
+        Behavior on currentSize {
+            NumberAnimation {
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.emphasized
+            }
         }
-
-        Behavior on y {
-            Anim {}
-        }
-    }
-
-    component Anim: NumberAnimation {
-        duration: Appearance.anim.durations.normal
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Appearance.anim.curves.standard
     }
 }

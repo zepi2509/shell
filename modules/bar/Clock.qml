@@ -19,7 +19,7 @@ BoxLayout {
     }
 
     Label {
-        horizontalAlignment: Text.AlignJustify
+        horizontalAlignment: Label.AlignHCenter
         text: root.vertical ? Time.format("hh\nmm") : Time.format("dd/MM/yy hh:mm")
         font.pointSize: Appearance.font.size.smaller
         font.family: Appearance.font.family.mono
