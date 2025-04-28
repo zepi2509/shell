@@ -10,12 +10,8 @@ BoxLayout {
 
     required property bool vertical
     required property list<Label> workspaces
+    required property var occupied
     required property BoxLayout layout
-
-    readonly property var occupied: Hyprland.workspaces.values.reduce((acc, curr) => {
-        acc[curr.id] = curr.lastIpcObject.windows > 0;
-        return acc;
-    }, {})
 
     anchors.centerIn: parent
     spacing: 0

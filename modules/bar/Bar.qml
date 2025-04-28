@@ -40,15 +40,15 @@ Variants {
 
                 OsIcon {}
 
+                Workspaces {
+                    vertical: win.vertical
+                }
+
                 Clock {
                     vertical: win.vertical
                 }
 
                 ActiveWindow {
-                    vertical: win.vertical
-                }
-
-                Workspaces {
                     vertical: win.vertical
                 }
             }

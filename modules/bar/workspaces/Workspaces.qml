@@ -12,7 +12,15 @@ Item {
 
     property alias vertical: layout.vertical
     readonly property color colour: Appearance.colours.mauve
+    property int shown: 10
+    property bool occupiedBg: false
+    property bool showWindows: false
+
     readonly property list<Label> workspaces: layout.children.filter(c => c.isWorkspace)
+    readonly property var occupied: Hyprland.workspaces.values.reduce((acc, curr) => {
+        acc[curr.id] = curr.lastIpcObject.windows > 0;
+        return acc;
+    }, {})
 
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight
@@ -28,26 +36,18 @@ Item {
         Repeater {
             model: BarConfig.workspaces.shown
 
-            Label {
-                required property int index
-                readonly property bool isWorkspace: true
-
-                text: index + 1
-                color: BarConfig.workspaces.occupiedBg || occupied.occupied[index + 1] ? Appearance.colours.text : Appearance.colours.subtext0
-                horizontalAlignment: Label.AlignHCenter
-
-                Layout.preferredWidth: layout.homogenous && !layout.vertical ? layout.height : -1
-                Layout.preferredHeight: layout.homogenous && layout.vertical ? layout.width : -1
+            Workspace {
+                layout: layout
+                occupied: root.occupied
             }
         }
     }
 
     OccupiedBg {
-        id: occupied
-
         opacity: BarConfig.workspaces.occupiedBg ? 1 : 0
         vertical: root.vertical
         workspaces: root.workspaces
+        occupied: root.occupied
         layout: layout
 
         Behavior on opacity {
