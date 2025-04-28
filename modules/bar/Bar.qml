@@ -1,6 +1,7 @@
 import "root:/widgets"
 import "root:/config"
-import "workspaces"
+import "components"
+import "components/workspaces"
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
