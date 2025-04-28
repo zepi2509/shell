@@ -3,22 +3,26 @@ pragma ComponentBehavior: Bound
 import "root:/widgets"
 import "root:/services"
 import "root:/config"
-import Quickshell
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 
 Item {
-    property alias vertical: root.vertical
+    id: root
 
-    implicitWidth: root.implicitWidth
-    implicitHeight: root.implicitHeight
+    property alias vertical: layout.vertical
+    readonly property color colour: Appearance.colours.mauve
 
-    Box {
-        id: root
+    implicitWidth: layout.implicitWidth
+    implicitHeight: layout.implicitHeight
 
-        readonly property color colour: Appearance.colours.mauve
+    BoxLayout {
+        id: layout
 
-        // homogenous: true
+        padding: [Appearance.padding.smaller / 2, 0]
+        anchors.centerIn: parent
+        homogenous: true
+        spacing: 0
 
         Repeater {
             model: BarConfig.workspaces.shown
@@ -26,41 +30,76 @@ Item {
             Label {
                 required property int index
 
-                text: (index + 1).toString()
+                text: index + 1
                 color: root.colour
+                horizontalAlignment: Label.AlignCenter
+
+                Layout.alignment: Layout.Center
+                Layout.preferredWidth: layout.homogenous ? layout.height : -1
             }
         }
-
-        // Text {
-        //     Layout.alignment: Qt.AlignCenter
-        //     horizontalAlignment: Text.AlignJustify
-
-        //     text: root.vertical ? Time.format("hh\nmm") : Time.format("dd/MM/yy hh:mm")
-        //     font.pointSize: Appearance.font.size.smaller
-        //     font.family: Appearance.font.family.mono
-        //     color: root.colour
-        // }
     }
 
     Rectangle {
-        x: (root.childrenRect.width / BarConfig.workspaces.shown) * ((Hyprland.activeWorkspace?.id ?? 1) - 1)
-        y: 0
-        width: root.childrenRect.width / BarConfig.workspaces.shown
-        height: root.childrenRect.height
-        color: "red"
-        radius: 1000
+        id: active
 
-        // layer.enabled: true
-        // layer.effect: ShaderEffect {
-        //     readonly property Item source: root
-        //     fragmentShader: `
-        //         varying highp vec2 qt_TexCoord0;
-        //         uniform highp vec4 color;
-        //         uniform sampler2D source;
-        //         void main() {
-        //             gl_FragColor = color * (1.0 - texture2D(source, qt_TexCoord0).w);
-        //         }
-        //     `
-        // }
+        // property int lastIdx: 0
+        property int currentIdx: (Hyprland.activeWorkspace?.id ?? 1) - 1
+        readonly property real size: layout.children[currentIdx][root.vertical ? "height" : "width"]
+        readonly property real offset: {
+            const vertical = root.vertical;
+            const child = layout.children[currentIdx];
+            const size = child[vertical ? "height" : "width"];
+            const implicitSize = child[vertical ? "implicitHeight" : "implicitWidth"];
+            return child.x - (size - implicitSize) / 2;
+        }
+
+        clip: true
+        x: root.vertical ? 0 : offset
+        y: root.vertical ? offset : 0
+        width: root.vertical ? layout.width : size
+        height: root.vertical ? size : layout.height
+        color: Appearance.colours.mauve
+        radius: Appearance.rounding.full
+
+        Rectangle {
+            id: base
+
+            visible: false
+            anchors.fill: parent
+            color: Appearance.colours.base
+        }
+
+        OpacityMask {
+            source: base
+            maskSource: layout
+
+            x: root.vertical ? 0 : -parent.offset
+            y: root.vertical ? -parent.offset : 0
+            width: root.width
+            height: root.height
+
+            Behavior on x {
+                Anim {}
+            }
+
+            Behavior on y {
+                Anim {}
+            }
+        }
+
+        Behavior on x {
+            Anim {}
+        }
+
+        Behavior on y {
+            Anim {}
+        }
+    }
+
+    component Anim: NumberAnimation {
+        duration: Appearance.anim.durations.normal
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Appearance.anim.curves.standard
     }
 }

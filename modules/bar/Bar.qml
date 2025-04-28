@@ -33,9 +33,9 @@ Variants {
             BoxLayout {
                 vertical: win.vertical
                 spacing: Appearance.spacing.larger
-                padding: [Appearance.padding.smaller, Appearance.padding.large]
+                padding: [0, Appearance.padding.large]
                 color: Appearance.alpha(Appearance.colours.base, false)
-                radius: Appearance.rounding.small
+                radius: Appearance.rounding.full
 
                 OsIcon {}
 
@@ -47,9 +47,9 @@ Variants {
                     vertical: win.vertical
                 }
 
-                // Workspaces {
-                //     vertical: win.vertical
-                // }
+                Workspaces {
+                    vertical: win.vertical
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ BoxLayout {
 
     readonly property color colour: Appearance.colours.pink
 
+    padding: [Appearance.padding.smaller, 0]
     animated: true
     clip: true
 
@@ -17,7 +18,7 @@ BoxLayout {
         text: Icons.getAppCategoryIcon(Hyprland.activeClient?.class) ?? "desktop_windows"
         color: root.colour
 
-        Layout.alignment: Qt.AlignCenter
+        Layout.alignment: Layout.Center
     }
 
     Label {
@@ -27,7 +28,7 @@ BoxLayout {
         color: root.colour
         rotation: root.vertical ? 90 : 0
 
-        Layout.alignment: Qt.AlignCenter
+        Layout.alignment: Layout.Center
         Layout.maximumWidth: root.vertical ? this.implicitHeight : this.implicitWidth
     }
 }

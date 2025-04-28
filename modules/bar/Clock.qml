@@ -9,11 +9,13 @@ BoxLayout {
 
     readonly property color colour: Appearance.colours.peach
 
+    padding: [Appearance.padding.smaller, 0]
+
     MaterialIcon {
         text: "calendar_month"
         color: root.colour
 
-        Layout.alignment: Qt.AlignCenter
+        Layout.alignment: Layout.Center
     }
 
     Label {
@@ -23,6 +25,6 @@ BoxLayout {
         font.family: Appearance.font.family.mono
         color: root.colour
 
-        Layout.alignment: Qt.AlignCenter
+        Layout.alignment: Layout.Center
     }
 }
