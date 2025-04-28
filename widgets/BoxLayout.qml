@@ -47,6 +47,10 @@ Rectangle {
         return pad;
     }
 
+    function childAt(x: real, y: real): Item {
+        return layout.childAt(x, y);
+    }
+
     color: "transparent"
 
     implicitWidth: layout.implicitWidth + paddingX
