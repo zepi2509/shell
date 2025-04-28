@@ -5,12 +5,13 @@ import "root:/config"
 import QtQuick
 import QtQuick.Layouts
 
-ClippingBoxLayout {
+BoxLayout {
     id: root
 
     readonly property color colour: Appearance.colours.pink
 
     animated: true
+    clip: true
 
     MaterialIcon {
         text: Icons.getAppCategoryIcon(Hyprland.activeClient?.class) ?? "desktop_windows"
