@@ -9,20 +9,45 @@ Singleton {
     id: root
 
     property bool borders: true
+    readonly property Transparency transparency: Transparency {}
+    readonly property Rounding rounding: Rounding {}
+    readonly property Spacing spacing: Spacing {}
+    readonly property Padding padding: Padding {}
+    readonly property Font font: Font {}
+    readonly property Anim anim: Anim {}
+    readonly property Colours colours: Colours {}
 
-    readonly property QtObject transparency: QtObject {
-        property real base: 0.78
-        property real layers: 0.5
+    function alpha(c: color, layer: bool): color {
+        return Qt.rgba(c.r, c.g, c.b, layer ? transparency.layers : transparency.base);
     }
 
-    readonly property QtObject rounding: QtObject {
+    FileView {
+        path: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/scheme/current.txt`
+        watchChanges: true
+        onFileChanged: this.reload()
+        onLoaded: {
+            const contents = this.text();
+
+            for (const line of contents.split("\n")) {
+                const [name, colour] = line.split(" ");
+                root.colours[name.trim()] = `#${colour.trim()}`;
+            }
+        }
+    }
+
+    component Transparency: QtObject {
+        readonly property real base: 0.78
+        readonly property real layers: 0.5
+    }
+
+    component Rounding: QtObject {
         readonly property int small: 12
         readonly property int normal: 17
         readonly property int large: 25
         readonly property int full: 1000
     }
 
-    readonly property QtObject spacing: QtObject {
+    component Spacing: QtObject {
         readonly property int small: 7
         readonly property int smaller: 10
         readonly property int normal: 12
@@ -30,7 +55,7 @@ Singleton {
         readonly property int large: 20
     }
 
-    readonly property QtObject padding: QtObject {
+    component Padding: QtObject {
         readonly property int small: 5
         readonly property int smaller: 7
         readonly property int normal: 10
@@ -38,41 +63,47 @@ Singleton {
         readonly property int large: 15
     }
 
-    readonly property QtObject font: QtObject {
-        readonly property QtObject family: QtObject {
-            readonly property string sans: "IBM Plex Sans"
-            readonly property string mono: "JetBrains Mono NF"
-            readonly property string material: "Material Symbols Rounded"
-        }
-
-        readonly property QtObject size: QtObject {
-            readonly property int small: 11
-            readonly property int smaller: 12
-            readonly property int normal: 13
-            readonly property int larger: 15
-            readonly property int large: 18
-        }
+    component FontFamily: QtObject {
+        readonly property string sans: "IBM Plex Sans"
+        readonly property string mono: "JetBrains Mono NF"
+        readonly property string material: "Material Symbols Rounded"
     }
 
-    readonly property QtObject anim: QtObject {
-        readonly property QtObject curves: QtObject {
-            readonly property list<real> emphasized: [0.05, 0, 2 / 15, 0.06, 1 / 6, 0.4, 5 / 24, 0.82, 0.25, 1, 1, 1]
-            readonly property list<real> emphasizedAccel: [0.3, 0, 0.8, 0.15, 1, 1]
-            readonly property list<real> emphasizedDecel: [0.05, 0.7, 0.1, 1, 1, 1]
-            readonly property list<real> standard: [0.2, 0, 0, 1, 1, 1]
-            readonly property list<real> standardAccel: [0.3, 0, 1, 1, 1, 1]
-            readonly property list<real> standardDecel: [0, 0, 0, 1, 1, 1]
-        }
-
-        readonly property QtObject durations: QtObject {
-            readonly property int small: 200
-            readonly property int normal: 400
-            readonly property int large: 600
-            readonly property int extraLarge: 1000
-        }
+    component FontSize: QtObject {
+        readonly property int small: 11
+        readonly property int smaller: 12
+        readonly property int normal: 13
+        readonly property int larger: 15
+        readonly property int large: 18
     }
 
-    readonly property QtObject colours: QtObject {
+    component Font: QtObject {
+        readonly property FontFamily family: FontFamily {}
+        readonly property FontSize size: FontSize {}
+    }
+
+    component AnimCurves: QtObject {
+        readonly property list<real> emphasized: [0.05, 0, 2 / 15, 0.06, 1 / 6, 0.4, 5 / 24, 0.82, 0.25, 1, 1, 1]
+        readonly property list<real> emphasizedAccel: [0.3, 0, 0.8, 0.15, 1, 1]
+        readonly property list<real> emphasizedDecel: [0.05, 0.7, 0.1, 1, 1, 1]
+        readonly property list<real> standard: [0.2, 0, 0, 1, 1, 1]
+        readonly property list<real> standardAccel: [0.3, 0, 1, 1, 1, 1]
+        readonly property list<real> standardDecel: [0, 0, 0, 1, 1, 1]
+    }
+
+    component AnimDurations: QtObject {
+        readonly property int small: 200
+        readonly property int normal: 400
+        readonly property int large: 600
+        readonly property int extraLarge: 1000
+    }
+
+    component Anim: QtObject {
+        readonly property AnimCurves curves: AnimCurves {}
+        readonly property AnimDurations durations: AnimDurations {}
+    }
+
+    component Colours: QtObject {
         property color primary: "#85D2E7"
         property color secondary: "#B2CBD3"
         property color tertiary: "#BFC4EB"
@@ -104,23 +135,5 @@ Singleton {
         property color sapphire: "#8AD1EE"
         property color blue: "#9CCBFA"
         property color lavender: "#86D1EB"
-    }
-
-    function alpha(c: color, layer: bool): color {
-        return Qt.rgba(c.r, c.g, c.b, layer ? transparency.layers : transparency.base);
-    }
-
-    FileView {
-        path: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/scheme/current.txt`
-        watchChanges: true
-        onFileChanged: this.reload()
-        onLoaded: {
-            const contents = this.text();
-
-            for (const line of contents.split("\n")) {
-                const [name, colour] = line.split(" ");
-                root.colours[name.trim()] = `#${colour.trim()}`;
-            }
-        }
     }
 }
