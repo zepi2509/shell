@@ -12,6 +12,7 @@ Item {
 
     property alias vertical: layout.vertical
     readonly property color colour: Appearance.colours.mauve
+    readonly property list<Label> workspaces: layout.children.filter(c => c.isWorkspace)
 
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight
@@ -29,14 +30,56 @@ Item {
 
             Label {
                 required property int index
+                readonly property bool isWorkspace: true
 
                 text: index + 1
-                color: root.colour
+                color: Appearance.colours.text
                 horizontalAlignment: Label.AlignHCenter
 
-                Layout.alignment: Layout.Center
                 Layout.preferredWidth: layout.homogenous && !layout.vertical ? layout.height : -1
                 Layout.preferredHeight: layout.homogenous && layout.vertical ? layout.width : -1
+            }
+        }
+    }
+
+    BoxLayout {
+        id: occupied
+
+        readonly property var occupied: Hyprland.workspaces.values.reduce((acc, curr) => {
+            acc[curr.id] = curr.lastIpcObject.windows > 0;
+            return acc;
+        }, {})
+
+        anchors.centerIn: parent
+        spacing: 0
+        z: -1
+
+        Repeater {
+            model: BarConfig.workspaces.shown
+
+            Rectangle {
+                required property int index
+                readonly property int roundLeft: index === 0 || !occupied.occupied[index] ? Appearance.rounding.full : 0
+                readonly property int roundRight: index === BarConfig.workspaces.shown - 1 || !occupied.occupied[index + 2] ? Appearance.rounding.full : 0
+
+                color: Appearance.alpha(Appearance.colours.surface2, true)
+                opacity: occupied.occupied[index + 1] ? 1 : 0
+                topLeftRadius: roundLeft
+                bottomLeftRadius: roundLeft
+                topRightRadius: roundRight
+                bottomRightRadius: roundRight
+
+                // Ugh stupid size errors on reload
+                Layout.preferredWidth: root.vertical ? layout.width : root.workspaces[index]?.width ?? 1
+                Layout.preferredHeight: root.vertical ? root.workspaces[index]?.height ?? 1 : layout.height
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Appearance.anim.durations.normal
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.anim.curves.standard
+                    }
+                }
             }
         }
     }
@@ -58,9 +101,9 @@ Item {
 
         property int currentIdx: 0
         property int lastIdx: 0
-        property real leading: layout.children[currentIdx][root.vertical ? "y" : "x"]
-        property real trailing: layout.children[lastIdx][root.vertical ? "y" : "x"]
-        property real currentSize: layout.children[currentIdx][root.vertical ? "height" : "width"]
+        property real leading: root.workspaces[currentIdx][root.vertical ? "y" : "x"]
+        property real trailing: root.workspaces[lastIdx][root.vertical ? "y" : "x"]
+        property real currentSize: root.workspaces[currentIdx][root.vertical ? "height" : "width"]
         property real size: Math.abs(leading - trailing) + currentSize
         property real offset: Math.min(leading, trailing)
 

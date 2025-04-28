@@ -6,6 +6,7 @@ Rectangle {
     id: root
 
     default property alias children: layout.children
+    readonly property alias visibleChildren: layout.visibleChildren
 
     property bool vertical: false
     property bool homogenous: false

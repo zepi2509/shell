@@ -11,8 +11,8 @@ Singleton {
     property bool borders: true
 
     readonly property QtObject transparency: QtObject {
-        property real base: 0.58
-        property real layers: 0.3
+        property real base: 0.78
+        property real layers: 0.5
     }
 
     readonly property QtObject rounding: QtObject {
