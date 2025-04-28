@@ -33,7 +33,7 @@ Item {
                 readonly property bool isWorkspace: true
 
                 text: index + 1
-                color: Appearance.colours.text
+                color: BarConfig.workspaces.occupiedBg || occupied.occupied[index + 1] ? Appearance.colours.text : Appearance.colours.subtext0
                 horizontalAlignment: Label.AlignHCenter
 
                 Layout.preferredWidth: layout.homogenous && !layout.vertical ? layout.height : -1
@@ -42,44 +42,17 @@ Item {
         }
     }
 
-    BoxLayout {
+    OccupiedBg {
         id: occupied
 
-        readonly property var occupied: Hyprland.workspaces.values.reduce((acc, curr) => {
-            acc[curr.id] = curr.lastIpcObject.windows > 0;
-            return acc;
-        }, {})
+        opacity: BarConfig.workspaces.occupiedBg ? 1 : 0
+        vertical: root.vertical
+        workspaces: root.workspaces
+        layout: layout
 
-        anchors.centerIn: parent
-        spacing: 0
-        z: -1
-
-        Repeater {
-            model: BarConfig.workspaces.shown
-
-            Rectangle {
-                required property int index
-                readonly property int roundLeft: index === 0 || !occupied.occupied[index] ? Appearance.rounding.full : 0
-                readonly property int roundRight: index === BarConfig.workspaces.shown - 1 || !occupied.occupied[index + 2] ? Appearance.rounding.full : 0
-
-                color: Appearance.alpha(Appearance.colours.surface2, true)
-                opacity: occupied.occupied[index + 1] ? 1 : 0
-                topLeftRadius: roundLeft
-                bottomLeftRadius: roundLeft
-                topRightRadius: roundRight
-                bottomRightRadius: roundRight
-
-                // Ugh stupid size errors on reload
-                Layout.preferredWidth: root.vertical ? layout.width : root.workspaces[index]?.width ?? 1
-                Layout.preferredHeight: root.vertical ? root.workspaces[index]?.height ?? 1 : layout.height
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: Appearance.anim.durations.normal
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.anim.curves.standard
-                    }
-                }
+        Behavior on opacity {
+            Anim {
+                easing.bezierCurve: Appearance.anim.curves.standard
             }
         }
     }
@@ -143,27 +116,23 @@ Item {
         }
 
         Behavior on leading {
-            NumberAnimation {
-                duration: Appearance.anim.durations.normal
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Appearance.anim.curves.emphasized
-            }
+            Anim {}
         }
 
         Behavior on trailing {
-            NumberAnimation {
+            Anim {
                 duration: Appearance.anim.durations.normal * 2
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Appearance.anim.curves.emphasized
             }
         }
 
         Behavior on currentSize {
-            NumberAnimation {
-                duration: Appearance.anim.durations.normal
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Appearance.anim.curves.emphasized
-            }
+            Anim {}
         }
+    }
+
+    component Anim: NumberAnimation {
+        duration: Appearance.anim.durations.normal
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Appearance.anim.curves.emphasized
     }
 }

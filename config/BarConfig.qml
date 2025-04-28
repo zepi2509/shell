@@ -9,5 +9,6 @@ Singleton {
     readonly property QtObject workspaces: QtObject {
         property int shown: 10
         property string style: ""
+        property bool occupiedBg: false
     }
 }
