@@ -177,6 +177,16 @@ Singleton {
         return "signal_wifi_0_bar";
     }
 
+    function getBluetoothIcon(icon: string): string {
+        if (icon.includes("headset") || icon.includes("headphones"))
+            return "headphones";
+        if (icon.includes("audio"))
+            return "speaker";
+        if (icon.includes("phone"))
+            return "smartphone";
+        return "bluetooth";
+    }
+
     FileView {
         path: "/etc/os-release"
         onLoaded: {

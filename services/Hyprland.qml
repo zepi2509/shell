@@ -39,7 +39,7 @@ Singleton {
 
     Process {
         id: getClients
-        command: ["bash", "-c", "hyprctl -j clients | jq -c"]
+        command: ["sh", "-c", "hyprctl -j clients | jq -c"]
         stdout: SplitParser {
             onRead: data => {
                 const clients = JSON.parse(data);
@@ -58,7 +58,7 @@ Singleton {
 
     Process {
         id: getActiveClient
-        command: ["bash", "-c", "hyprctl -j activewindow | jq -c"]
+        command: ["sh", "-c", "hyprctl -j activewindow | jq -c"]
         stdout: SplitParser {
             onRead: data => {
                 const client = JSON.parse(data);

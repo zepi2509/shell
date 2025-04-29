@@ -2,7 +2,7 @@ import "root:/config"
 import QtQuick.Layouts
 
 GridLayout {
-    property bool vertical: false
+    property bool vertical: parent.vertical ?? false // Propagate from parent
     property bool homogenous: false
     property int spacing: Appearance.spacing.small
 

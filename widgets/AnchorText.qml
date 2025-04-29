@@ -5,7 +5,7 @@ StyledText {
     id: root
 
     required property Item prevAnchor
-    property bool vertical
+    property bool vertical: parent.vertical ?? false
 
     anchors.left: vertical ? undefined : prevAnchor.right
     anchors.leftMargin: vertical ? 0 : Appearance.padding.smaller

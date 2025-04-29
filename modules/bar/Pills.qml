@@ -35,9 +35,9 @@ Item {
                 vertical: BarConfig.vertical
 
                 anchors.left: root.get(osIcon.right, undefined)
-                anchors.leftMargin: root.get(Appearance.padding.normal, 0)
+                anchors.leftMargin: root.get(Appearance.padding.large, 0)
                 anchors.top: root.get(undefined, osIcon.bottom)
-                anchors.topMargin: root.get(0, Appearance.padding.normal)
+                anchors.topMargin: root.get(0, Appearance.padding.large)
 
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
@@ -70,9 +70,9 @@ Item {
 
             StatusIcons {
                 anchors.left: root.get(clock.right, undefined)
-                anchors.leftMargin: root.get(Appearance.padding.normal, 0)
+                anchors.leftMargin: root.get(Appearance.padding.large, 0)
                 anchors.top: root.get(undefined, clock.bottom)
-                anchors.topMargin: root.get(0, Appearance.padding.normal)
+                anchors.topMargin: root.get(0, Appearance.padding.large)
 
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
