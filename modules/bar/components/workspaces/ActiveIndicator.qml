@@ -23,10 +23,10 @@ Rectangle {
     property real offset: Math.min(leading, trailing)
 
     clip: true
-    x: vertical ? 0 : offset
-    y: vertical ? offset : 0
-    width: vertical ? BarConfig.sizes.innerHeight : size
-    height: vertical ? size : BarConfig.sizes.innerHeight
+    x: vertical ? 1 : offset + 1
+    y: vertical ? offset + 1 : 1
+    width: (vertical ? BarConfig.sizes.innerHeight : size) - 2
+    height: (vertical ? size : BarConfig.sizes.innerHeight) - 2
     color: Appearance.colours.mauve
     radius: Appearance.rounding.full
 
