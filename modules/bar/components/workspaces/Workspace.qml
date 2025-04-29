@@ -3,7 +3,7 @@ import "root:/services"
 import "root:/config"
 import QtQuick.Layouts
 
-Label {
+StyledText {
     required property int index
     required property BoxLayout layout
     required property var occupied
@@ -11,7 +11,7 @@ Label {
 
     text: index + 1
     color: BarConfig.workspaces.occupiedBg || occupied[index + 1] ? Appearance.colours.text : Appearance.colours.subtext0
-    horizontalAlignment: Label.AlignHCenter
+    horizontalAlignment: StyledText.AlignHCenter
 
     Layout.preferredWidth: layout.homogenous && !layout.vertical ? layout.height : -1
     Layout.preferredHeight: layout.homogenous && layout.vertical ? layout.width : -1

@@ -9,7 +9,7 @@ BoxLayout {
     id: root
 
     required property bool vertical
-    required property list<Label> workspaces
+    required property list<StyledText> workspaces
     required property var occupied
     required property BoxLayout layout
 

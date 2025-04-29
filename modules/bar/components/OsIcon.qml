@@ -8,7 +8,7 @@ import QtQuick.Layouts
 Box {
     padding: [Appearance.padding.smaller, 0]
 
-    Label {
+    StyledText {
         text: Icons.osIcon
         font.pointSize: Appearance.font.size.smaller
         font.family: Appearance.font.family.mono

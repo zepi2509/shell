@@ -16,7 +16,7 @@ Item {
     property bool occupiedBg: false
     property bool showWindows: false
 
-    readonly property list<Label> workspaces: layout.children.filter(c => c.isWorkspace)
+    readonly property list<StyledText> workspaces: layout.children.filter(c => c.isWorkspace)
     readonly property var occupied: Hyprland.workspaces.values.reduce((acc, curr) => {
         acc[curr.id] = curr.lastIpcObject.windows > 0;
         return acc;

@@ -5,6 +5,7 @@ import "components/workspaces"
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
+import QtQuick.Controls
 
 Variants {
     model: Quickshell.screens
@@ -13,46 +14,68 @@ Variants {
         id: win
 
         required property ShellScreen modelData
-        readonly property bool vertical: BarConfig.vertical
 
         screen: modelData
         namespace: "caelestia-bar"
         color: "transparent"
 
+        width: content.width
+        height: content.height
+
         anchors.top: true
         anchors.left: true
-        anchors.right: !vertical
-        anchors.bottom: vertical
+        anchors.right: true
 
-        width: contents.implicitWidth
-        height: contents.implicitHeight
+        // Connections {
+        //     target: BarConfig
 
-        Box {
-            id: contents
+        //     function onVerticalChanged(): void {
+        //         win.visible = false;
+        //         if (BarConfig.vertical) {
+        //             win.anchors.right = false;
+        //             win.anchors.bottom = true;
+        //         } else {
+        //             win.anchors.bottom = false;
+        //             win.anchors.right = true;
+        //         }
+        //         win.visible = true;
+        //     }
+        // }
 
-            padding: [Appearance.padding.normal, Appearance.padding.large, 0, Appearance.padding.large]
+        // SwipeView {
+        //     anchors.fill: parent
 
-            BoxLayout {
-                vertical: win.vertical
-                spacing: Appearance.spacing.larger
-                padding: [0, Appearance.padding.large]
-                color: Appearance.alpha(Appearance.colours.base, false)
-                radius: Appearance.rounding.full
-
-                OsIcon {}
-
-                Workspaces {
-                    vertical: win.vertical
-                }
-
-                Clock {
-                    vertical: win.vertical
-                }
-
-                ActiveWindow {
-                    vertical: win.vertical
-                }
-            }
+        // }
+        Pills {
+            id: content
         }
+
+        // Box {
+        //     id: contents
+
+        //     padding: [Appearance.padding.normal, Appearance.padding.large, 0, Appearance.padding.large]
+
+        //     BoxLayout {
+        //         vertical: win.vertical
+        //         spacing: Appearance.spacing.larger
+        //         padding: [0, Appearance.padding.large]
+        //         color: Appearance.alpha(Appearance.colours.base, false)
+        //         radius: Appearance.rounding.full
+
+        //         OsIcon {}
+
+        //         Workspaces {
+        //             vertical: win.vertical
+        //         }
+
+        //         Clock {
+        //             vertical: win.vertical
+        //         }
+
+        //         ActiveWindow {
+        //             vertical: win.vertical
+        //         }
+        //     }
+        // }
     }
 }
