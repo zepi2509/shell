@@ -28,8 +28,7 @@ Item {
     BoxLayout {
         id: layout
 
-        padding: vertical ? [0, Appearance.padding.smaller / 2] : [Appearance.padding.smaller / 2, 0]
-        anchors.centerIn: parent
+        anchors.fill: parent
         homogenous: true
         spacing: 0
 
@@ -72,8 +71,8 @@ Item {
     Rectangle {
         id: active
 
-        property int currentIdx: 0
-        property int lastIdx: 0
+        property int currentIdx: (Hyprland.activeWorkspace?.id ?? 1) - 1
+        property int lastIdx: currentIdx
         property real leading: root.workspaces[currentIdx][root.vertical ? "y" : "x"]
         property real trailing: root.workspaces[lastIdx][root.vertical ? "y" : "x"]
         property real currentSize: root.workspaces[currentIdx][root.vertical ? "height" : "width"]
@@ -83,19 +82,13 @@ Item {
         clip: true
         x: root.vertical ? 0 : offset
         y: root.vertical ? offset : 0
-        width: root.vertical ? layout.width : size
-        height: root.vertical ? size : layout.height
+        width: root.vertical ? BarConfig.sizes.innerHeight : size
+        height: root.vertical ? size : BarConfig.sizes.innerHeight
         color: Appearance.colours.mauve
         radius: Appearance.rounding.full
 
-        Connections {
-            target: Hyprland
-
-            function onActiveWorkspaceChanged() {
-                active.currentIdx = (Hyprland.activeWorkspace?.id ?? 1) - 1;
-                active.lastIdx = active.currentIdx;
-            }
-        }
+        anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
+        anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
 
         Rectangle {
             id: base
@@ -113,6 +106,9 @@ Item {
             y: root.vertical ? -parent.offset : 0
             width: root.width
             height: root.height
+
+            anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
+            anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
         }
 
         Behavior on leading {

@@ -1,9 +1,7 @@
 import "root:/widgets"
-import "root:/services"
 import "root:/config"
 import QtQuick
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 
 BoxLayout {
     id: root
@@ -33,8 +31,8 @@ BoxLayout {
             bottomRightRadius: roundRight
 
             // Ugh stupid size errors on reload
-            Layout.preferredWidth: root.vertical ? layout.width : root.workspaces[index]?.width ?? 1
-            Layout.preferredHeight: root.vertical ? root.workspaces[index]?.height ?? 1 : layout.height
+            Layout.preferredWidth: root.vertical ? BarConfig.sizes.innerHeight : root.workspaces[index]?.width ?? 1
+            Layout.preferredHeight: root.vertical ? root.workspaces[index]?.height ?? 1 : BarConfig.sizes.innerHeight
 
             Behavior on opacity {
                 NumberAnimation {

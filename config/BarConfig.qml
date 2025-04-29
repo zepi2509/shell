@@ -11,6 +11,7 @@ Singleton {
 
     component Sizes: QtObject {
         readonly property int height: 50
+        readonly property int innerHeight: 30
         readonly property int floatingGap: 10
         readonly property int floatingGapLarge: 15
     }
