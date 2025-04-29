@@ -8,12 +8,12 @@ import QtQuick
 Singleton {
     id: root
 
-    readonly property ListModel clients: ListModel {}
+    property list<Client> clients: []
     readonly property var workspaces: Hyprland.workspaces
     readonly property var monitors: Hyprland.monitors
-    property var activeClient: null
-    property HyprlandWorkspace activeWorkspace: focusedMonitor?.activeWorkspace ?? null
-    property HyprlandMonitor focusedMonitor: Hyprland.monitors.values.find(m => m.lastIpcObject.focused) ?? null
+    readonly property Client activeClient: Client {}
+    readonly property HyprlandWorkspace activeWorkspace: focusedMonitor?.activeWorkspace ?? null
+    readonly property HyprlandMonitor focusedMonitor: Hyprland.monitors.values.find(m => m.lastIpcObject.focused) ?? null
 
     function reload() {
         Hyprland.refreshWorkspaces();
@@ -43,15 +43,9 @@ Singleton {
         stdout: SplitParser {
             onRead: data => {
                 const clients = JSON.parse(data);
-                root.clients.clear();
-                for (const client of clients) {
-                    root.clients.append({
-                        lastIpcObject: client,
-                        address: client.address,
-                        class: client.class,
-                        title: client.title
-                    });
-                }
+                root.clients = clients.map(c => clientComp.createObject(root, {
+                        lastIpcObject: c
+                    })).filter(c => c);
             }
         }
     }
@@ -60,15 +54,30 @@ Singleton {
         id: getActiveClient
         command: ["sh", "-c", "hyprctl -j activewindow | jq -c"]
         stdout: SplitParser {
-            onRead: data => {
-                const client = JSON.parse(data);
-                root.activeClient = {
-                    lastIpcObject: client,
-                    address: client.address,
-                    class: client.class,
-                    title: client.title
-                };
-            }
+            onRead: data => root.activeClient.lastIpcObject = JSON.parse(data)
         }
+    }
+
+    component Client: QtObject {
+        property var lastIpcObject
+        property string address: lastIpcObject?.address ?? ""
+        property string wmClass: lastIpcObject?.class ?? ""
+        property string title: lastIpcObject?.title ?? ""
+        property string initialClass: lastIpcObject?.initialClass ?? ""
+        property string initialTitle: lastIpcObject?.initialTitle ?? ""
+        property int x: lastIpcObject?.at[0] ?? 0
+        property int y: lastIpcObject?.at[1] ?? 0
+        property int width: lastIpcObject?.size[0] ?? 0
+        property int height: lastIpcObject?.size[1] ?? 0
+        property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === lastIpcObject?.workspace.id) ?? null
+        property bool floating: lastIpcObject?.floating ?? false
+        property bool fullscreen: lastIpcObject?.fullscreen ?? false
+        property int pid: lastIpcObject?.pid ?? 0
+    }
+
+    Component {
+        id: clientComp
+
+        Client {}
     }
 }
