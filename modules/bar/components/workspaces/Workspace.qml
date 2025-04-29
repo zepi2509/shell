@@ -14,6 +14,7 @@ StyledText {
 
     property int ws: groupOffset + index + 1
 
+    animate: true
     text: ws
     color: BarConfig.workspaces.occupiedBg || occupied[ws] ? Appearance.colours.text : Appearance.colours.subtext0
     horizontalAlignment: StyledText.AlignHCenter

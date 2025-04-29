@@ -22,14 +22,16 @@ BoxLayout {
         model: BarConfig.workspaces.shown
 
         Rectangle {
+            id: rect
+
             required property int index
-            readonly property int roundLeft: index === 0 || !root.occupied[ws - 1] ? Appearance.rounding.full : 0
-            readonly property int roundRight: index === BarConfig.workspaces.shown - 1 || !root.occupied[ws + 1] ? Appearance.rounding.full : 0
+            property int roundLeft: index === 0 || !root.occupied[ws - 1] ? Appearance.rounding.full : 0
+            property int roundRight: index === BarConfig.workspaces.shown - 1 || !root.occupied[ws + 1] ? Appearance.rounding.full : 0
 
             property int ws: root.groupOffset + index + 1
 
             color: Appearance.alpha(Appearance.colours.surface2, true)
-            opacity: root.occupied[ws] ? 1 : 0
+            opacity: 0
             topLeftRadius: roundLeft
             bottomLeftRadius: roundLeft
             topRightRadius: roundRight
@@ -39,8 +41,59 @@ BoxLayout {
             Layout.preferredWidth: root.vertical ? BarConfig.sizes.innerHeight : root.workspaces[index]?.width ?? 1
             Layout.preferredHeight: root.vertical ? root.workspaces[index]?.height ?? 1 : BarConfig.sizes.innerHeight
 
-            Behavior on opacity {
-                Anim {}
+            states: [
+                State {
+                    name: "occupied"
+                    when: root.occupied[rect.ws] ?? false
+
+                    PropertyChanges {
+                        rect.opacity: 1
+                    }
+                }
+            ]
+
+            transitions: [
+                Transition {
+                    from: ""
+                    to: "occupied"
+
+                    SequentialAnimation {
+                        PropertyAction {
+                            target: rect
+                            properties: "roundLeft,roundRight"
+                            value: Appearance.rounding.full
+                        }
+                        Anim {
+                            easing.bezierCurve: Appearance.anim.curves.standardDecel
+                        }
+                    }
+                },
+                Transition {
+                    from: "occupied"
+                    to: ""
+
+                    Anim {
+                        easing.bezierCurve: Appearance.anim.curves.standardAccel
+                    }
+                }
+            ]
+
+            Behavior on roundLeft {
+                SequentialAnimation {
+                    PropertyAction {
+                        exclude: rect.roundLeft ? [] : [rect]
+                    }
+                    Anim {}
+                }
+            }
+
+            Behavior on roundRight {
+                SequentialAnimation {
+                    PropertyAction {
+                        exclude: rect.roundRight ? [] : [rect]
+                    }
+                    Anim {}
+                }
             }
         }
     }
