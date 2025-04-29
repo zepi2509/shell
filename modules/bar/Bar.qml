@@ -46,39 +46,7 @@ Variants {
             anchors.fill: parent
             currentIndex: 1
 
-            // Item {
-            Pills {
-                id: content
-            }
-            // }
+            Pills {}
         }
-
-        // Box {
-        //     id: contents
-
-        //     padding: [Appearance.padding.normal, Appearance.padding.large, 0, Appearance.padding.large]
-
-        //     BoxLayout {
-        //         vertical: win.vertical
-        //         spacing: Appearance.spacing.larger
-        //         padding: [0, Appearance.padding.large]
-        //         color: Appearance.alpha(Appearance.colours.base, false)
-        //         radius: Appearance.rounding.full
-
-        //         OsIcon {}
-
-        //         Workspaces {
-        //             vertical: win.vertical
-        //         }
-
-        //         Clock {
-        //             vertical: win.vertical
-        //         }
-
-        //         ActiveWindow {
-        //             vertical: win.vertical
-        //         }
-        //     }
-        // }
     }
 }
