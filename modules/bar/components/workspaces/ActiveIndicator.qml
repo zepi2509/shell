@@ -39,6 +39,14 @@ Rectangle {
         visible: false
         anchors.fill: parent
         color: Appearance.colours.base
+
+        Behavior on color {
+            ColorAnimation {
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.standard
+            }
+        }
     }
 
     OpacityMask {
@@ -52,6 +60,14 @@ Rectangle {
 
         anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
         anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
+    }
+
+    Behavior on color {
+        ColorAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.standard
+        }
     }
 
     Behavior on leading {
