@@ -43,12 +43,13 @@ StyledRect {
                 IconImage {
                     id: icon
 
-                    visible: false
+                    visible: !BarConfig.tray.recolourIcons
                     source: item.modelData.icon
                     anchors.fill: parent
                 }
 
                 ColorOverlay {
+                    visible: BarConfig.tray.recolourIcons
                     anchors.fill: icon
                     source: icon
                     color: Appearance.colours.lavender

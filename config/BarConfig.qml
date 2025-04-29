@@ -12,6 +12,7 @@ Singleton {
 
     readonly property Sizes sizes: Sizes {}
     readonly property Workspaces workspaces: Workspaces {}
+    readonly property Tray tray: Tray {}
     readonly property Presets presets: Presets {}
 
     component Sizes: QtObject {
@@ -25,6 +26,10 @@ Singleton {
         readonly property int shown: 10
         readonly property string style: ""
         readonly property bool occupiedBg: true
+    }
+
+    component Tray: QtObject {
+        readonly property bool recolourIcons: false
     }
 
     component Preset: QtObject {
