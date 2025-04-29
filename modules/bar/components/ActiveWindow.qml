@@ -3,7 +3,6 @@ import "root:/services"
 import "root:/utils"
 import "root:/config"
 import QtQuick
-import QtQuick.Layouts
 
 StyledRect {
     id: root

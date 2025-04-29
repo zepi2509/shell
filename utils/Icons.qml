@@ -152,7 +152,7 @@ Singleton {
 
     property string osIcon: ""
 
-    function getAppCategoryIcon(name) {
+    function getAppCategoryIcon(name: string): string {
         if (!name)
             return null;
 
@@ -163,6 +163,18 @@ Singleton {
                 if (categories.includes(key))
                     return value;
         return "terminal";
+    }
+
+    function getNetworkIcon(strength: int): string {
+        if (strength >= 80)
+            return "signal_wifi_4_bar";
+        if (strength >= 60)
+            return "network_wifi_3_bar";
+        if (strength >= 40)
+            return "network_wifi_2_bar";
+        if (strength >= 20)
+            return "network_wifi_1_bar";
+        return "signal_wifi_0_bar";
     }
 
     FileView {
