@@ -9,14 +9,17 @@ Singleton {
 
     property bool powered
     property bool discovering
-    readonly property list<Device> devices: []
+    property list<Device> devices: []
     readonly property list<Device> connected: devices.filter(d => d.connected)
 
     Process {
         running: true
         command: ["bluetoothctl"]
         stdout: SplitParser {
-            onRead: getInfo.running = true
+            onRead: {
+                getInfo.running = true;
+                getDevices.running = true;
+            }
         }
     }
 
@@ -35,19 +38,19 @@ Singleton {
     Process {
         id: getDevices
         running: true
-        command: ["fish", "-c", `for a in (bluetoothctl devices | cut -d ' ' -f 2); bluetoothctl info $a | jq -R 'reduce (inputs / ":") as [$key, $value] ({}; .[$key | ltrimstr("\t")] = ($value | ltrimstr(" ")))' | jq -c --arg addr $a '.Address = $addr'; end`]
+        command: ["fish", "-c", `for a in (bluetoothctl devices | cut -d ' ' -f 2); bluetoothctl info $a | jq -R 'reduce (inputs / ":") as [$key, $value] ({}; .[$key | ltrimstr("\t")] = ($value | ltrimstr(" ")))' | jq -c --arg addr $a '.Address = $addr'; end | jq -sc`]
         stdout: SplitParser {
             onRead: data => {
-                const d = JSON.parse(data);
-                root.devices.push(deviceComp.createObject(root, {
-                    name: d.Name,
-                    alias: d.Alias,
-                    address: d.Address,
-                    icon: d.Icon,
-                    connected: d.Connected === "yes",
-                    paired: d.Paired === "yes",
-                    trusted: d.Trusted === "yes"
-                }));
+                const devices = JSON.parse(data);
+                root.devices = devices.map(d => deviceComp.createObject(root, {
+                        name: d.Name,
+                        alias: d.Alias,
+                        address: d.Address,
+                        icon: d.Icon,
+                        connected: d.Connected === "yes",
+                        paired: d.Paired === "yes",
+                        trusted: d.Trusted === "yes"
+                    })).filter(d => d);
             }
         }
     }

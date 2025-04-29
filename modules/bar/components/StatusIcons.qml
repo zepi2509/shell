@@ -10,6 +10,9 @@ StyledRect {
 
     readonly property color colour: Appearance.colours.rosewater
 
+    animate: true
+    clip: true
+
     MaterialIcon {
         id: network
 
