@@ -7,9 +7,8 @@ BoxLayout {
     id: root
 
     required property bool vertical
-    required property list<StyledText> workspaces
+    required property list<Workspace> workspaces
     required property var occupied
-    required property BoxLayout layout
 
     anchors.centerIn: parent
     spacing: 0

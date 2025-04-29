@@ -1,11 +1,7 @@
-pragma ComponentBehavior: Bound
-
 import "root:/widgets"
 import "root:/services"
 import "root:/config"
 import QtQuick
-import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
@@ -16,7 +12,7 @@ Item {
     property bool occupiedBg: false
     property bool showWindows: false
 
-    readonly property list<StyledText> workspaces: layout.children.filter(c => c.isWorkspace)
+    readonly property list<Workspace> workspaces: layout.children.filter(c => c.isWorkspace)
     readonly property var occupied: Hyprland.workspaces.values.reduce((acc, curr) => {
         acc[curr.id] = curr.lastIpcObject.windows > 0;
         return acc;
@@ -36,7 +32,8 @@ Item {
             model: BarConfig.workspaces.shown
 
             Workspace {
-                layout: layout
+                vertical: root.vertical
+                homogenous: true
                 occupied: root.occupied
             }
         }
@@ -47,13 +44,22 @@ Item {
         vertical: root.vertical
         workspaces: root.workspaces
         occupied: root.occupied
-        layout: layout
 
         Behavior on opacity {
-            Anim {
+            NumberAnimation {
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
                 easing.bezierCurve: Appearance.anim.curves.standard
             }
         }
+    }
+
+    ActiveIndicator {
+        vertical: root.vertical
+        workspaces: root.workspaces
+        mask: layout
+        maskWidth: root.width
+        maskHeight: root.height
     }
 
     MouseArea {
@@ -66,69 +72,5 @@ Item {
             else if (event.angleDelta.y > 0 && Hyprland.activeWorkspace.id > 1)
                 Hyprland.dispatch(`workspace r-1`);
         }
-    }
-
-    Rectangle {
-        id: active
-
-        property int currentIdx: (Hyprland.activeWorkspace?.id ?? 1) - 1
-        property int lastIdx: currentIdx
-        property real leading: root.workspaces[currentIdx][root.vertical ? "y" : "x"]
-        property real trailing: root.workspaces[lastIdx][root.vertical ? "y" : "x"]
-        property real currentSize: root.workspaces[currentIdx][root.vertical ? "height" : "width"]
-        property real size: Math.abs(leading - trailing) + currentSize
-        property real offset: Math.min(leading, trailing)
-
-        clip: true
-        x: root.vertical ? 0 : offset
-        y: root.vertical ? offset : 0
-        width: root.vertical ? BarConfig.sizes.innerHeight : size
-        height: root.vertical ? size : BarConfig.sizes.innerHeight
-        color: Appearance.colours.mauve
-        radius: Appearance.rounding.full
-
-        anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
-        anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
-
-        Rectangle {
-            id: base
-
-            visible: false
-            anchors.fill: parent
-            color: Appearance.colours.base
-        }
-
-        OpacityMask {
-            source: base
-            maskSource: layout
-
-            x: root.vertical ? 0 : -parent.offset
-            y: root.vertical ? -parent.offset : 0
-            width: root.width
-            height: root.height
-
-            anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
-            anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
-        }
-
-        Behavior on leading {
-            Anim {}
-        }
-
-        Behavior on trailing {
-            Anim {
-                duration: Appearance.anim.durations.normal * 2
-            }
-        }
-
-        Behavior on currentSize {
-            Anim {}
-        }
-    }
-
-    component Anim: NumberAnimation {
-        duration: Appearance.anim.durations.normal
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Appearance.anim.curves.emphasized
     }
 }
