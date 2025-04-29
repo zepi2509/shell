@@ -53,6 +53,14 @@ StyledRect {
                     anchors.fill: icon
                     source: icon
                     color: Appearance.colours.lavender
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: Appearance.anim.durations.normal
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Appearance.anim.curves.standard
+                        }
+                    }
                 }
             }
         }
