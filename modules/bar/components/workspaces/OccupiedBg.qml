@@ -5,7 +5,7 @@ import "root:/config"
 import QtQuick
 import QtQuick.Layouts
 
-BoxLayout {
+Item {
     id: root
 
     required property bool vertical
@@ -13,9 +13,8 @@ BoxLayout {
     required property var occupied
     required property int groupOffset
 
-    anchors.centerIn: parent
+    anchors.fill: parent
     opacity: BarConfig.workspaces.occupiedBg ? 1 : 0
-    spacing: 0
     z: -1
 
     Repeater {
@@ -37,9 +36,13 @@ BoxLayout {
             topRightRadius: roundRight
             bottomRightRadius: roundRight
 
-            // Ugh stupid size errors on reload
-            Layout.preferredWidth: root.vertical ? BarConfig.sizes.innerHeight : root.workspaces[index]?.width ?? 1
-            Layout.preferredHeight: root.vertical ? root.workspaces[index]?.height ?? 1 : BarConfig.sizes.innerHeight
+            x: root.workspaces[index]?.x ?? 0
+            y: root.workspaces[index]?.y ?? 0
+            width: root.vertical ? BarConfig.sizes.innerHeight : root.workspaces[index]?.width ?? 1
+            height: root.vertical ? root.workspaces[index]?.height ?? 1 : BarConfig.sizes.innerHeight
+
+            anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
+            anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
 
             states: [
                 State {
