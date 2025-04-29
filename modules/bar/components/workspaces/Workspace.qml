@@ -8,11 +8,14 @@ StyledText {
     required property bool vertical
     required property bool homogenous
     required property var occupied
+    required property int groupOffset
 
     readonly property bool isWorkspace: true // Flag for finding workspace children
 
-    text: index + 1
-    color: BarConfig.workspaces.occupiedBg || occupied[index + 1] ? Appearance.colours.text : Appearance.colours.subtext0
+    property int ws: groupOffset + index + 1
+
+    text: ws
+    color: BarConfig.workspaces.occupiedBg || occupied[ws] ? Appearance.colours.text : Appearance.colours.subtext0
     horizontalAlignment: StyledText.AlignHCenter
 
     Layout.preferredWidth: homogenous && !vertical ? BarConfig.sizes.innerHeight : -1

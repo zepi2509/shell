@@ -12,8 +12,9 @@ Rectangle {
     required property Item mask
     required property real maskWidth
     required property real maskHeight
+    required property int groupOffset
 
-    property int currentIdx: (Hyprland.activeWorkspace?.id ?? 1) - 1
+    property int currentIdx: (Hyprland.activeWorkspace?.id ?? 1) - 1 - groupOffset
     property int lastIdx: currentIdx
     property real leading: workspaces[currentIdx][vertical ? "y" : "x"]
     property real trailing: workspaces[lastIdx][vertical ? "y" : "x"]

@@ -19,6 +19,6 @@ Singleton {
     component Workspaces: QtObject {
         readonly property int shown: 10
         readonly property string style: ""
-        readonly property bool occupiedBg: false
+        readonly property bool occupiedBg: true
     }
 }
