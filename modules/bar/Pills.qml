@@ -71,7 +71,7 @@ Item {
         }
     }
 
-    component Pill: Box {
+    component Pill: PaddedRect {
         id: pill
 
         color: Appearance.alpha(Appearance.colours.base, false)

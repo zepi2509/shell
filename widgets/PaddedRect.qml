@@ -1,13 +1,9 @@
 import "root:/config"
 import QtQuick
 
-Rectangle {
+StyledRect {
     id: root
 
-    property bool vertical: false
-    property bool homogenous: false
-    property bool animated: false
-    property int spacing: Appearance.spacing.small
     property var padding: 0
 
     readonly property int paddingTop: getRealPadding().top
@@ -44,8 +40,6 @@ Rectangle {
         return pad;
     }
 
-    color: "transparent"
-
     implicitWidth: childrenRect.width + paddingX
     implicitHeight: childrenRect.height + paddingY
 
@@ -53,34 +47,6 @@ Rectangle {
         for (const child of children) {
             child.x = Qt.binding(() => paddingLeft);
             child.y = Qt.binding(() => paddingTop);
-        }
-    }
-
-    Behavior on color {
-        ColorAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.standard
-        }
-    }
-
-    Behavior on implicitWidth {
-        enabled: root.animated
-
-        NumberAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.emphasized
-        }
-    }
-
-    Behavior on implicitHeight {
-        enabled: root.animated
-
-        NumberAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.emphasized
         }
     }
 }

@@ -5,12 +5,11 @@ import "root:/config"
 import QtQuick
 import QtQuick.Layouts
 
-Box {
+StyledRect {
     id: root
 
     readonly property color colour: Appearance.colours.pink
 
-    padding: [Appearance.padding.smaller, 0]
     animated: true
     clip: true
 
@@ -21,14 +20,14 @@ Box {
         color: root.colour
     }
 
-    StyledText {
+    AnchorText {
+        prevAnchor: icon
+        vertical: root.vertical
+
         text: Hyprland.activeClient?.title ?? "Desktop"
         font.pointSize: Appearance.font.size.smaller
         font.family: Appearance.font.family.mono
         color: root.colour
         rotation: root.vertical ? 90 : 0
-
-        anchors.left: icon.right
-        anchors.leftMargin: Appearance.padding.smaller
     }
 }
