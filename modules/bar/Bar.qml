@@ -10,14 +10,13 @@ import QtQuick.Controls
 Variants {
     model: Quickshell.screens
 
-    WlrLayershell {
+    StyledWindow {
         id: win
 
         required property ShellScreen modelData
 
         screen: modelData
-        namespace: "caelestia-bar"
-        color: "transparent"
+        name: "bar"
 
         width: BarConfig.vertical ? BarConfig.preset.totalHeight : -1
         height: BarConfig.vertical ? -1 : BarConfig.preset.totalHeight

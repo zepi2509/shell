@@ -12,6 +12,7 @@ Text {
     renderType: Text.NativeRendering
     color: Appearance.colours.text
     font.family: Appearance.font.family.sans
+    font.pointSize: Appearance.font.size.smaller
 
     Behavior on color {
         ColorAnimation {
