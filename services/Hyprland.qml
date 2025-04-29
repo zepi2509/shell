@@ -12,7 +12,7 @@ Singleton {
     readonly property var workspaces: Hyprland.workspaces
     readonly property var monitors: Hyprland.monitors
     property var activeClient: null
-    property HyprlandWorkspace activeWorkspace: null
+    property HyprlandWorkspace activeWorkspace: focusedMonitor?.activeWorkspace ?? null
     property HyprlandMonitor focusedMonitor: Hyprland.monitors.values.find(m => m.lastIpcObject.focused) ?? null
 
     function reload() {
@@ -20,7 +20,6 @@ Singleton {
         Hyprland.refreshMonitors();
         getClients.running = true;
         getActiveClient.running = true;
-        getActiveWorkspace.running = true;
     }
 
     function dispatch(request: string): void {
@@ -69,17 +68,6 @@ Singleton {
                     class: client.class,
                     title: client.title
                 };
-            }
-        }
-    }
-
-    Process {
-        id: getActiveWorkspace
-        command: ["bash", "-c", "hyprctl -j activeworkspace | jq -c"]
-        stdout: SplitParser {
-            onRead: data => {
-                const ws = JSON.parse(data);
-                root.activeWorkspace = root.workspaces.values.find(w => w.id === ws.id) ?? null;
             }
         }
     }
