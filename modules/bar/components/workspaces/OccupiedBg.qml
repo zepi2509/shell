@@ -2,8 +2,8 @@ pragma ComponentBehavior: Bound
 
 import "root:/widgets"
 import "root:/config"
+import Quickshell
 import QtQuick
-import QtQuick.Layouts
 
 Item {
     id: root
@@ -13,73 +13,59 @@ Item {
     required property var occupied
     required property int groupOffset
 
+    property list<var> pills: []
+
+    onOccupiedChanged: {
+        let count = 0;
+        for (const [ws, occ] of Object.entries(occupied)) {
+            if (ws > 0 && occ) {
+                if (!occupied[ws - 1]) {
+                    if (pills[count])
+                        pills[count].start = ws;
+                    else
+                        pills.push(pillComp.createObject(root, {
+                            start: ws
+                        }));
+                    count++;
+                }
+                if (!occupied[ws + 1])
+                    pills[pills.length - 1].end = ws;
+            }
+        }
+        if (pills.length > count)
+            pills.splice(count, pills.length - count);
+    }
+
     anchors.fill: parent
     opacity: BarConfig.workspaces.occupiedBg ? 1 : 0
     z: -1
 
     Repeater {
-        model: BarConfig.workspaces.shown
+        model: ScriptModel {
+            values: root.pills
+        }
 
         Rectangle {
             id: rect
 
-            required property int index
-            property int roundLeft: index === 0 || !root.occupied[ws - 1] ? Appearance.rounding.full : 0
-            property int roundRight: index === BarConfig.workspaces.shown - 1 || !root.occupied[ws + 1] ? Appearance.rounding.full : 0
+            required property var modelData
 
-            property int ws: root.groupOffset + index + 1
+            property Workspace start: root.workspaces[modelData.start - 1] ?? null
+            property Workspace end: root.workspaces[modelData.end - 1] ?? null
 
             color: Appearance.alpha(Appearance.colours.surface2, true)
-            opacity: 0
-            topLeftRadius: roundLeft
-            bottomLeftRadius: roundLeft
-            topRightRadius: roundRight
-            bottomRightRadius: roundRight
+            radius: Appearance.rounding.full
 
-            x: root.workspaces[index]?.x ?? 0
-            y: root.workspaces[index]?.y ?? 0
-            width: root.vertical ? BarConfig.sizes.innerHeight : root.workspaces[index]?.width ?? 1
-            height: root.vertical ? root.workspaces[index]?.height ?? 1 : BarConfig.sizes.innerHeight
+            x: start?.x ?? 0
+            y: start?.y ?? 0
+            width: root.vertical ? BarConfig.sizes.innerHeight : end?.x + end?.width - start?.x
+            height: root.vertical ? end?.y + end?.height - start?.y : BarConfig.sizes.innerHeight
 
             anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
             anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
 
-            states: [
-                State {
-                    name: "occupied"
-                    when: root.occupied[rect.ws] ?? false
-
-                    PropertyChanges {
-                        rect.opacity: 1
-                    }
-                }
-            ]
-
-            transitions: [
-                Transition {
-                    from: ""
-                    to: "occupied"
-
-                    SequentialAnimation {
-                        PropertyAction {
-                            target: rect
-                            properties: "roundLeft,roundRight"
-                            value: Appearance.rounding.full
-                        }
-                        Anim {
-                            easing.bezierCurve: Appearance.anim.curves.standardDecel
-                        }
-                    }
-                },
-                Transition {
-                    from: "occupied"
-                    to: ""
-
-                    Anim {
-                        easing.bezierCurve: Appearance.anim.curves.standardAccel
-                    }
-                }
-            ]
+            scale: 0
+            Component.onCompleted: scale = 1
 
             Behavior on color {
                 ColorAnimation {
@@ -89,22 +75,18 @@ Item {
                 }
             }
 
-            Behavior on roundLeft {
-                SequentialAnimation {
-                    PropertyAction {
-                        exclude: rect.roundLeft ? [] : [rect]
-                    }
-                    Anim {}
+            Behavior on scale {
+                Anim {
+                    easing.bezierCurve: Appearance.anim.curves.standardDecel
                 }
             }
 
-            Behavior on roundRight {
-                SequentialAnimation {
-                    PropertyAction {
-                        exclude: rect.roundRight ? [] : [rect]
-                    }
-                    Anim {}
-                }
+            Behavior on width {
+                Anim {}
+            }
+
+            Behavior on height {
+                Anim {}
             }
         }
     }
@@ -117,5 +99,16 @@ Item {
         duration: Appearance.anim.durations.normal
         easing.type: Easing.BezierSpline
         easing.bezierCurve: Appearance.anim.curves.standard
+    }
+
+    component Pill: QtObject {
+        property int start
+        property int end
+    }
+
+    Component {
+        id: pillComp
+
+        Pill {}
     }
 }
