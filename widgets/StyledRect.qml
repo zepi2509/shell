@@ -4,7 +4,7 @@ import QtQuick
 Rectangle {
     id: root
 
-    property bool animated: false
+    property bool animate: false
     property bool vertical: false // Convenience property for propagation to children
 
     color: "transparent"
@@ -20,7 +20,7 @@ Rectangle {
     }
 
     Behavior on implicitWidth {
-        enabled: root.animated
+        enabled: root.animate
 
         NumberAnimation {
             duration: Appearance.anim.durations.normal
@@ -30,7 +30,7 @@ Rectangle {
     }
 
     Behavior on implicitHeight {
-        enabled: root.animated
+        enabled: root.animate
 
         NumberAnimation {
             duration: Appearance.anim.durations.normal

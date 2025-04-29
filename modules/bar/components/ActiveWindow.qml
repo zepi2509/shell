@@ -9,7 +9,7 @@ StyledRect {
 
     readonly property color colour: Appearance.colours.pink
 
-    animated: true
+    animate: true
     clip: true
 
     MaterialIcon {
