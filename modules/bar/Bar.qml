@@ -19,8 +19,8 @@ Variants {
         namespace: "caelestia-bar"
         color: "transparent"
 
-        width: content.width
-        height: content.height
+        width: BarConfig.vertical ? BarConfig.preset.totalHeight : -1
+        height: BarConfig.vertical ? -1 : BarConfig.preset.totalHeight
 
         anchors.top: true
         anchors.left: true
@@ -42,12 +42,15 @@ Variants {
         //     }
         // }
 
-        // SwipeView {
-        //     anchors.fill: parent
+        SwipeView {
+            anchors.fill: parent
+            currentIndex: 1
 
-        // }
-        Pills {
-            id: content
+            // Item {
+            Pills {
+                id: content
+            }
+            // }
         }
 
         // Box {
