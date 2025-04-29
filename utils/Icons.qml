@@ -152,17 +152,14 @@ Singleton {
 
     property string osIcon: ""
 
-    function getAppCategoryIcon(name: string): string {
-        if (!name)
-            return null;
-
+    function getAppCategoryIcon(name: string, fallback: string): string {
         const categories = DesktopEntries.applications.values.find(app => app.id === name)?.categories;
 
         if (categories)
             for (const [key, value] of Object.entries(this.categoryIcons))
                 if (categories.includes(key))
                     return value;
-        return "terminal";
+        return fallback;
     }
 
     function getNetworkIcon(strength: int): string {

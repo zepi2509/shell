@@ -15,7 +15,7 @@ StyledRect {
     MaterialIcon {
         id: icon
 
-        text: Icons.getAppCategoryIcon(Hyprland.activeClient?.class) ?? "desktop_windows"
+        text: Icons.getAppCategoryIcon(Hyprland.activeClient?.wmClass, "desktop_windows")
         color: root.colour
     }
 
