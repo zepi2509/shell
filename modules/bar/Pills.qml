@@ -63,11 +63,6 @@ Item {
             Tray {
                 vertical: BarConfig.vertical
 
-                anchors.left: root.get(clock.right, undefined)
-                anchors.leftMargin: root.get(Appearance.padding.large, 0)
-                anchors.top: root.get(undefined, clock.bottom)
-                anchors.topMargin: root.get(0, Appearance.padding.large)
-
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
             }
