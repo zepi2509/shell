@@ -10,6 +10,7 @@ import Qt5Compat.GraphicalEffects
 StyledRect {
     animate: true
     clip: true
+    visible: width > 0 && height > 0 // To avoid warnings about being visible with no size
 
     BoxLayout {
         Repeater {
@@ -21,8 +22,8 @@ StyledRect {
                 required property SystemTrayItem modelData
 
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                width: Math.round(Appearance.font.size.large * 1.2)
-                height: Math.round(Appearance.font.size.large * 1.2)
+                width: Appearance.font.size.smaller * 2
+                height: Appearance.font.size.smaller * 2
 
                 onClicked: event => {
                     if (event.button === Qt.LeftButton)
@@ -31,6 +32,7 @@ StyledRect {
                         menu.open();
                 }
 
+                // TODO custom menu
                 QsMenuAnchor {
                     id: menu
 

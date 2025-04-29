@@ -84,7 +84,7 @@ Item {
 
             StatusIcons {
                 anchors.left: root.get(tray.right, undefined)
-                anchors.leftMargin: root.get(Appearance.padding.normal, 0)
+                anchors.leftMargin: root.get(Appearance.padding.large, 0)
                 anchors.top: root.get(undefined, tray.bottom)
                 anchors.topMargin: root.get(0, Appearance.padding.large)
 
