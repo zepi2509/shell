@@ -65,11 +65,11 @@ Singleton {
         property string title: lastIpcObject?.title ?? ""
         property string initialClass: lastIpcObject?.initialClass ?? ""
         property string initialTitle: lastIpcObject?.initialTitle ?? ""
-        property int x: lastIpcObject?.at[0] ?? 0
-        property int y: lastIpcObject?.at[1] ?? 0
-        property int width: lastIpcObject?.size[0] ?? 0
-        property int height: lastIpcObject?.size[1] ?? 0
-        property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === lastIpcObject?.workspace.id) ?? null
+        property int x: (lastIpcObject?.at ?? [])[0] ?? 0
+        property int y: (lastIpcObject?.at ?? [])[1] ?? 0
+        property int width: (lastIpcObject?.size ?? [])[0] ?? 0
+        property int height: (lastIpcObject?.size ?? [])[1] ?? 0
+        property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === lastIpcObject?.workspace?.id) ?? null
         property bool floating: lastIpcObject?.floating ?? false
         property bool fullscreen: lastIpcObject?.fullscreen ?? false
         property int pid: lastIpcObject?.pid ?? 0
