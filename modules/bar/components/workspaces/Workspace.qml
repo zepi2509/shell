@@ -11,10 +11,13 @@ StyledText {
 
     readonly property bool isWorkspace: true // Flag for finding workspace children
 
-    property int ws: groupOffset + index + 1
+    readonly property int ws: groupOffset + index + 1
+    readonly property string label: BarConfig.workspaces.label || ws
+    readonly property string activeLabel: BarConfig.workspaces.activeLabel || label
 
     animate: true
-    text: ws
+    animateProp: "scale"
+    text: (Hyprland.activeWorkspace?.id ?? 1) === ws ? activeLabel : label
     color: BarConfig.workspaces.occupiedBg || occupied[ws] ? Appearance.colours.text : Appearance.colours.subtext0
     horizontalAlignment: StyledText.AlignHCenter
 

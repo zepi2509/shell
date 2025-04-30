@@ -26,6 +26,8 @@ Singleton {
         readonly property int shown: 10
         readonly property string style: ""
         readonly property bool occupiedBg: true
+        readonly property string label: " "
+        readonly property string activeLabel: "󰮯 "
     }
 
     component Tray: QtObject {
