@@ -105,7 +105,7 @@ Item {
     component Pill: PaddedRect {
         id: pill
 
-        color: Appearance.alpha(Appearance.colours.base, false)
+        color: Appearance.alpha(Appearance.colours.m3surface, false)
         radius: Appearance.rounding.full
         padding: BarConfig.vertical ? [Appearance.padding.large, 0] : [0, Appearance.padding.large]
 

@@ -37,7 +37,7 @@ Rectangle {
 
         visible: false
         anchors.fill: parent
-        color: Appearance.colours.base
+        color: Appearance.colours.m3inverseOnSurface
 
         Behavior on color {
             ColorAnimation {

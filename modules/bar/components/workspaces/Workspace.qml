@@ -33,7 +33,7 @@ Item {
 
         animate: true
         text: Hyprland.activeWsId === root.ws ? activeLabel : root.isOccupied ? occupiedLabel : label
-        color: BarConfig.workspaces.occupiedBg || root.isOccupied ? Appearance.colours.text : Appearance.colours.subtext0
+        color: BarConfig.workspaces.occupiedBg || root.isOccupied ? Appearance.colours.m3onSurface : Appearance.colours.m3outlineVariant
         horizontalAlignment: StyledText.AlignHCenter
         verticalAlignment: StyledText.AlignVCenter
 
@@ -56,7 +56,7 @@ Item {
                 required property Hyprland.Client modelData
 
                 text: Icons.getAppCategoryIcon(modelData.wmClass, "terminal")
-                color: Appearance.colours.subtext1
+                color: Appearance.colours.m3onSurfaceVariant
             }
         }
     }

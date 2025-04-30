@@ -53,7 +53,7 @@ Item {
             property Workspace start: root.workspaces[modelData.start - 1] ?? null
             property Workspace end: root.workspaces[modelData.end - 1] ?? null
 
-            color: Appearance.alpha(Appearance.colours.surface2, true)
+            color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
             radius: Appearance.rounding.full
 
             x: start?.x ?? 0

@@ -18,10 +18,14 @@ Singleton {
     readonly property Colours colours: Colours {}
 
     function alpha(c: color, layer: bool): color {
+        if (!transparency.enabled)
+            return c;
         return Qt.rgba(c.r, c.g, c.b, layer ? transparency.layers : transparency.base);
     }
 
     FileView {
+        readonly property list<string> colourNames: ["rosewater", "flamingo", "pink", "mauve", "red", "maroon", "peach", "yellow", "green", "teal", "sky", "sapphire", "blue", "lavender"]
+
         path: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/scheme/current.txt`
         watchChanges: true
         onFileChanged: this.reload()
@@ -29,15 +33,17 @@ Singleton {
             const contents = this.text();
 
             for (const line of contents.split("\n")) {
-                const [name, colour] = line.split(" ");
-                root.colours[name.trim()] = `#${colour.trim()}`;
+                let [name, colour] = line.split(" ");
+                name = name.trim();
+                root.colours[colourNames.includes(name) ? name : `m3${name}`] = `#${colour.trim()}`;
             }
         }
     }
 
     component Transparency: QtObject {
+        readonly property bool enabled: true
         readonly property real base: 0.78
-        readonly property real layers: 0.5
+        readonly property real layers: 0.58
     }
 
     component Rounding: QtObject {
@@ -104,36 +110,74 @@ Singleton {
     }
 
     component Colours: QtObject {
-        property color primary: "#85D2E7"
-        property color secondary: "#B2CBD3"
-        property color tertiary: "#BFC4EB"
-        property color text: "#DEE3E6"
-        property color subtext1: "#BFC8CB"
-        property color subtext0: "#899295"
-        property color overlay2: "#788083"
-        property color overlay1: "#666D70"
-        property color overlay0: "#555C5E"
-        property color surface2: "#434A4D"
-        property color surface1: "#32393B"
-        property color surface0: "#202628"
-        property color base: "#0F1416"
-        property color mantle: "#090C0D"
-        property color crust: "#050607"
-        property color success: "#93E5B6"
-        property color error: "#EA8DC1"
-        property color rosewater: "#9BD4A1"
-        property color flamingo: "#84D5C3"
-        property color pink: "#8CD0F1"
-        property color mauve: "#91CEF5"
-        property color red: "#80D4DC"
-        property color maroon: "#85D2E7"
-        property color peach: "#80D5D0"
-        property color yellow: "#93D5A9"
-        property color green: "#8DD5B3"
-        property color teal: "#81D3E0"
-        property color sky: "#83D2E4"
-        property color sapphire: "#8AD1EE"
-        property color blue: "#9CCBFA"
-        property color lavender: "#86D1EB"
+        property color m3primary_paletteKeyColor: "#7870AB"
+        property color m3secondary_paletteKeyColor: "#78748A"
+        property color m3tertiary_paletteKeyColor: "#976A7D"
+        property color m3neutral_paletteKeyColor: "#79767D"
+        property color m3neutral_variant_paletteKeyColor: "#797680"
+        property color m3background: "#141318"
+        property color m3onBackground: "#E5E1E9"
+        property color m3surface: "#141318"
+        property color m3surfaceDim: "#141318"
+        property color m3surfaceBright: "#3A383E"
+        property color m3surfaceContainerLowest: "#0E0D13"
+        property color m3surfaceContainerLow: "#1C1B20"
+        property color m3surfaceContainer: "#201F25"
+        property color m3surfaceContainerHigh: "#2B292F"
+        property color m3surfaceContainerHighest: "#35343A"
+        property color m3onSurface: "#E5E1E9"
+        property color m3surfaceVariant: "#48454E"
+        property color m3onSurfaceVariant: "#C9C5D0"
+        property color m3inverseSurface: "#E5E1E9"
+        property color m3inverseOnSurface: "#312F36"
+        property color m3outline: "#938F99"
+        property color m3outlineVariant: "#48454E"
+        property color m3shadow: "#000000"
+        property color m3scrim: "#000000"
+        property color m3surfaceTint: "#C8BFFF"
+        property color m3primary: "#C8BFFF"
+        property color m3onPrimary: "#30285F"
+        property color m3primaryContainer: "#473F77"
+        property color m3onPrimaryContainer: "#E5DEFF"
+        property color m3inversePrimary: "#5F5791"
+        property color m3secondary: "#C9C3DC"
+        property color m3onSecondary: "#312E41"
+        property color m3secondaryContainer: "#484459"
+        property color m3onSecondaryContainer: "#E5DFF9"
+        property color m3tertiary: "#ECB8CD"
+        property color m3onTertiary: "#482536"
+        property color m3tertiaryContainer: "#B38397"
+        property color m3onTertiaryContainer: "#000000"
+        property color m3error: "#EA8DC1"
+        property color m3onError: "#690005"
+        property color m3errorContainer: "#93000A"
+        property color m3onErrorContainer: "#FFDAD6"
+        property color m3primaryFixed: "#E5DEFF"
+        property color m3primaryFixedDim: "#C8BFFF"
+        property color m3onPrimaryFixed: "#1B1149"
+        property color m3onPrimaryFixedVariant: "#473F77"
+        property color m3secondaryFixed: "#E5DFF9"
+        property color m3secondaryFixedDim: "#C9C3DC"
+        property color m3onSecondaryFixed: "#1C192B"
+        property color m3onSecondaryFixedVariant: "#484459"
+        property color m3tertiaryFixed: "#FFD8E7"
+        property color m3tertiaryFixedDim: "#ECB8CD"
+        property color m3onTertiaryFixed: "#301121"
+        property color m3onTertiaryFixedVariant: "#613B4C"
+
+        property color rosewater: "#B8C4FF"
+        property color flamingo: "#DBB9F8"
+        property color pink: "#F3B3E3"
+        property color mauve: "#D0BDFE"
+        property color red: "#F8B3D1"
+        property color maroon: "#F6B2DA"
+        property color peach: "#E4B7F4"
+        property color yellow: "#C3C0FF"
+        property color green: "#ADC6FF"
+        property color teal: "#D4BBFC"
+        property color sky: "#CBBEFF"
+        property color sapphire: "#BDC2FF"
+        property color blue: "#C7BFFF"
+        property color lavender: "#EAB5ED"
     }
 }

@@ -4,10 +4,10 @@ import Quickshell
 import QtQuick.Controls.Material
 
 ShellRoot {
-    Material.accent: Appearance.colours.primary
-    Material.primary: Appearance.colours.secondary
-    Material.foreground: Appearance.colours.text
-    Material.background: Appearance.colours.base
+    Material.accent: Appearance.colours.m3primary
+    Material.primary: Appearance.colours.m3secondary
+    Material.foreground: Appearance.colours.m3onBackground
+    Material.background: Appearance.colours.m3background
 
     Bar {}
 }
