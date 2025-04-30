@@ -71,16 +71,34 @@ Rectangle {
     }
 
     Behavior on leading {
+        enabled: BarConfig.workspaces.activeTrail
+
         Anim {}
     }
 
     Behavior on trailing {
+        enabled: BarConfig.workspaces.activeTrail
+
         Anim {
             duration: Appearance.anim.durations.normal * 2
         }
     }
 
     Behavior on currentSize {
+        enabled: BarConfig.workspaces.activeTrail
+
+        Anim {}
+    }
+
+    Behavior on offset {
+        enabled: !BarConfig.workspaces.activeTrail
+
+        Anim {}
+    }
+
+    Behavior on size {
+        enabled: !BarConfig.workspaces.activeTrail
+
         Anim {}
     }
 

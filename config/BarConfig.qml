@@ -26,7 +26,10 @@ Singleton {
         readonly property int shown: 10
         readonly property string style: ""
         readonly property bool occupiedBg: true
-        readonly property string label: " "
+        readonly property bool showWindows: true
+        readonly property bool activeTrail: !showWindows // Doesn't work well with variable sized workspaces
+        readonly property string label: "  "
+        readonly property string occupiedLabel: "󰮯 "
         readonly property string activeLabel: "󰮯 "
     }
 

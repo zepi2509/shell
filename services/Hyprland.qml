@@ -8,12 +8,13 @@ import QtQuick
 Singleton {
     id: root
 
-    property list<Client> clients: []
+    readonly property list<Client> clients: []
     readonly property var workspaces: Hyprland.workspaces
     readonly property var monitors: Hyprland.monitors
     property Client activeClient: null
     readonly property HyprlandWorkspace activeWorkspace: focusedMonitor?.activeWorkspace ?? null
     readonly property HyprlandMonitor focusedMonitor: Hyprland.monitors.values.find(m => m.lastIpcObject.focused) ?? null
+    readonly property int activeWsId: activeWorkspace?.id ?? 1
 
     function reload() {
         Hyprland.refreshWorkspaces();
@@ -43,9 +44,25 @@ Singleton {
         stdout: SplitParser {
             onRead: data => {
                 const clients = JSON.parse(data);
-                root.clients = clients.map(c => clientComp.createObject(root, {
-                        lastIpcObject: c
-                    })).filter(c => c);
+                const rClients = root.clients;
+
+                const len = rClients.length;
+                for (let i = 0; i < len; i++) {
+                    const client = rClients[i];
+                    if (!clients.find(c => c.address === client.address))
+                        rClients.splice(i, 1);
+                }
+
+                for (const client of clients) {
+                    const match = rClients.find(c => c.address === client.address);
+                    if (match) {
+                        match.lastIpcObject = client;
+                    } else {
+                        rClients.push(clientComp.createObject(root, {
+                            lastIpcObject: client
+                        }));
+                    }
+                }
             }
         }
     }
@@ -78,6 +95,7 @@ Singleton {
         property bool floating: lastIpcObject.floating
         property bool fullscreen: lastIpcObject.fullscreen
         property int pid: lastIpcObject.pid
+        property int focusHistoryId: lastIpcObject.focusHistoryID
     }
 
     Component {
