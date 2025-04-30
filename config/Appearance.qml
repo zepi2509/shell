@@ -9,6 +9,7 @@ Singleton {
     id: root
 
     property bool borders: true
+    property bool light: false
     readonly property Transparency transparency: Transparency {}
     readonly property Rounding rounding: Rounding {}
     readonly property Spacing spacing: Spacing {}
@@ -20,7 +21,17 @@ Singleton {
     function alpha(c: color, layer: bool): color {
         if (!transparency.enabled)
             return c;
-        return Qt.rgba(c.r, c.g, c.b, layer ? transparency.layers : transparency.base);
+        c = Qt.rgba(c.r, c.g, c.b, layer ? transparency.layers : transparency.base);
+        if (layer)
+            c.hsvValue = Math.max(0, Math.min(1, c.hslLightness + (light ? -0.2 : 0.1)));
+        return c;
+    }
+
+    FileView {
+        path: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/scheme/current-mode.txt`
+        watchChanges: true
+        onFileChanged: this.reload()
+        onLoaded: root.light = this.text() === "light"
     }
 
     FileView {
