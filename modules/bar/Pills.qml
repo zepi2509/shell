@@ -6,14 +6,17 @@ import "components"
 import "components/workspaces"
 import Quickshell.Wayland
 import QtQuick
+import QtQuick.Layouts
 
 Item {
-    Item {
+    BoxLayout {
         id: root
 
         function get(horiz, vert) {
             return BarConfig.vertical ? vert : horiz;
         }
+
+        spacing: Appearance.padding.large
 
         anchors.fill: parent
         anchors.leftMargin: get(BarConfig.sizes.floatingGapLarge, BarConfig.sizes.floatingGap)
@@ -22,8 +25,6 @@ Item {
         anchors.bottomMargin: get(0, BarConfig.sizes.floatingGapLarge)
 
         Pill {
-            anchors.left: parent.left
-
             OsIcon {
                 id: osIcon
 
@@ -44,10 +45,12 @@ Item {
             }
         }
 
-        Pill {
-            anchors.horizontalCenter: root.get(parent.horizontalCenter, undefined)
-            anchors.verticalCenter: root.get(undefined, parent.verticalCenter)
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
 
+        Pill {
             ActiveWindow {
                 vertical: BarConfig.vertical
 
@@ -56,10 +59,12 @@ Item {
             }
         }
 
-        Pill {
-            anchors.right: rightPill.left
-            anchors.rightMargin: Appearance.padding.normal
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
 
+        Pill {
             Tray {
                 vertical: BarConfig.vertical
 
@@ -69,10 +74,6 @@ Item {
         }
 
         Pill {
-            id: rightPill
-
-            anchors.right: parent.right
-
             Clock {
                 id: clock
 
@@ -92,6 +93,13 @@ Item {
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
             }
         }
+
+        Pill {
+            Power {
+                anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
+                anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
+            }
+        }
     }
 
     component Pill: PaddedRect {
@@ -101,7 +109,7 @@ Item {
         radius: Appearance.rounding.full
         padding: BarConfig.vertical ? [Appearance.padding.large, 0] : [0, Appearance.padding.large]
 
-        width: BarConfig.vertical ? BarConfig.sizes.height : implicitWidth
-        height: BarConfig.vertical ? implicitHeight : BarConfig.sizes.height
+        Layout.minimumWidth: BarConfig.sizes.height
+        Layout.minimumHeight: BarConfig.sizes.height
     }
 }
