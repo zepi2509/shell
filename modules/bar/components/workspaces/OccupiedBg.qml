@@ -29,7 +29,7 @@ Item {
                     count++;
                 }
                 if (!occupied[ws + 1])
-                    pills[pills.length - 1].end = ws;
+                    pills[count - 1].end = ws;
             }
         }
         if (pills.length > count)
@@ -42,7 +42,7 @@ Item {
 
     Repeater {
         model: ScriptModel {
-            values: root.pills
+            values: root.pills.filter(p => p)
         }
 
         Rectangle {
@@ -79,6 +79,14 @@ Item {
                 Anim {
                     easing.bezierCurve: Appearance.anim.curves.standardDecel
                 }
+            }
+
+            Behavior on x {
+                Anim {}
+            }
+
+            Behavior on y {
+                Anim {}
             }
 
             Behavior on width {

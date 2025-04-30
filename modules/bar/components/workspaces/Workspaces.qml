@@ -22,7 +22,6 @@ Item {
     BoxLayout {
         id: layout
 
-        homogenous: true
         spacing: 0
 
         Repeater {
@@ -30,7 +29,6 @@ Item {
 
             Workspace {
                 vertical: root.vertical
-                homogenous: layout.homogenous
                 occupied: root.occupied
                 groupOffset: root.groupOffset
             }

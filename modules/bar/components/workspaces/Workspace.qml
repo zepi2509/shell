@@ -6,7 +6,6 @@ import QtQuick.Layouts
 StyledText {
     required property int index
     required property bool vertical
-    required property bool homogenous
     required property var occupied
     required property int groupOffset
 
@@ -19,6 +18,6 @@ StyledText {
     color: BarConfig.workspaces.occupiedBg || occupied[ws] ? Appearance.colours.text : Appearance.colours.subtext0
     horizontalAlignment: StyledText.AlignHCenter
 
-    Layout.preferredWidth: homogenous && !vertical ? BarConfig.sizes.innerHeight : -1
-    Layout.preferredHeight: homogenous && vertical ? BarConfig.sizes.innerHeight : -1
+    Layout.minimumWidth: vertical ? -1 : BarConfig.sizes.innerHeight
+    Layout.minimumHeight: vertical ? BarConfig.sizes.innerHeight : -1
 }
