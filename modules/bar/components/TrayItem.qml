@@ -6,9 +6,10 @@ import QtQuick
 import Qt5Compat.GraphicalEffects
 
 MouseArea {
-    id: item
+    id: root
 
     required property SystemTrayItem modelData
+    required property color colour
 
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     width: Appearance.font.size.smaller * 2
@@ -25,7 +26,7 @@ MouseArea {
     QsMenuAnchor {
         id: menu
 
-        menu: item.modelData.menu
+        menu: root.modelData.menu
         anchor.window: this.QsWindow.window
     }
 
@@ -33,7 +34,7 @@ MouseArea {
         id: icon
 
         visible: !BarConfig.tray.recolourIcons
-        source: item.modelData.icon
+        source: root.modelData.icon
         anchors.fill: parent
     }
 
@@ -41,7 +42,7 @@ MouseArea {
         visible: BarConfig.tray.recolourIcons
         anchors.fill: icon
         source: icon
-        color: Appearance.colours.lavender
+        color: root.colour
 
         Behavior on color {
             ColorAnimation {

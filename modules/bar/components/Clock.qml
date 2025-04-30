@@ -6,7 +6,7 @@ import QtQuick
 StyledRect {
     id: root
 
-    readonly property color colour: Appearance.colours.peach
+    property color colour: Appearance.colours.peach
 
     MaterialIcon {
         id: icon

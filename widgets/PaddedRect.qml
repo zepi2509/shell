@@ -6,12 +6,12 @@ StyledRect {
 
     property var padding: 0
 
-    readonly property int paddingTop: getRealPadding().top
-    readonly property int paddingRight: getRealPadding().right
-    readonly property int paddingBottom: getRealPadding().bottom
-    readonly property int paddingLeft: getRealPadding().left
-    readonly property int paddingX: getRealPadding().x
-    readonly property int paddingY: getRealPadding().y
+    readonly property real paddingTop: getRealPadding().top
+    readonly property real paddingRight: getRealPadding().right
+    readonly property real paddingBottom: getRealPadding().bottom
+    readonly property real paddingLeft: getRealPadding().left
+    readonly property real paddingX: getRealPadding().x
+    readonly property real paddingY: getRealPadding().y
 
     function getRealPadding() {
         const pad = {};

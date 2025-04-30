@@ -26,8 +26,7 @@ Rectangle {
     y: vertical ? offset + 1 : 1
     width: (vertical ? BarConfig.sizes.innerHeight : size) - 2
     height: (vertical ? size : BarConfig.sizes.innerHeight) - 2
-    color: Appearance.colours.mauve
-    radius: Appearance.rounding.full
+    radius: BarConfig.workspaces.rounded ? Appearance.rounding.full : 0
 
     anchors.horizontalCenter: vertical ? parent.horizontalCenter : undefined
     anchors.verticalCenter: vertical ? undefined : parent.verticalCenter

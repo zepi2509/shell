@@ -9,7 +9,7 @@ import QtQuick.Controls
 StyledRect {
     id: root
 
-    readonly property color colour: Appearance.colours.rosewater
+    property color colour: Appearance.colours.rosewater
 
     animate: true
     clip: true

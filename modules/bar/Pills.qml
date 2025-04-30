@@ -1,10 +1,7 @@
-pragma ComponentBehavior: Bound
-
 import "root:/widgets"
 import "root:/config"
 import "components"
 import "components/workspaces"
-import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
@@ -108,8 +105,6 @@ BoxLayout {
     }
 
     component Pill: PaddedRect {
-        id: pill
-
         color: Appearance.alpha(Appearance.colours.m3surface, false)
         radius: Appearance.rounding.full
         padding: BarConfig.vertical ? [Appearance.padding.large, 0] : [0, Appearance.padding.large]

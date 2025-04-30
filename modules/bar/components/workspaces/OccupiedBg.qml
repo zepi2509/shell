@@ -54,7 +54,7 @@ Item {
             property Workspace end: root.workspaces[modelData.end - 1] ?? null
 
             color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
-            radius: Appearance.rounding.full
+            radius: BarConfig.workspaces.rounded ? Appearance.rounding.full : 0
 
             x: start?.x ?? 0
             y: start?.y ?? 0

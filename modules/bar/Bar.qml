@@ -14,8 +14,8 @@ Variants {
         screen: modelData
         name: "bar"
 
-        width: BarConfig.vertical ? BarConfig.preset.totalHeight : -1
-        height: BarConfig.vertical ? -1 : BarConfig.preset.totalHeight
+        width: BarConfig.vertical ? BarConfig.sizes.totalHeight : -1
+        height: BarConfig.vertical ? -1 : BarConfig.sizes.totalHeight
 
         anchors.top: true
         anchors.left: true
@@ -41,6 +41,12 @@ Variants {
             presetName: "pills"
 
             Pills {}
+        }
+
+        Preset {
+            presetName: "panel"
+
+            Panel {}
         }
     }
 

@@ -10,44 +10,65 @@ Singleton {
     property bool vertical: false
     property Preset preset: presets.pills
 
-    readonly property Sizes sizes: Sizes {}
-    readonly property Workspaces workspaces: Workspaces {}
-    readonly property Tray tray: Tray {}
+    readonly property Sizes sizes: preset.sizes
+    readonly property Workspaces workspaces: preset.workspaces
+    readonly property Tray tray: preset.tray
     readonly property Presets presets: Presets {}
 
     component Sizes: QtObject {
-        readonly property int height: 40
-        readonly property int innerHeight: 30
-        readonly property int floatingGap: 10
-        readonly property int floatingGapLarge: 15
-        readonly property int maxLabelWidth: 600
-        readonly property int maxLabelHeight: 400
+        property int totalHeight: height
+        property int height: 40
+        property int innerHeight: 30
+        property int floatingGap: 10
+        property int floatingGapLarge: 15
+        property int maxLabelWidth: 600
+        property int maxLabelHeight: 400
     }
 
     component Workspaces: QtObject {
-        readonly property int shown: 10
-        readonly property string style: ""
-        readonly property bool occupiedBg: true
-        readonly property bool showWindows: true
-        readonly property bool activeTrail: !showWindows // Doesn't work well with variable sized workspaces
-        readonly property string label: "  "
-        readonly property string occupiedLabel: "󰮯 "
-        readonly property string activeLabel: "󰮯 "
+        property int shown: 10
+        property bool rounded: true
+        property bool occupiedBg: true
+        property bool showWindows: true
+        property bool activeTrail: !showWindows // Doesn't work well with variable sized workspaces
+        property string label: "  "
+        property string occupiedLabel: "󰮯 "
+        property string activeLabel: "󰮯 "
     }
 
     component Tray: QtObject {
-        readonly property bool recolourIcons: false
+        property bool recolourIcons: false
     }
 
     component Preset: QtObject {
         required property string name
-        required property int totalHeight
+        property Sizes sizes: Sizes {}
+        property Workspaces workspaces: Workspaces {}
+        property Tray tray: Tray {}
     }
 
     component Presets: QtObject {
         readonly property Preset pills: Preset {
             name: "pills"
-            totalHeight: root.sizes.height + root.sizes.floatingGap
+            sizes: Sizes {
+                totalHeight: height + floatingGap
+            }
+        }
+        readonly property Preset panel: Preset {
+            name: "panel"
+            sizes: Sizes {
+                height: 30
+            }
+            workspaces: Workspaces {
+                rounded: false
+                showWindows: false
+                label: ""
+                occupiedLabel: ""
+                activeLabel: ""
+            }
+            tray: Tray {
+                recolourIcons: true
+            }
         }
     }
 }

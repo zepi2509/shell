@@ -16,13 +16,14 @@ Item {
 
     readonly property bool isWorkspace: true // Flag for finding workspace children
     // Unanimated prop for others to use as reference
-    readonly property real size: childrenRect[vertical ? "height" : "width"] + (isOccupied ? Appearance.padding.normal : 0)
+    readonly property real size: childrenRect[vertical ? "height" : "width"] + (shouldPad ? Appearance.padding.normal : 0)
 
     readonly property int ws: groupOffset + index + 1
     readonly property bool isOccupied: occupied[ws] ?? false
+    readonly property bool shouldPad: isOccupied && BarConfig.workspaces.showWindows
 
-    Layout.preferredWidth: childrenRect.width + (isOccupied && !vertical ? Appearance.padding.normal : 0)
-    Layout.preferredHeight: childrenRect.height + (isOccupied && vertical ? Appearance.padding.normal : 0)
+    Layout.preferredWidth: childrenRect.width + (shouldPad && !vertical ? Appearance.padding.normal : 0)
+    Layout.preferredHeight: childrenRect.height + (shouldPad && vertical ? Appearance.padding.normal : 0)
 
     StyledText {
         id: indicator
@@ -49,7 +50,7 @@ Item {
 
         Repeater {
             model: ScriptModel {
-                values: Hyprland.clients.filter(c => c.workspace?.id === root.ws)
+                values: BarConfig.workspaces.showWindows ? Hyprland.clients.filter(c => c.workspace?.id === root.ws) : []
             }
 
             MaterialIcon {

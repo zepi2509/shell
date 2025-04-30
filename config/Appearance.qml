@@ -27,6 +27,10 @@ Singleton {
         return c;
     }
 
+    function on(c: color): color {
+        return Qt.hsla(c.hslHue, c.hslSaturation, 0.2, 1);
+    }
+
     FileView {
         path: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/scheme/current-mode.txt`
         watchChanges: true
