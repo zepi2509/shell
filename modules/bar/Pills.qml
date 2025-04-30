@@ -95,7 +95,14 @@ Item {
         }
 
         Pill {
+            // Make circle
+            Layout.maximumWidth: BarConfig.sizes.height
+            Layout.maximumHeight: BarConfig.sizes.height
+
             Power {
+                // Center in pill
+                x: (BarConfig.sizes.height - width) / 2
+
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
             }
