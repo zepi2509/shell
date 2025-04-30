@@ -49,7 +49,7 @@ Item {
 
         Repeater {
             model: ScriptModel {
-                values: Hyprland.clients.filter(c => c.workspace.id === root.ws)
+                values: Hyprland.clients.filter(c => c.workspace?.id === root.ws)
             }
 
             MaterialIcon {

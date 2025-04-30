@@ -1,11 +1,7 @@
 import "root:/widgets"
 import "root:/config"
-import "components"
-import "components/workspaces"
 import Quickshell
-import Quickshell.Wayland
 import QtQuick
-import QtQuick.Controls
 
 Variants {
     model: Quickshell.screens
@@ -41,11 +37,64 @@ Variants {
         //     }
         // }
 
-        SwipeView {
-            anchors.fill: parent
-            currentIndex: 1
+        Preset {
+            presetName: "pills"
 
             Pills {}
         }
+    }
+
+    component Preset: Loader {
+        id: loader
+
+        required property string presetName
+
+        anchors.fill: parent
+        asynchronous: true
+        active: false
+        opacity: 0
+
+        states: [
+            State {
+                name: "visible"
+                when: BarConfig.preset.name === loader.presetName
+
+                PropertyChanges {
+                    loader.opacity: 1
+                    loader.active: true
+                }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: ""
+                to: "visible"
+
+                SequentialAnimation {
+                    PropertyAction {}
+                    NumberAnimation {
+                        property: "opacity"
+                        duration: Appearance.anim.durations.large
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.anim.curves.standard
+                    }
+                }
+            },
+            Transition {
+                from: "visible"
+                to: ""
+
+                SequentialAnimation {
+                    NumberAnimation {
+                        property: "opacity"
+                        duration: Appearance.anim.durations.large
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.anim.curves.standard
+                    }
+                    PropertyAction {}
+                }
+            }
+        ]
     }
 }

@@ -11,6 +11,8 @@ Singleton {
         active: true
     }
 
+    reloadableId: "network"
+
     Process {
         running: true
         command: ["nmcli", "m"]
