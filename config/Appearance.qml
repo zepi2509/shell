@@ -31,11 +31,14 @@ Singleton {
         onFileChanged: this.reload()
         onLoaded: {
             const contents = this.text();
+            const colours = root.colours;
 
             for (const line of contents.split("\n")) {
                 let [name, colour] = line.split(" ");
                 name = name.trim();
-                root.colours[colourNames.includes(name) ? name : `m3${name}`] = `#${colour.trim()}`;
+                name = colourNames.includes(name) ? name : `m3${name}`;
+                if (colours.hasOwnProperty(name))
+                    colours[name] = `#${colour.trim()}`;
             }
         }
     }
