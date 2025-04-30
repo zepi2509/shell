@@ -32,7 +32,6 @@ Item {
         readonly property string activeLabel: BarConfig.workspaces.activeLabel || (root.isOccupied ? occupiedLabel : label)
 
         animate: true
-        animateProp: "scale"
         text: Hyprland.activeWsId === root.ws ? activeLabel : root.isOccupied ? occupiedLabel : label
         color: BarConfig.workspaces.occupiedBg || root.isOccupied ? Appearance.colours.text : Appearance.colours.subtext0
         horizontalAlignment: StyledText.AlignHCenter

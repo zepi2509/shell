@@ -7,7 +7,8 @@ Text {
     id: root
 
     property bool animate: false
-    property string animateProp: "opacity"
+    property string animateProp: "scale"
+    property int animateDuration: Appearance.anim.durations.normal
 
     renderType: Text.NativeRendering
     color: Appearance.colours.text
@@ -41,7 +42,7 @@ Text {
     component Anim: NumberAnimation {
         target: root
         property: root.animateProp
-        duration: Appearance.anim.durations.small
+        duration: root.animateDuration / 2
         easing.type: Easing.BezierSpline
     }
 }

@@ -20,6 +20,8 @@ Singleton {
         readonly property int innerHeight: 30
         readonly property int floatingGap: 10
         readonly property int floatingGapLarge: 15
+        readonly property int maxLabelWidth: 600
+        readonly property int maxLabelHeight: 400
     }
 
     component Workspaces: QtObject {

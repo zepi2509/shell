@@ -15,18 +15,28 @@ StyledRect {
     MaterialIcon {
         id: icon
 
+        animate: true
         text: Icons.getAppCategoryIcon(Hyprland.activeClient?.wmClass, "desktop_windows")
         color: root.colour
     }
 
     AnchorText {
         prevAnchor: icon
-        vertical: root.vertical
+
+        text: metrics.elidedText
+        font.pointSize: metrics.font.pointSize
+        font.family: metrics.font.family
+        color: root.colour
+        rotation: vertical ? 90 : 0
+    }
+
+    TextMetrics {
+        id: metrics
 
         text: Hyprland.activeClient?.title ?? "Desktop"
         font.pointSize: Appearance.font.size.smaller
         font.family: Appearance.font.family.mono
-        color: root.colour
-        rotation: root.vertical ? 90 : 0
+        elide: Qt.ElideRight
+        elideWidth: root.vertical ? BarConfig.sizes.maxLabelHeight : BarConfig.sizes.maxLabelWidth
     }
 }
