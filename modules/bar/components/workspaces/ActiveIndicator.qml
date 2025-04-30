@@ -17,7 +17,7 @@ Rectangle {
     property int currentIdx: Hyprland.activeWsId - 1 - groupOffset
     property real leading: workspaces[currentIdx][vertical ? "y" : "x"]
     property real trailing: workspaces[currentIdx][vertical ? "y" : "x"]
-    property real currentSize: workspaces[currentIdx][vertical ? "height" : "width"]
+    property real currentSize: workspaces[currentIdx].size
     property real size: Math.abs(leading - trailing) + currentSize
     property real offset: Math.min(leading, trailing)
 

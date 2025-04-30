@@ -49,7 +49,7 @@ Singleton {
                 const len = rClients.length;
                 for (let i = 0; i < len; i++) {
                     const client = rClients[i];
-                    if (!clients.find(c => c.address === client.address))
+                    if (!clients.find(c => c.address === client?.address))
                         rClients.splice(i, 1);
                 }
 

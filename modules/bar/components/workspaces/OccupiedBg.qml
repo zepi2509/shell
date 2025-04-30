@@ -88,14 +88,6 @@ Item {
             Behavior on y {
                 Anim {}
             }
-
-            Behavior on width {
-                Anim {}
-            }
-
-            Behavior on height {
-                Anim {}
-            }
         }
     }
 

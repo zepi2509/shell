@@ -15,6 +15,8 @@ Item {
     required property int groupOffset
 
     readonly property bool isWorkspace: true // Flag for finding workspace children
+    // Unanimated prop for others to use as reference
+    readonly property real size: childrenRect[vertical ? "height" : "width"] + (isOccupied ? Appearance.padding.normal : 0)
 
     readonly property int ws: groupOffset + index + 1
     readonly property bool isOccupied: occupied[ws] ?? false
