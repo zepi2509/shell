@@ -2,6 +2,7 @@ import "root:/widgets"
 import "root:/services"
 import "root:/utils"
 import "root:/config"
+import Quickshell
 import QtQuick
 import QtQuick.Controls
 
@@ -33,7 +34,7 @@ StyledRect {
         font.pointSize: Appearance.font.size.larger
     }
 
-    BoxLayout {
+    Box {
         anchors.left: vertical ? undefined : bluetooth.right
         anchors.leftMargin: vertical ? 0 : Appearance.padding.smaller
         anchors.top: vertical ? bluetooth.bottom : undefined
@@ -43,7 +44,9 @@ StyledRect {
         anchors.verticalCenter: vertical ? undefined : bluetooth.verticalCenter
 
         Repeater {
-            model: Bluetooth.connected
+            model: ScriptModel {
+                values: Bluetooth.devices.filter(d => d.connected)
+            }
 
             MaterialIcon {
                 required property Bluetooth.Device modelData

@@ -10,7 +10,6 @@ Singleton {
     property bool powered
     property bool discovering
     property list<Device> devices: []
-    readonly property list<Device> connected: devices.filter(d => d.connected)
 
     Process {
         running: true

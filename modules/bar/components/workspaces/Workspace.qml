@@ -41,25 +41,11 @@ Item {
         height: BarConfig.sizes.innerHeight
     }
 
-    Grid {
-        flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
-        rows: root.vertical ? -1 : 1
-        columns: root.vertical ? 1 : -1
-        spacing: Appearance.padding.small
-
+    Box {
         anchors.left: vertical ? undefined : indicator.right
         anchors.top: vertical ? indicator.bottom : undefined
         anchors.verticalCenter: vertical ? undefined : indicator.verticalCenter
         anchors.horizontalCenter: vertical ? indicator.horizontalCenter : undefined
-
-        add: Transition {
-            Anim {
-                properties: "scale"
-                from: 0
-                to: 1
-                duration: Appearance.anim.durations.small
-            }
-        }
 
         Repeater {
             model: ScriptModel {
