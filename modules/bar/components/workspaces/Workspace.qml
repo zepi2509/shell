@@ -70,6 +70,7 @@ Item {
                 required property Hyprland.Client modelData
 
                 text: Icons.getAppCategoryIcon(modelData.wmClass, "terminal")
+                color: Appearance.colours.subtext1
             }
         }
     }
