@@ -82,20 +82,20 @@ Singleton {
 
     component Client: QtObject {
         required property var lastIpcObject
-        property string address: lastIpcObject.address
-        property string wmClass: lastIpcObject.class
-        property string title: lastIpcObject.title
-        property string initialClass: lastIpcObject.initialClass
-        property string initialTitle: lastIpcObject.initialTitle
-        property int x: lastIpcObject.at[0]
-        property int y: lastIpcObject.at[1]
-        property int width: lastIpcObject.size[0]
-        property int height: lastIpcObject.size[1]
-        property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === lastIpcObject.workspace.id) ?? null
-        property bool floating: lastIpcObject.floating
-        property bool fullscreen: lastIpcObject.fullscreen
-        property int pid: lastIpcObject.pid
-        property int focusHistoryId: lastIpcObject.focusHistoryID
+        readonly property string address: lastIpcObject.address
+        readonly property string wmClass: lastIpcObject.class
+        readonly property string title: lastIpcObject.title
+        readonly property string initialClass: lastIpcObject.initialClass
+        readonly property string initialTitle: lastIpcObject.initialTitle
+        readonly property int x: lastIpcObject.at[0]
+        readonly property int y: lastIpcObject.at[1]
+        readonly property int width: lastIpcObject.size[0]
+        readonly property int height: lastIpcObject.size[1]
+        readonly property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === lastIpcObject.workspace.id) ?? null
+        readonly property bool floating: lastIpcObject.floating
+        readonly property bool fullscreen: lastIpcObject.fullscreen
+        readonly property int pid: lastIpcObject.pid
+        readonly property int focusHistoryId: lastIpcObject.focusHistoryID
     }
 
     Component {

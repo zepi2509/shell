@@ -9,7 +9,7 @@ Singleton {
 
     property bool powered
     property bool discovering
-    property list<Device> devices: []
+    readonly property list<Device> devices: []
 
     Process {
         running: true
@@ -41,27 +41,38 @@ Singleton {
         stdout: SplitParser {
             onRead: data => {
                 const devices = JSON.parse(data);
-                root.devices = devices.map(d => deviceComp.createObject(root, {
-                        name: d.Name,
-                        alias: d.Alias,
-                        address: d.Address,
-                        icon: d.Icon,
-                        connected: d.Connected === "yes",
-                        paired: d.Paired === "yes",
-                        trusted: d.Trusted === "yes"
-                    })).filter(d => d);
+                const rDevices = root.devices;
+
+                const len = rDevices.length;
+                for (let i = 0; i < len; i++) {
+                    const device = rDevices[i];
+                    if (!devices.find(d => d.address === device?.Address))
+                        rDevices.splice(i, 1);
+                }
+
+                for (const device of devices) {
+                    const match = rDevices.find(d => d.address === device.Address);
+                    if (match) {
+                        match.lastIpcObject = device;
+                    } else {
+                        rDevices.push(deviceComp.createObject(root, {
+                            lastIpcObject: device
+                        }));
+                    }
+                }
             }
         }
     }
 
     component Device: QtObject {
-        property string name
-        property string alias
-        property string address
-        property string icon
-        property bool connected
-        property bool paired
-        property bool trusted
+        required property var lastIpcObject
+        readonly property string name: lastIpcObject.Name
+        readonly property string alias: lastIpcObject.Alias
+        readonly property string address: lastIpcObject.Address
+        readonly property string icon: lastIpcObject.Icon
+        readonly property bool connected: lastIpcObject.Connected === "yes"
+        readonly property bool paired: lastIpcObject.Paired === "yes"
+        readonly property bool trusted: lastIpcObject.Trusted === "yes"
     }
 
     Component {
