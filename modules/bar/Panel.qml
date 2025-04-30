@@ -51,19 +51,10 @@ StyledRect {
             Layout.fillHeight: true
         }
 
-        Workspaces {
-            vertical: BarConfig.vertical
-        }
-
-        Item {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-        }
-
         Module {
             color: Appearance.colours.green
 
-            Tray {
+            Clock {
                 colour: Appearance.on(Appearance.colours.green)
 
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
@@ -74,7 +65,7 @@ StyledRect {
         Module {
             color: Appearance.colours.yellow
 
-            Clock {
+            Tray {
                 colour: Appearance.on(Appearance.colours.yellow)
 
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
@@ -107,6 +98,13 @@ StyledRect {
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
             }
         }
+    }
+
+    Workspaces {
+        vertical: BarConfig.vertical
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
     }
 
     component Module: PaddedRect {
