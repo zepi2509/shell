@@ -33,7 +33,7 @@ StyledRect {
     TextMetrics {
         id: metrics
 
-        text: Hyprland.activeClient?.title ?? "Desktop"
+        text: Hyprland.activeClient?.title ?? qsTr("Desktop")
         font.pointSize: Appearance.font.size.smaller
         font.family: Appearance.font.family.mono
         elide: Qt.ElideRight
