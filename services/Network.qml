@@ -57,10 +57,10 @@ Singleton {
     }
 
     component AccessPoint: QtObject {
-        property string ssid
-        property int strength
-        property int frequency
-        property bool active
+        required property string ssid
+        required property int strength
+        required property int frequency
+        required property bool active
     }
 
     Component {

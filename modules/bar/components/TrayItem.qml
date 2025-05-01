@@ -34,7 +34,15 @@ MouseArea {
         id: icon
 
         visible: !BarConfig.tray.recolourIcons
-        source: root.modelData.icon
+        source: {
+            let icon = root.modelData.icon;
+            if (icon.includes("?path=")) {
+                const [name, path] = icon.split("?path=");
+                icon = `file://${path}/${name.slice(name.lastIndexOf("/") + 1)}.png`;
+            }
+            return icon;
+        }
+        asynchronous: true
         anchors.fill: parent
     }
 
