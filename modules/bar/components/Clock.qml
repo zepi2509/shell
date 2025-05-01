@@ -13,6 +13,8 @@ StyledRect {
 
         text: "calendar_month"
         color: root.colour
+
+        anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
     }
 
     AnchorText {

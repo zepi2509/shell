@@ -12,6 +12,7 @@ BoxLayout {
         return BarConfig.vertical ? vert : horiz;
     }
 
+    vertical: BarConfig.vertical
     spacing: Appearance.padding.large
 
     anchors.fill: parent
@@ -98,6 +99,7 @@ BoxLayout {
         Power {
             // Center in pill
             x: (BarConfig.sizes.height - width) / 2
+            y: (BarConfig.sizes.height - height) / 2
 
             anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
             anchors.verticalCenter: root.get(parent.verticalCenter, undefined)

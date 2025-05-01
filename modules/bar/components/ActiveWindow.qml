@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import "root:/widgets"
 import "root:/services"
 import "root:/utils"
@@ -18,16 +20,28 @@ StyledRect {
         animate: true
         text: Icons.getAppCategoryIcon(Hyprland.activeClient?.wmClass, "desktop_windows")
         color: root.colour
+
+        anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
     }
 
     AnchorText {
+        id: text
+
         prevAnchor: icon
 
         text: metrics.elidedText
         font.pointSize: metrics.font.pointSize
         font.family: metrics.font.family
         color: root.colour
-        rotation: vertical ? 90 : 0
+
+        transform: Rotation {
+            angle: vertical ? 90 : 0
+            origin.x: text.implicitHeight / 2
+            origin.y: text.implicitHeight / 2
+        }
+
+        width: vertical ? implicitHeight : implicitWidth
+        height: vertical ? implicitWidth : implicitHeight
     }
 
     TextMetrics {

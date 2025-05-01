@@ -52,6 +52,8 @@ Item {
         anchors.horizontalCenter: root.vertical ? indicator.horizontalCenter : undefined
 
         sourceComponent: Box {
+            vertical: root.vertical
+
             Repeater {
                 model: ScriptModel {
                     values: Hyprland.clients.filter(c => c.workspace?.id === root.ws)

@@ -20,6 +20,8 @@ StyledRect {
         animate: true
         text: Icons.getNetworkIcon(Network.active?.strength ?? 0)
         color: root.colour
+
+        anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
     }
 
     AnchorText {

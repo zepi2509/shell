@@ -12,6 +12,7 @@ StyledRect {
         return BarConfig.vertical ? vert : horiz;
     }
 
+    vertical: BarConfig.vertical
     color: Appearance.alpha(Appearance.colours.m3surface, false)
     anchors.fill: parent
 
@@ -92,6 +93,8 @@ StyledRect {
 
             Power {
                 x: (BarConfig.sizes.height - width) / 2
+                y: (BarConfig.sizes.height - height) / 2
+
                 color: Appearance.colours.m3onError
 
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)

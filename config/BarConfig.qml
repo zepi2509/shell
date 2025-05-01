@@ -7,7 +7,7 @@ import QtQuick
 Singleton {
     id: root
 
-    property bool vertical: false
+    property bool vertical: true
     property Preset preset: presets.pills
 
     readonly property Sizes sizes: preset.sizes
@@ -26,9 +26,9 @@ Singleton {
     }
 
     component Workspaces: QtObject {
-        property int shown: 10
+        property int shown: root.vertical ? 5 : 10
         property bool rounded: true
-        property bool occupiedBg: true
+        property bool occupiedBg: false
         property bool showWindows: true
         property bool activeTrail: !showWindows // Doesn't work well with variable sized workspaces
         property string label: "  "

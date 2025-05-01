@@ -19,7 +19,8 @@ Variants {
 
         anchors.top: true
         anchors.left: true
-        anchors.right: true
+        // anchors.right: true
+        anchors.bottom: true
 
         // Connections {
         //     target: BarConfig
