@@ -5,9 +5,17 @@ Grid {
     property bool vertical: parent.vertical ?? false // Propagate from parent
 
     flow: vertical ? Grid.TopToBottom : Grid.LeftToRight
-    rows: vertical ? -1 : 1
-    columns: vertical ? 1 : -1
     spacing: Appearance.spacing.small
+
+    onVerticalChanged: {
+        if (vertical) {
+            rows = -1;
+            columns = 1;
+        } else {
+            columns = -1;
+            rows = 1;
+        }
+    }
 
     add: Transition {
         NumberAnimation {

@@ -19,24 +19,29 @@ Variants {
 
         anchors.top: true
         anchors.left: true
-        // anchors.right: true
-        anchors.bottom: true
 
-        // Connections {
-        //     target: BarConfig
+        Component.onCompleted: {
+            if (BarConfig.vertical)
+                win.anchors.bottom = true;
+            else
+                win.anchors.right = true;
+        }
 
-        //     function onVerticalChanged(): void {
-        //         win.visible = false;
-        //         if (BarConfig.vertical) {
-        //             win.anchors.right = false;
-        //             win.anchors.bottom = true;
-        //         } else {
-        //             win.anchors.bottom = false;
-        //             win.anchors.right = true;
-        //         }
-        //         win.visible = true;
-        //     }
-        // }
+        Connections {
+            target: BarConfig
+
+            function onVerticalChanged(): void {
+                win.visible = false;
+                if (BarConfig.vertical) {
+                    win.anchors.right = false;
+                    win.anchors.bottom = true;
+                } else {
+                    win.anchors.bottom = false;
+                    win.anchors.right = true;
+                }
+                win.visible = true;
+            }
+        }
 
         Preset {
             presetName: "pills"
@@ -101,5 +106,16 @@ Variants {
                 }
             }
         ]
+
+        Connections {
+            target: BarConfig
+
+            function onVerticalChanged(): void {
+                if (loader.state === "visible") {
+                    loader.active = false;
+                    loader.active = true;
+                }
+            }
+        }
     }
 }
