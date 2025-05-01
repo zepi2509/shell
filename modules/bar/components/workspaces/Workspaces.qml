@@ -14,7 +14,7 @@ Item {
         acc[curr.id] = curr.lastIpcObject.windows > 0;
         return acc;
     }, {})
-    readonly property int groupOffset: Math.floor(((Hyprland.activeWorkspace?.id ?? 1) - 1) / BarConfig.workspaces.shown) * BarConfig.workspaces.shown
+    readonly property int groupOffset: Math.floor((Hyprland.activeWsId - 1) / BarConfig.workspaces.shown) * BarConfig.workspaces.shown
 
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight

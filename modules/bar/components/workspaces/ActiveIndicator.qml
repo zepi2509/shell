@@ -14,10 +14,10 @@ Rectangle {
     required property real maskHeight
     required property int groupOffset
 
-    property int currentIdx: Hyprland.activeWsId - 1 - groupOffset
-    property real leading: (vertical ? workspaces[currentIdx]?.y : workspaces[currentIdx]?.x) ?? 0
-    property real trailing: (vertical ? workspaces[currentIdx]?.y : workspaces[currentIdx]?.x) ?? 0
-    property real currentSize: (workspaces[currentIdx]?.size) ?? 0
+    readonly property Workspace currentWs: workspaces[Hyprland.activeWsId - 1 - groupOffset]
+    property real leading: (vertical ? currentWs?.y : currentWs?.x) ?? 0
+    property real trailing: (vertical ? currentWs?.y : currentWs?.x) ?? 0
+    property real currentSize: (currentWs?.size) ?? 0
     property real size: Math.abs(leading - trailing) + currentSize
     property real offset: Math.min(leading, trailing)
 

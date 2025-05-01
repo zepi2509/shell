@@ -17,8 +17,10 @@ Item {
 
     onOccupiedChanged: {
         let count = 0;
+        const start = groupOffset;
+        const end = start + BarConfig.workspaces.shown;
         for (const [ws, occ] of Object.entries(occupied)) {
-            if (ws > 0 && occ) {
+            if (ws > start && ws <= end && occ) {
                 if (!occupied[ws - 1]) {
                     if (pills[count])
                         pills[count].start = ws;
