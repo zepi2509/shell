@@ -40,7 +40,7 @@ Singleton {
         command: ["fish", "-c", `for a in (bluetoothctl devices | cut -d ' ' -f 2); bluetoothctl info $a | jq -R 'reduce (inputs / ":") as [$key, $value] ({}; .[$key | ltrimstr("\t")] = ($value | ltrimstr(" ")))' | jq -c --arg addr $a '.Address = $addr'; end | jq -sc`]
         stdout: SplitParser {
             onRead: data => {
-                const devices = JSON.parse(data);
+                const devices = JSON.parse(data).filter(d => d.name);
                 const rDevices = root.devices;
 
                 const len = rDevices.length;
