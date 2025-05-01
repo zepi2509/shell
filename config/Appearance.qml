@@ -23,7 +23,7 @@ Singleton {
             return c;
         c = Qt.rgba(c.r, c.g, c.b, layer ? transparency.layers : transparency.base);
         if (layer)
-            c.hsvValue = Math.max(0, Math.min(1, c.hslLightness + (light ? -0.2 : 0.1)));
+            c.hsvValue = Math.max(0, Math.min(1, c.hslLightness + (light ? -0.2 : 0.2)));
         return c;
     }
 

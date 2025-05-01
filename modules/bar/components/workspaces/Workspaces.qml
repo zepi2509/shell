@@ -57,10 +57,11 @@ Item {
 
         onPressed: event => Hyprland.dispatch(`workspace ${layout.childAt(event.x, event.y).index + root.groupOffset + 1}`)
         onWheel: event => {
-            if (event.angleDelta.y < 0)
-                Hyprland.dispatch(`workspace r+1`);
-            else if (event.angleDelta.y > 0 && Hyprland.activeWorkspace.id > 1)
-                Hyprland.dispatch(`workspace r-1`);
+            const activeWs = Hyprland.activeClient?.workspace?.name;
+            if (activeWs?.startsWith("special:"))
+                Hyprland.dispatch(`togglespecialworkspace ${activeWs.slice(8)}`);
+            else if (event.angleDelta.y < 0 || Hyprland.activeWsId > 1)
+                Hyprland.dispatch(`workspace r${event.angleDelta.y > 0 ? "-" : "+"}1`);
         }
     }
 }
