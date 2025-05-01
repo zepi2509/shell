@@ -40,13 +40,13 @@ Singleton {
         command: ["fish", "-c", `for a in (bluetoothctl devices | cut -d ' ' -f 2); bluetoothctl info $a | jq -R 'reduce (inputs / ":") as [$key, $value] ({}; .[$key | ltrimstr("\t")] = ($value | ltrimstr(" ")))' | jq -c --arg addr $a '.Address = $addr'; end | jq -sc`]
         stdout: SplitParser {
             onRead: data => {
-                const devices = JSON.parse(data).filter(d => d.name);
+                const devices = JSON.parse(data).filter(d => d.Name);
                 const rDevices = root.devices;
 
                 const len = rDevices.length;
                 for (let i = 0; i < len; i++) {
                     const device = rDevices[i];
-                    if (!devices.find(d => d.address === device?.Address))
+                    if (!devices.find(d => d.Address === device?.address))
                         rDevices.splice(i, 1);
                 }
 

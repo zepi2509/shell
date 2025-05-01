@@ -18,7 +18,7 @@ StyledRect {
         id: network
 
         animate: true
-        text: Icons.getNetworkIcon(Network.active.strength)
+        text: Icons.getNetworkIcon(Network.active?.strength ?? 0)
         color: root.colour
     }
 
