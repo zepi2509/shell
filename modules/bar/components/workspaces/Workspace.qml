@@ -34,7 +34,7 @@ Item {
 
         animate: true
         text: Hyprland.activeWsId === root.ws ? activeLabel : root.isOccupied ? occupiedLabel : label
-        color: BarConfig.workspaces.occupiedBg || root.isOccupied ? Appearance.colours.m3onSurface : Appearance.colours.m3outlineVariant
+        color: BarConfig.workspaces.occupiedBg || root.isOccupied || Hyprland.activeWsId === root.ws ? Appearance.colours.m3onSurface : Appearance.colours.m3outlineVariant
         horizontalAlignment: StyledText.AlignHCenter
         verticalAlignment: StyledText.AlignVCenter
 

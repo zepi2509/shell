@@ -28,9 +28,6 @@ Rectangle {
     height: (vertical ? size : BarConfig.sizes.innerHeight) - 2
     radius: BarConfig.workspaces.rounded ? Appearance.rounding.full : 0
 
-    anchors.horizontalCenter: vertical ? parent.horizontalCenter : undefined
-    anchors.verticalCenter: vertical ? undefined : parent.verticalCenter
-
     Rectangle {
         id: base
 

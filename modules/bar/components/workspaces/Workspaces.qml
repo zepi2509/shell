@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import "root:/widgets"
 import "root:/services"
 import "root:/config"
@@ -50,14 +52,19 @@ Item {
         }
     }
 
-    ActiveIndicator {
-        color: root.colour
-        vertical: root.vertical
-        workspaces: root.workspaces
-        mask: layout
-        maskWidth: root.width
-        maskHeight: root.height
-        groupOffset: root.groupOffset
+    Loader {
+        active: BarConfig.workspaces.activeIndicator
+        asynchronous: true
+
+        sourceComponent: ActiveIndicator {
+            color: root.colour
+            vertical: root.vertical
+            workspaces: root.workspaces
+            mask: layout
+            maskWidth: root.width
+            maskHeight: root.height
+            groupOffset: root.groupOffset
+        }
     }
 
     MouseArea {

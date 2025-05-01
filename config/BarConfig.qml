@@ -28,6 +28,7 @@ Singleton {
     component Workspaces: QtObject {
         property int shown: root.vertical ? 5 : 10
         property bool rounded: true
+        property bool activeIndicator: true
         property bool occupiedBg: false
         property bool showWindows: true
         property bool activeTrail: !showWindows // Doesn't work well with variable sized workspaces
