@@ -39,14 +39,12 @@ Variants {
 
         Preset {
             presetName: "pills"
-
-            Pills {}
+            sourceComponent: Pills {}
         }
 
         Preset {
             presetName: "panel"
-
-            Panel {}
+            sourceComponent: Panel {}
         }
     }
 

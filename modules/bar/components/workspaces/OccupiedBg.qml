@@ -38,10 +38,6 @@ Item {
             pills.splice(count, pills.length - count);
     }
 
-    anchors.fill: parent
-    opacity: BarConfig.workspaces.occupiedBg ? 1 : 0
-    z: -1
-
     Repeater {
         model: ScriptModel {
             values: root.pills.filter(p => p)
@@ -52,8 +48,8 @@ Item {
 
             required property var modelData
 
-            property Workspace start: root.workspaces[modelData.start - 1] ?? null
-            property Workspace end: root.workspaces[modelData.end - 1] ?? null
+            readonly property Workspace start: root.workspaces[modelData.start - 1 - root.groupOffset] ?? null
+            readonly property Workspace end: root.workspaces[modelData.end - 1 - root.groupOffset] ?? null
 
             color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
             radius: BarConfig.workspaces.rounded ? Appearance.rounding.full : 0
@@ -91,10 +87,6 @@ Item {
                 Anim {}
             }
         }
-    }
-
-    Behavior on opacity {
-        Anim {}
     }
 
     component Anim: NumberAnimation {

@@ -16,14 +16,14 @@ Item {
 
     readonly property bool isWorkspace: true // Flag for finding workspace children
     // Unanimated prop for others to use as reference
-    readonly property real size: childrenRect[vertical ? "height" : "width"] + (shouldPad ? Appearance.padding.normal : 0)
+    readonly property real size: childrenRect[vertical ? "height" : "width"] + (hasWindows ? Appearance.padding.normal : 0)
 
     readonly property int ws: groupOffset + index + 1
     readonly property bool isOccupied: occupied[ws] ?? false
-    readonly property bool shouldPad: isOccupied && BarConfig.workspaces.showWindows
+    readonly property bool hasWindows: isOccupied && BarConfig.workspaces.showWindows
 
-    Layout.preferredWidth: childrenRect.width + (shouldPad && !vertical ? Appearance.padding.normal : 0)
-    Layout.preferredHeight: childrenRect.height + (shouldPad && vertical ? Appearance.padding.normal : 0)
+    Layout.preferredWidth: childrenRect.width + (hasWindows && !vertical ? Appearance.padding.normal : 0)
+    Layout.preferredHeight: childrenRect.height + (hasWindows && vertical ? Appearance.padding.normal : 0)
 
     StyledText {
         id: indicator
@@ -42,22 +42,30 @@ Item {
         height: BarConfig.sizes.innerHeight
     }
 
-    Box {
-        anchors.left: vertical ? undefined : indicator.right
-        anchors.top: vertical ? indicator.bottom : undefined
-        anchors.verticalCenter: vertical ? undefined : indicator.verticalCenter
-        anchors.horizontalCenter: vertical ? indicator.horizontalCenter : undefined
+    Loader {
+        active: BarConfig.workspaces.showWindows
+        asynchronous: true
 
-        Repeater {
-            model: ScriptModel {
-                values: BarConfig.workspaces.showWindows ? Hyprland.clients.filter(c => c.workspace?.id === root.ws) : []
-            }
+        anchors.left: root.vertical ? undefined : indicator.right
+        anchors.top: root.vertical ? indicator.bottom : undefined
+        anchors.verticalCenter: root.vertical ? undefined : indicator.verticalCenter
+        anchors.horizontalCenter: root.vertical ? indicator.horizontalCenter : undefined
 
-            MaterialIcon {
-                required property Hyprland.Client modelData
+        sourceComponent: Box {
+            anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
+            anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
 
-                text: Icons.getAppCategoryIcon(modelData.wmClass, "terminal")
-                color: Appearance.colours.m3onSurfaceVariant
+            Repeater {
+                model: ScriptModel {
+                    values: Hyprland.clients.filter(c => c.workspace?.id === root.ws)
+                }
+
+                MaterialIcon {
+                    required property Hyprland.Client modelData
+
+                    text: Icons.getAppCategoryIcon(modelData.wmClass, "terminal")
+                    color: Appearance.colours.m3onSurfaceVariant
+                }
             }
         }
     }

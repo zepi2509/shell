@@ -9,7 +9,7 @@ Item {
     property alias vertical: layout.vertical
     property color colour: Appearance.colours.mauve
 
-    readonly property list<Workspace> workspaces: layout.children.filter(c => c.isWorkspace)
+    readonly property list<Workspace> workspaces: layout.children.filter(c => c.isWorkspace).sort((w1, w2) => w1.ws - w2.ws)
     readonly property var occupied: Hyprland.workspaces.values.reduce((acc, curr) => {
         acc[curr.id] = curr.lastIpcObject.windows > 0;
         return acc;
@@ -35,11 +35,19 @@ Item {
         }
     }
 
-    OccupiedBg {
-        vertical: root.vertical
-        workspaces: root.workspaces
-        occupied: root.occupied
-        groupOffset: root.groupOffset
+    Loader {
+        active: BarConfig.workspaces.occupiedBg
+        asynchronous: true
+
+        z: -1
+        anchors.fill: parent
+
+        sourceComponent: OccupiedBg {
+            vertical: root.vertical
+            workspaces: root.workspaces
+            occupied: root.occupied
+            groupOffset: root.groupOffset
+        }
     }
 
     ActiveIndicator {
