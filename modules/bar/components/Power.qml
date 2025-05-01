@@ -3,7 +3,7 @@ import "root:/config"
 
 MaterialIcon {
     text: "power_settings_new"
-    color: Appearance.colours.red
+    color: Appearance.colours.m3error
     font.bold: true
     font.pointSize: Appearance.font.size.normal
 }
