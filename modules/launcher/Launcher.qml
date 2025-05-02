@@ -1,9 +1,7 @@
 import "root:/widgets"
 import "root:/config"
 import Quickshell
-import QtQuick
-import QtQuick.Shapes
-import Qt5Compat.GraphicalEffects
+import Quickshell.Wayland
 
 Scope {
     id: root
@@ -20,6 +18,8 @@ Scope {
             id: win
 
             name: "launcher"
+            keyboardFocus: root.launcherVisible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            visible: wrapper.shouldBeVisible
 
             width: content.width + bg.rounding * 2
             height: content.implicitHeight
@@ -37,17 +37,8 @@ Scope {
 
                 launcherVisible: root.launcherVisible
 
-                PaddedRect {
+                Content {
                     id: content
-
-                    width: LauncherConfig.sizes.width
-                    padding: Appearance.padding.large
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    StyledText {
-                        text: "Launcher"
-                        font.pointSize: 80
-                    }
                 }
             }
         }

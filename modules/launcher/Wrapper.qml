@@ -5,13 +5,13 @@ Item {
     id: root
 
     required property bool launcherVisible
+    property bool shouldBeVisible
 
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: parent.bottom
 
     height: 0
-    visible: false
 
     clip: true
 
@@ -21,7 +21,7 @@ Item {
 
         PropertyChanges {
             root.height: content.height
-            root.visible: true
+            root.shouldBeVisible: true
         }
     }
 
@@ -33,7 +33,7 @@ Item {
             SequentialAnimation {
                 PropertyAction {
                     target: root
-                    property: "visible"
+                    property: "shouldBeVisible"
                 }
                 NumberAnimation {
                     target: root
@@ -58,7 +58,7 @@ Item {
                 }
                 PropertyAction {
                     target: root
-                    property: "visible"
+                    property: "shouldBeVisible"
                 }
             }
         }

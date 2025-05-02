@@ -13,7 +13,7 @@ StyledRect {
     }
 
     vertical: BarConfig.vertical
-    color: Appearance.alpha(Appearance.colours.m3surface, false)
+    color: Appearance.alpha(Appearance.colours.m3surfaceContainer, false)
     anchors.fill: parent
 
     BoxLayout {
