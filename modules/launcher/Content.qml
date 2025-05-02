@@ -1,4 +1,5 @@
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import Quickshell
 import QtQuick
@@ -29,14 +30,13 @@ Item {
             id: list
 
             model: ScriptModel {
-                // TODO: sort
-                values: DesktopEntries.applications.values.filter(x => x.name.toLowerCase().includes(search.text.toLowerCase()))
+                values: Apps.fuzzyQuery(search.text)
+                onValuesChanged: list.currentIndex = 0
             }
 
             clip: true
             spacing: Appearance.spacing.small
             orientation: Qt.Vertical
-            verticalLayoutDirection: Qt.BottomToTop
             implicitHeight: ((currentItem?.height ?? 1) + spacing) * Math.min(LauncherConfig.maxShown, count) - spacing
 
             anchors.left: parent.left
@@ -62,17 +62,22 @@ Item {
                 }
             }
 
+            move: Transition {
+                Anim {
+                    property: "y"
+                }
+            }
+
             addDisplaced: Transition {
                 Anim {
-                    properties: "x,y"
+                    property: "y"
                     duration: Appearance.anim.durations.small
                 }
             }
 
-            removeDisplaced: Transition {
+            displaced: Transition {
                 Anim {
-                    properties: "x,y"
-                    duration: Appearance.anim.durations.large
+                    property: "y"
                 }
             }
 
@@ -97,8 +102,12 @@ Item {
             radius: Appearance.rounding.large
         }
 
-        // TODO: apps service with launch
-        // onAccepted: console.log(list.currentItem?.modelData.id)
+        onAccepted: {
+            if (list.currentItem) {
+                Apps.launch(list.currentItem?.modelData);
+                root.launcher.launcherVisible = false;
+            }
+        }
 
         // TODO: key press grab focus + close on esc anywhere
         Keys.onEscapePressed: root.launcher.launcherVisible = false

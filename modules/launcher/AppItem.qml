@@ -12,7 +12,7 @@ PaddedRect {
     implicitWidth: ListView.view.width
     padding: [Appearance.padding.smaller, Appearance.padding.normal]
     radius: Appearance.rounding.normal
-    color: Appearance.alpha(Appearance.colours.m3surfaceContainerHighest, true)
+    // color: ListView.isCurrentItem ? Appearance.alpha(Appearance.colours.m3surfaceContainerHighest, true) : "transparent"
 
     IconImage {
         id: icon
@@ -39,8 +39,7 @@ PaddedRect {
         }
 
         StyledText {
-            text: root.modelData.comment
-            // font.family: Appearance.font.family.mono
+            text: qsTr(root.modelData.comment || root.modelData.genericName || root.modelData.name)
             font.pointSize: Appearance.font.size.small
             color: Appearance.alpha(Appearance.colours.m3outline, true)
 
