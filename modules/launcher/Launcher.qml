@@ -26,126 +26,16 @@ Scope {
 
             anchors.bottom: true
 
-            Shape {
+            Background {
                 id: bg
 
-                readonly property int rounding: Appearance.rounding.large
-                readonly property int roundingY: Math.min(rounding, wrapper.height / 2)
-                readonly property real wrapperHeight: wrapper.height - 1 // Pixel issues :sob:
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-
-                preferredRendererType: Shape.CurveRenderer
-                opacity: Appearance.transparency.enabled ? Appearance.transparency.base : 1
-
-                ShapePath {
-                    strokeWidth: -1
-                    fillColor: Appearance.colours.m3surface
-
-                    startY: bg.wrapperHeight
-
-                    PathArc {
-                        relativeX: bg.rounding
-                        relativeY: -bg.roundingY
-                        radiusX: bg.rounding
-                        radiusY: bg.roundingY
-                        direction: PathArc.Counterclockwise
-                    }
-                    PathLine {
-                        relativeX: 0
-                        y: bg.roundingY
-                    }
-                    PathArc {
-                        relativeX: bg.rounding
-                        relativeY: -bg.roundingY
-                        radiusX: bg.rounding
-                        radiusY: bg.roundingY
-                    }
-                    PathLine {
-                        x: wrapper.width - bg.rounding * 2
-                    }
-                    PathArc {
-                        relativeX: bg.rounding
-                        relativeY: bg.roundingY
-                        radiusX: bg.rounding
-                        radiusY: bg.roundingY
-                    }
-                    PathLine {
-                        relativeX: 0
-                        y: bg.wrapperHeight - bg.roundingY
-                    }
-                    PathArc {
-                        relativeX: bg.rounding
-                        relativeY: bg.roundingY
-                        radiusX: bg.rounding
-                        radiusY: bg.roundingY
-                        direction: PathArc.Counterclockwise
-                    }
-                }
+                realWrapperHeight: wrapper.height
             }
 
-            Item {
+            Wrapper {
                 id: wrapper
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-
-                height: 0
-                visible: false
-
-                clip: true
-
-                states: State {
-                    name: "visible"
-                    when: root.launcherVisible
-
-                    PropertyChanges {
-                        wrapper.height: content.height
-                        wrapper.visible: true
-                    }
-                }
-
-                transitions: [
-                    Transition {
-                        from: ""
-                        to: "visible"
-
-                        SequentialAnimation {
-                            PropertyAction {
-                                target: wrapper
-                                property: "visible"
-                            }
-                            NumberAnimation {
-                                target: wrapper
-                                property: "height"
-                                duration: Appearance.anim.durations.large
-                                easing.type: Easing.BezierSpline
-                                easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
-                            }
-                        }
-                    },
-                    Transition {
-                        from: "visible"
-                        to: ""
-
-                        SequentialAnimation {
-                            NumberAnimation {
-                                target: wrapper
-                                property: "height"
-                                duration: Appearance.anim.durations.extraLarge
-                                easing.type: Easing.BezierSpline
-                                easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
-                            }
-                            PropertyAction {
-                                target: wrapper
-                                property: "visible"
-                            }
-                        }
-                    }
-                ]
+                launcherVisible: root.launcherVisible
 
                 PaddedRect {
                     id: content
