@@ -3,28 +3,32 @@ import "root:/services"
 import "root:/config"
 import Quickshell
 import QtQuick
+import QtQuick.Controls
 
 Item {
     id: root
 
     required property Scope launcher
+    readonly property int padding: Appearance.padding.large
+    readonly property int spacing: Appearance.spacing.normal
+    readonly property int rounding: Appearance.rounding.large
 
     implicitWidth: LauncherConfig.sizes.width
-    implicitHeight: search.height + list.height + Appearance.padding.large * 5 // Don't question it
+    implicitHeight: search.height + list.height + padding * 4 + spacing
 
     anchors.bottom: parent.bottom
     anchors.horizontalCenter: parent.horizontalCenter
 
     StyledRect {
         color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
-        radius: Appearance.rounding.large
-        implicitHeight: list.height + Appearance.padding.large * 2
+        radius: root.rounding
+        implicitHeight: list.height + root.padding * 2
 
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: search.top
-        anchors.bottomMargin: Appearance.spacing.normal
-        anchors.margins: Appearance.padding.large
+        anchors.bottomMargin: root.spacing
+        anchors.margins: root.padding
 
         ListView {
             id: list
@@ -42,9 +46,20 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.margins: Appearance.padding.large
+            anchors.margins: root.padding
 
             delegate: AppItem {}
+
+            ScrollBar.vertical: StyledScrollBar {
+                // Move half out
+                parent: list.parent
+                anchors.top: list.top
+                anchors.bottom: list.bottom
+                anchors.right: list.right
+                anchors.topMargin: root.padding / 2
+                anchors.bottomMargin: root.padding / 2
+                anchors.rightMargin: -root.padding / 2
+            }
 
             add: Transition {
                 Anim {
@@ -93,13 +108,13 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.margins: Appearance.padding.large
+        anchors.margins: root.padding
 
         placeholderText: qsTr("Type \">\" for commands")
 
         background: StyledRect {
             color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
-            radius: Appearance.rounding.large
+            radius: root.rounding
         }
 
         onAccepted: {
