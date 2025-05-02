@@ -37,27 +37,14 @@ Item {
             spacing: Appearance.spacing.small
             orientation: Qt.Vertical
             verticalLayoutDirection: Qt.BottomToTop
-            implicitHeight: ((currentItem?.height ?? 1) + spacing) * Math.min(10, count) - spacing
+            implicitHeight: ((currentItem?.height ?? 1) + spacing) * Math.min(LauncherConfig.maxShown, count) - spacing
 
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.margins: Appearance.padding.large
 
-            delegate: PaddedRect {
-                id: entry
-
-                required property DesktopEntry modelData
-
-                radius: Appearance.rounding.normal
-                color: Appearance.alpha(Appearance.colours.m3surfaceContainerHighest, true)
-
-                StyledText {
-                    text: modelData.name
-                    font.family: Appearance.font.family.sans
-                    font.pointSize: Appearance.font.size.smaller
-                }
-            }
+            delegate: AppItem {}
 
             add: Transition {
                 Anim {
