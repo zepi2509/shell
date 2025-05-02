@@ -5,6 +5,7 @@ Item {
     id: root
 
     required property bool launcherVisible
+    required property real contentHeight
     property bool shouldBeVisible
 
     anchors.left: parent.left
@@ -12,7 +13,6 @@ Item {
     anchors.bottom: parent.bottom
 
     height: 0
-
     clip: true
 
     states: State {
@@ -20,7 +20,7 @@ Item {
         when: root.launcherVisible
 
         PropertyChanges {
-            root.height: content.height
+            root.height: contentHeight
             root.shouldBeVisible: true
         }
     }
@@ -52,7 +52,7 @@ Item {
                 NumberAnimation {
                     target: root
                     property: "height"
-                    duration: Appearance.anim.durations.extraLarge
+                    duration: Appearance.anim.durations.normal
                     easing.type: Easing.BezierSpline
                     easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
                 }

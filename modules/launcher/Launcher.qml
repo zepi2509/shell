@@ -22,8 +22,11 @@ Scope {
             visible: wrapper.shouldBeVisible
 
             width: content.width + bg.rounding * 2
-            height: content.implicitHeight
+            mask: Region {
+                item: wrapper
+            }
 
+            anchors.top: true
             anchors.bottom: true
 
             Background {
@@ -36,9 +39,12 @@ Scope {
                 id: wrapper
 
                 launcherVisible: root.launcherVisible
+                contentHeight: content.height
 
                 Content {
                     id: content
+
+                    launcher: root
                 }
             }
         }
