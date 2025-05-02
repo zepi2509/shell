@@ -1,4 +1,5 @@
 import "modules/bar"
+import "modules/launcher"
 import "config"
 import Quickshell
 import QtQuick.Controls.Material
@@ -10,4 +11,5 @@ ShellRoot {
     Material.background: Appearance.colours.m3background
 
     Bar {}
+    Launcher {}
 }

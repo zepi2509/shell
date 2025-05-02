@@ -64,17 +64,15 @@ Variants {
         active: false
         opacity: 0
 
-        states: [
-            State {
-                name: "visible"
-                when: BarConfig.preset.name === loader.presetName
+        states: State {
+            name: "visible"
+            when: BarConfig.preset.name === loader.presetName
 
-                PropertyChanges {
-                    loader.opacity: 1
-                    loader.active: true
-                }
+            PropertyChanges {
+                loader.opacity: 1
+                loader.active: true
             }
-        ]
+        }
 
         transitions: [
             Transition {
