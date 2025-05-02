@@ -5,7 +5,6 @@ import "root:/widgets"
 import "root:/config"
 import Quickshell
 import Quickshell.Io
-import QtQuick
 
 Singleton {
     id: root
@@ -24,22 +23,15 @@ Singleton {
     }
 
     function launch(entry: DesktopEntry): void {
-        launchProc.createObject(root, {
-            entry
-        });
+        launchProc.entry = entry;
+        launchProc.startDetached();
     }
 
-    Component {
+    Process {
         id: launchProc
 
-        Process {
-            required property DesktopEntry entry
+        property DesktopEntry entry
 
-            command: ["app2unit", "--", `${entry.id}.desktop`]
-            Component.onCompleted: {
-                startDetached();
-                destroy();
-            }
-        }
+        command: ["app2unit", "--", `${entry.id}.desktop`]
     }
 }

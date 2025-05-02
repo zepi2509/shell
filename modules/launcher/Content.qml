@@ -37,6 +37,7 @@ Item {
 
             padding: root.padding
             search: search.text
+            launcher: root.launcher
         }
 
         EmptyIndicator {
@@ -73,6 +74,9 @@ Item {
             }
         }
 
+        Keys.onUpPressed: list.decrementCurrentIndex()
+        Keys.onDownPressed: list.incrementCurrentIndex()
+
         Keys.onEscapePressed: root.launcher.launcherVisible = false
 
         Connections {
@@ -81,8 +85,10 @@ Item {
             function onLauncherVisibleChanged(): void {
                 if (root.launcher.launcherVisible)
                     search.forceActiveFocus();
-                else
+                else {
                     search.text = "";
+                    list.currentIndex = 0;
+                }
             }
         }
     }

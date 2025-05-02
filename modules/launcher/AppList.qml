@@ -10,6 +10,7 @@ ListView {
 
     required property int padding
     required property string search
+    required property Scope launcher
 
     model: ScriptModel {
         values: Apps.fuzzyQuery(root.search)
@@ -26,10 +27,16 @@ ListView {
     anchors.bottom: parent.bottom
     anchors.margins: root.padding
 
+    highlightMoveDuration: Appearance.anim.durations.normal
+
+    highlight: StyledRect {
+        radius: Appearance.rounding.normal
+        color: Appearance.alpha(Appearance.colours.m3surfaceContainerHighest, true)
+    }
+
     delegate: AppItem {
         launcher: root.launcher
     }
-    // TODO highlight
 
     ScrollBar.vertical: StyledScrollBar {
         // Move half out
