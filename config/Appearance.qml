@@ -99,6 +99,7 @@ Singleton {
         readonly property int normal: 13
         readonly property int larger: 15
         readonly property int large: 18
+        readonly property int extraLarge: 28
     }
 
     component Font: QtObject {

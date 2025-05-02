@@ -14,15 +14,17 @@ Item {
     readonly property int rounding: Appearance.rounding.large
 
     implicitWidth: LauncherConfig.sizes.width
-    implicitHeight: search.height + list.height + padding * 4 + spacing
+    implicitHeight: search.height + listWrapper.height + padding * 2 + spacing
 
     anchors.bottom: parent.bottom
     anchors.horizontalCenter: parent.horizontalCenter
 
     StyledRect {
+        id: listWrapper
+
         color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
         radius: root.rounding
-        implicitHeight: list.height + root.padding * 2
+        implicitHeight: Math.max(empty.height, list.height) + root.padding * 2
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -51,6 +53,7 @@ Item {
             delegate: AppItem {
                 launcher: root.launcher
             }
+            // TODO highlight
 
             ScrollBar.vertical: StyledScrollBar {
                 // Move half out
@@ -102,6 +105,12 @@ Item {
                 Anim {}
             }
         }
+
+        EmptyIndicator {
+            id: empty
+
+            empty: list.count === 0
+        }
     }
 
     StyledTextField {
@@ -131,14 +140,18 @@ Item {
             }
         }
 
-        onVisibleChanged: {
-            if (visible)
-                forceActiveFocus();
-            else
-                text = "";
-        }
-
         Keys.onEscapePressed: root.launcher.launcherVisible = false
+
+        Connections {
+            target: root.launcher
+
+            function onLauncherVisibleChanged(): void {
+                if (root.launcher.launcherVisible)
+                    search.forceActiveFocus();
+                else
+                    search.text = "";
+            }
+        }
     }
 
     component Anim: NumberAnimation {
