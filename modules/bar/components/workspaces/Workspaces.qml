@@ -70,7 +70,11 @@ Item {
     MouseArea {
         anchors.fill: parent
 
-        onPressed: event => Hyprland.dispatch(`workspace ${layout.childAt(event.x, event.y).index + root.groupOffset + 1}`)
+        onPressed: event => {
+            const ws = layout.childAt(event.x, event.y).index + root.groupOffset + 1;
+            if (Hyprland.activeWsId !== ws)
+                Hyprland.dispatch(`workspace ${ws}`);
+        }
         onWheel: event => {
             const activeWs = Hyprland.activeClient?.workspace?.name;
             if (activeWs?.startsWith("special:"))
