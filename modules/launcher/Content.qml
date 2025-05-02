@@ -48,7 +48,9 @@ Item {
             anchors.bottom: parent.bottom
             anchors.margins: root.padding
 
-            delegate: AppItem {}
+            delegate: AppItem {
+                launcher: root.launcher
+            }
 
             ScrollBar.vertical: StyledScrollBar {
                 // Move half out

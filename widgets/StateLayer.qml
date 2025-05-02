@@ -1,0 +1,45 @@
+import "root:/widgets"
+import "root:/config"
+import QtQuick
+
+Rectangle {
+    id: root
+
+    function onClicked(event: MouseEvent): void {
+    }
+
+    anchors.fill: parent
+
+    color: Appearance.colours.m3onSurface
+    opacity: mouse.pressed ? 0.1 : mouse.hovered ? 0.08 : 0
+
+    MouseArea {
+        id: mouse
+
+        property bool hovered
+
+        anchors.fill: parent
+        hoverEnabled: true
+
+        onEntered: hovered = true
+        onExited: hovered = false
+
+        onClicked: event => root.onClicked(event)
+    }
+
+    Behavior on opacity {
+        NumberAnimation {
+            duration: Appearance.anim.durations.smaller
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.standard
+        }
+    }
+
+    Behavior on color {
+        ColorAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.standard
+        }
+    }
+}

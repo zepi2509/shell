@@ -1,4 +1,5 @@
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import Quickshell
 import Quickshell.Widgets
@@ -8,11 +9,19 @@ PaddedRect {
     id: root
 
     required property DesktopEntry modelData
+    required property Scope launcher
 
     implicitWidth: ListView.view.width
     padding: [Appearance.padding.smaller, Appearance.padding.normal]
-    radius: Appearance.rounding.normal
-    // color: ListView.isCurrentItem ? Appearance.alpha(Appearance.colours.m3surfaceContainerHighest, true) : "transparent"
+
+    StateLayer {
+        radius: Appearance.rounding.normal
+
+        function onClicked(): void {
+            Apps.launch(root.modelData);
+            root.launcher.launcherVisible = false;
+        }
+    }
 
     IconImage {
         id: icon

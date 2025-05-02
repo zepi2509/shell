@@ -35,8 +35,11 @@ Singleton {
         Process {
             required property DesktopEntry entry
 
-            running: true
             command: ["app2unit", "--", `${entry.id}.desktop`]
+            Component.onCompleted: {
+                startDetached();
+                destroy();
+            }
         }
     }
 }
