@@ -131,7 +131,13 @@ Item {
             }
         }
 
-        // TODO: key press grab focus + close on esc anywhere
+        onVisibleChanged: {
+            if (visible)
+                forceActiveFocus();
+            else
+                text = "";
+        }
+
         Keys.onEscapePressed: root.launcher.launcherVisible = false
     }
 
