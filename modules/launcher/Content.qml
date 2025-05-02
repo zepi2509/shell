@@ -110,6 +110,11 @@ Item {
         anchors.bottom: parent.bottom
         anchors.margins: root.padding
 
+        topPadding: Appearance.padding.normal
+        bottomPadding: Appearance.padding.normal
+        leftPadding: root.padding
+        rightPadding: root.padding
+
         placeholderText: qsTr("Type \">\" for commands")
 
         background: StyledRect {

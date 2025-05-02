@@ -4,7 +4,6 @@ import "root:/utils"
 import "root:/config"
 import Quickshell
 import QtQuick
-import QtQuick.Controls
 
 StyledRect {
     id: root
