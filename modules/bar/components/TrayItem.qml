@@ -1,9 +1,11 @@
+pragma ComponentBehavior: Bound
+
 import "root:/config"
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 import QtQuick
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 
 MouseArea {
     id: root
@@ -46,17 +48,22 @@ MouseArea {
         anchors.fill: parent
     }
 
-    ColorOverlay {
-        visible: BarConfig.tray.recolourIcons
+    Loader {
         anchors.fill: icon
-        source: icon
-        color: root.colour
+        active: BarConfig.tray.recolourIcons
+        asynchronous: true
 
-        Behavior on color {
-            ColorAnimation {
-                duration: Appearance.anim.durations.normal
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Appearance.anim.curves.standard
+        sourceComponent: MultiEffect {
+            source: icon
+            colorizationColor: root.colour
+            colorization: 1
+
+            Behavior on colorizationColor {
+                ColorAnimation {
+                    duration: Appearance.anim.durations.normal
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.anim.curves.standard
+                }
             }
         }
     }

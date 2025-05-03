@@ -2,7 +2,7 @@ import "root:/widgets"
 import "root:/services"
 import "root:/config"
 import QtQuick
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 
 Rectangle {
     id: root
@@ -44,9 +44,12 @@ Rectangle {
         }
     }
 
-    OpacityMask {
+    MultiEffect {
         source: base
         maskSource: root.mask
+        maskEnabled: true
+        maskSpreadAtMin: 1
+        maskThresholdMin: 0.4
 
         x: root.vertical ? 0 : -parent.offset
         y: root.vertical ? -parent.offset : 0
