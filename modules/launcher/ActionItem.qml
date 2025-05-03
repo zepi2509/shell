@@ -1,40 +1,38 @@
 import "root:/widgets"
 import "root:/config"
 import Quickshell
-import Quickshell.Widgets
 import QtQuick
 
 PaddedRect {
     id: root
 
-    required property DesktopEntry modelData
-    required property Scope launcher
+    required property Actions.Action modelData
+    required property var list
 
     implicitWidth: ListView.view.width
     implicitHeight: LauncherConfig.sizes.itemHeight
-    padding: [Appearance.padding.smaller, Appearance.padding.normal]
+    padding: [Appearance.padding.smaller, Appearance.padding.larger]
 
     StateLayer {
         radius: Appearance.rounding.normal
 
         function onClicked(): void {
-            Apps.launch(root.modelData);
-            root.launcher.launcherVisible = false;
+            root.modelData.onClicked(root.list);
         }
     }
 
-    IconImage {
+    MaterialIcon {
         id: icon
 
-        source: Quickshell.iconPath(root.modelData.icon)
-        implicitSize: parent.height * 0.8
+        text: root.modelData.icon
+        font.pointSize: Appearance.font.size.extraLarge
 
         anchors.verticalCenter: parent.verticalCenter
     }
 
     Item {
         anchors.left: icon.right
-        anchors.leftMargin: Appearance.spacing.normal
+        anchors.leftMargin: Appearance.spacing.larger
         anchors.verticalCenter: icon.verticalCenter
 
         implicitWidth: parent.width - icon.width
@@ -48,7 +46,7 @@ PaddedRect {
         }
 
         StyledText {
-            text: root.modelData.comment || root.modelData.genericName || root.modelData.name
+            text: root.modelData.desc
             font.pointSize: Appearance.font.size.small
             color: Appearance.alpha(Appearance.colours.m3outline, true)
 

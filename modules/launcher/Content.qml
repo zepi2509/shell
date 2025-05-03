@@ -36,7 +36,7 @@ Item {
             id: list
 
             padding: root.padding
-            search: search.text
+            search: search
             launcher: root.launcher
         }
 
@@ -60,7 +60,7 @@ Item {
         leftPadding: root.padding
         rightPadding: root.padding
 
-        placeholderText: qsTr("Type \">\" for commands")
+        placeholderText: qsTr(`Type "${LauncherConfig.actionPrefix}" for commands`)
 
         background: StyledRect {
             color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
@@ -69,8 +69,12 @@ Item {
 
         onAccepted: {
             if (list.currentItem) {
-                Apps.launch(list.currentItem?.modelData);
-                root.launcher.launcherVisible = false;
+                if (list.isAction)
+                    list.currentItem.modelData.onClicked(list);
+                else {
+                    Apps.launch(list.currentItem?.modelData);
+                    root.launcher.launcherVisible = false;
+                }
             }
         }
 
