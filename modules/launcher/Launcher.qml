@@ -32,7 +32,7 @@ Scope {
             Background {
                 id: bg
 
-                realWrapperHeight: wrapper.height
+                realWrapperHeight: Math.min(wrapper.height, content.height)
             }
 
             Wrapper {
