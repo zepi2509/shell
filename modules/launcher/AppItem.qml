@@ -48,7 +48,7 @@ PaddedRect {
         }
 
         StyledText {
-            text: qsTr(root.modelData.comment || root.modelData.genericName || root.modelData.name)
+            text: root.modelData.comment || root.modelData.genericName || root.modelData.name
             font.pointSize: Appearance.font.size.small
             color: Appearance.alpha(Appearance.colours.m3outline, true)
 
