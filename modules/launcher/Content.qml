@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import "root:/widgets"
 import "root:/services"
 import "root:/config"
@@ -13,7 +15,7 @@ Item {
     readonly property int spacing: Appearance.spacing.normal
     readonly property int rounding: Appearance.rounding.large
 
-    implicitWidth: LauncherConfig.sizes.width
+    implicitWidth: listWrapper.width + padding * 2
     implicitHeight: search.height + listWrapper.height + padding * 2 + spacing
 
     anchors.bottom: parent.bottom
@@ -24,26 +26,23 @@ Item {
 
         color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
         radius: root.rounding
-        implicitHeight: Math.max(empty.height, list.height) + root.padding * 2
 
-        anchors.left: parent.left
-        anchors.right: parent.right
+        implicitWidth: list.width + root.padding * 2
+        implicitHeight: list.height + root.padding * 2
+
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: search.top
         anchors.bottomMargin: root.spacing
         anchors.margins: root.padding
 
-        AppList {
+        ContentList {
             id: list
 
-            padding: root.padding
-            search: search
             launcher: root.launcher
-        }
-
-        EmptyIndicator {
-            id: empty
-
-            empty: list.count === 0
+            search: search
+            padding: root.padding
+            spacing: root.spacing
+            rounding: root.rounding
         }
     }
 
@@ -68,18 +67,22 @@ Item {
         }
 
         onAccepted: {
-            if (list.currentItem) {
-                if (list.isAction)
-                    list.currentItem.modelData.onClicked(list);
-                else {
-                    Apps.launch(list.currentItem?.modelData);
+            const currentItem = list.currentList?.currentItem;
+            if (currentItem) {
+                if (list.showWallpapers) {
+                    // TODO
+                    console.log(currentItem.modelData.path);
+                } else if (text.startsWith(LauncherConfig.actionPrefix)) {
+                    currentItem.modelData.onClicked(list.currentList);
+                } else {
+                    Apps.launch(currentItem.modelData);
                     root.launcher.launcherVisible = false;
                 }
             }
         }
 
-        Keys.onUpPressed: list.decrementCurrentIndex()
-        Keys.onDownPressed: list.incrementCurrentIndex()
+        Keys.onUpPressed: list.currentList?.decrementCurrentIndex()
+        Keys.onDownPressed: list.currentList?.incrementCurrentIndex()
 
         Keys.onEscapePressed: root.launcher.launcherVisible = false
 
@@ -91,7 +94,9 @@ Item {
                     search.forceActiveFocus();
                 else {
                     search.text = "";
-                    list.currentIndex = 0;
+                    const current = list.currentList;
+                    if (current)
+                        current.currentIndex = 0;
                 }
             }
         }

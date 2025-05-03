@@ -9,9 +9,11 @@ PaddedRect {
     required property Actions.Action modelData
     required property var list
 
-    implicitWidth: ListView.view.width
     implicitHeight: LauncherConfig.sizes.itemHeight
     padding: [Appearance.padding.smaller, Appearance.padding.larger]
+
+    anchors.left: parent.left
+    anchors.right: parent.right
 
     StateLayer {
         radius: Appearance.rounding.normal

@@ -10,9 +10,11 @@ PaddedRect {
     required property DesktopEntry modelData
     required property Scope launcher
 
-    implicitWidth: ListView.view.width
     implicitHeight: LauncherConfig.sizes.itemHeight
     padding: [Appearance.padding.smaller, Appearance.padding.normal]
+
+    anchors.left: parent.left
+    anchors.right: parent.right
 
     StateLayer {
         radius: Appearance.rounding.normal

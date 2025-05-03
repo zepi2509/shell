@@ -21,22 +21,30 @@ Scope {
             keyboardFocus: root.launcherVisible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             visible: wrapper.shouldBeVisible
 
-            width: content.width + bg.rounding * 2
             mask: Region {
                 item: wrapper
             }
 
             anchors.top: true
+            anchors.left: true
             anchors.bottom: true
+            anchors.right: true
 
             Background {
                 id: bg
 
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                wrapperWidth: wrapper.width
                 realWrapperHeight: Math.min(wrapper.height, content.height)
             }
 
             Wrapper {
                 id: wrapper
+
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                implicitWidth: content.width + bg.rounding * 2
 
                 launcherVisible: root.launcherVisible
                 contentHeight: content.height

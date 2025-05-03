@@ -5,13 +5,12 @@ import QtQuick.Shapes
 Shape {
     id: root
 
+    required property real wrapperWidth
     required property real realWrapperHeight
     readonly property int rounding: Appearance.rounding.large
     readonly property int roundingY: Math.min(rounding, realWrapperHeight / 2)
     readonly property real wrapperHeight: realWrapperHeight - 1 // Pixel issues :sob:
 
-    anchors.left: parent.left
-    anchors.right: parent.right
     anchors.bottom: parent.bottom
 
     preferredRendererType: Shape.CurveRenderer
@@ -41,7 +40,7 @@ Shape {
             radiusY: root.roundingY
         }
         PathLine {
-            x: wrapper.width - root.rounding * 2
+            x: root.wrapperWidth - root.rounding * 2
         }
         PathArc {
             relativeX: root.rounding

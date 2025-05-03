@@ -30,17 +30,12 @@ ListView {
         onValuesChanged: root.currentIndex = 0
     }
 
-    clip: true
     spacing: Appearance.spacing.small
     orientation: Qt.Vertical
     implicitHeight: (LauncherConfig.sizes.itemHeight + spacing) * Math.min(LauncherConfig.maxShown, count) - spacing
 
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: parent.bottom
-    anchors.margins: root.padding
-
     highlightMoveDuration: Appearance.anim.durations.normal
+    highlightResizeDuration: 0
 
     highlight: StyledRect {
         radius: Appearance.rounding.normal
@@ -108,13 +103,6 @@ ListView {
 
         ActionItem {
             list: root
-        }
-    }
-
-    Behavior on implicitHeight {
-        Anim {
-            duration: Appearance.anim.durations.large
-            easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
         }
     }
 

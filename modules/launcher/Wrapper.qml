@@ -8,8 +8,6 @@ Item {
     required property real contentHeight
     property bool shouldBeVisible
 
-    anchors.left: parent.left
-    anchors.right: parent.right
     anchors.bottom: parent.bottom
 
     height: 0

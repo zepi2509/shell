@@ -1,0 +1,44 @@
+import "root:/widgets"
+import "root:/services"
+import "root:/config"
+import Quickshell
+import QtQuick
+import QtQuick.Controls
+
+PathView {
+    id: root
+
+    required property TextField search
+    required property Scope launcher
+
+    model: ScriptModel {
+        values: {
+            const list = Wallpapers.fuzzyQuery(root.search.text.split(" ").slice(1).join(" "));
+            if (list.length > 1 && list.length % 2 === 0)
+                list.length -= 1; // Always show odd number
+            return list;
+        }
+        onValuesChanged: root.currentIndex = 0
+    }
+
+    implicitWidth: Math.min(LauncherConfig.maxWallpapers, count) * (LauncherConfig.sizes.wallpaperWidth * 0.8 + Appearance.padding.larger * 2)
+    pathItemCount: LauncherConfig.maxWallpapers
+    cacheItemCount: 4
+
+    snapMode: PathView.SnapToItem
+    preferredHighlightBegin: 0.5
+    preferredHighlightEnd: 0.5
+    highlightRangeMode: PathView.StrictlyEnforceRange
+    highlightMoveDuration: Appearance.anim.durations.short
+
+    delegate: WallpaperItem {}
+
+    path: Path {
+        startY: root.height / 2
+
+        PathLine {
+            x: root.width
+            relativeY: 0
+        }
+    }
+}
