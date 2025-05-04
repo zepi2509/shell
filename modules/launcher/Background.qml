@@ -11,8 +11,6 @@ Shape {
     readonly property int roundingY: Math.min(rounding, realWrapperHeight / 2)
     readonly property real wrapperHeight: realWrapperHeight - 1 // Pixel issues :sob:
 
-    anchors.bottom: parent.bottom
-
     preferredRendererType: Shape.CurveRenderer
     opacity: Appearance.transparency.enabled ? Appearance.transparency.base : 1
 

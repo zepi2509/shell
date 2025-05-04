@@ -4,19 +4,19 @@ import QtQuick
 Item {
     id: root
 
-    required property bool launcherVisible
-    required property real contentHeight
+    required property bool osdVisible
+    required property real contentWidth
     property bool shouldBeVisible
 
-    height: 0
+    width: 0
     clip: true
 
     states: State {
         name: "visible"
-        when: root.launcherVisible
+        when: root.osdVisible
 
         PropertyChanges {
-            root.height: contentHeight
+            root.width: contentWidth
             root.shouldBeVisible: true
         }
     }
@@ -33,7 +33,7 @@ Item {
                 }
                 NumberAnimation {
                     target: root
-                    property: "height"
+                    property: "width"
                     duration: Appearance.anim.durations.large
                     easing.type: Easing.BezierSpline
                     easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
@@ -47,10 +47,10 @@ Item {
             SequentialAnimation {
                 NumberAnimation {
                     target: root
-                    property: "height"
+                    property: "width"
                     duration: Appearance.anim.durations.normal
                     easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
+                    easing.bezierCurve: Appearance.anim.curves.emphasizedAccel
                 }
                 PropertyAction {
                     target: root

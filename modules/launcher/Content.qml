@@ -33,7 +33,6 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: search.top
         anchors.bottomMargin: root.spacing
-        anchors.margins: root.padding
 
         ContentList {
             id: list

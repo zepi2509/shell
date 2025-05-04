@@ -34,6 +34,7 @@ Scope {
                 id: bg
 
                 anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
 
                 wrapperWidth: wrapper.width
                 realWrapperHeight: Math.min(wrapper.height, content.height)
@@ -43,6 +44,7 @@ Scope {
                 id: wrapper
 
                 anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
 
                 implicitWidth: content.width + bg.rounding * 2
 

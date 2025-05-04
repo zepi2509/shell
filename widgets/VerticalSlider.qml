@@ -1,0 +1,130 @@
+import "root:/widgets"
+import "root:/config"
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Effects
+
+Slider {
+    id: root
+
+    required property string icon
+
+    orientation: Qt.Vertical
+
+    background: StyledRect {
+        color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
+        radius: Appearance.rounding.full
+
+        StyledRect {
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            y: root.handle.y
+            implicitHeight: parent.height - y
+
+            color: Appearance.alpha(Appearance.colours.m3secondary, true)
+            radius: Appearance.rounding.full
+        }
+    }
+
+    handle: Item {
+        id: handle
+
+        property bool moving
+
+        y: root.visualPosition * (root.availableHeight - height)
+        implicitWidth: root.width
+        implicitHeight: root.width
+
+        RectangularShadow {
+            anchors.fill: parent
+            radius: rect.radius
+            color: Appearance.colours.m3shadow
+            blur: 5
+            spread: 0
+        }
+
+        StyledRect {
+            id: rect
+
+            anchors.fill: parent
+
+            color: Appearance.alpha(Appearance.colours.m3inverseSurface, true)
+            radius: Appearance.rounding.full
+
+            MaterialIcon {
+                id: icon
+
+                animate: true
+                text: root.icon
+                color: Appearance.colours.m3onPrimary
+                anchors.centerIn: parent
+
+                states: State {
+                    name: "value"
+                    when: handle.moving
+
+                    PropertyChanges {
+                        icon.animate: false
+                        icon.text: Math.round(root.value * 100)
+                        icon.font.pointSize: Appearance.font.size.small
+                        icon.font.family: Appearance.font.family.sans
+                    }
+                }
+
+                transitions: Transition {
+                    from: "*"
+                    to: "*"
+
+                    NumberAnimation {
+                        target: icon
+                        property: "scale"
+                        from: 1
+                        to: 0
+                        duration: Appearance.anim.durations.normal
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.anim.curves.standardAccel
+                    }
+                    PropertyAction {
+                        target: icon
+                        properties: "animate,text,font.pointSize,font.family"
+                    }
+                    NumberAnimation {
+                        target: icon
+                        property: "scale"
+                        from: 0
+                        to: 1
+                        duration: Appearance.anim.durations.normal
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.anim.curves.standardDecel
+                    }
+                }
+            }
+        }
+    }
+
+    onPressedChanged: handle.moving = pressed
+
+    onValueChanged: {
+        handle.moving = true;
+        stateChangeDelay.restart();
+    }
+
+    Timer {
+        id: stateChangeDelay
+
+        interval: 500
+        onTriggered: {
+            if (!root.pressed)
+                handle.moving = false;
+        }
+    }
+
+    Behavior on value {
+        NumberAnimation {
+            duration: Appearance.anim.durations.large
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.standard
+        }
+    }
+}
