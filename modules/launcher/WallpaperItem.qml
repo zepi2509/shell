@@ -10,9 +10,14 @@ StyledRect {
 
     required property Wallpapers.Wallpaper modelData
 
-    scale: PathView.isCurrentItem ? 1 : PathView.onPath ? 0.8 : 0
-    opacity: PathView.onPath ? 1 : 0
+    scale: 0.5
+    opacity: 0
     z: PathView.z
+
+    Component.onCompleted: {
+        scale = Qt.binding(() => PathView.isCurrentItem ? 1 : PathView.onPath ? 0.8 : 0);
+        opacity = Qt.binding(() => PathView.onPath ? 1 : 0);
+    }
 
     implicitWidth: image.width + Appearance.padding.larger * 2
     implicitHeight: image.height + label.height + Appearance.spacing.small / 2 + Appearance.padding.large + Appearance.padding.normal

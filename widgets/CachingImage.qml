@@ -8,7 +8,12 @@ Image {
     required property string path
     property string thumbnail: path
 
-    source: `file://${thumbnail}`
+    source: {
+        if (thumbnail)
+            return `file://${thumbnail}`;
+        shaProc.running = true;
+        return "";
+    }
     asynchronous: true
     fillMode: Image.PreserveAspectCrop
 
