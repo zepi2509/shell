@@ -36,6 +36,18 @@ PathView {
     path: Path {
         startY: root.height / 2
 
+        PathAttribute {
+            name: "z"
+            value: 0
+        }
+        PathLine {
+            x: root.width / 2
+            relativeY: 0
+        }
+        PathAttribute {
+            name: "z"
+            value: 1
+        }
         PathLine {
             x: root.width
             relativeY: 0

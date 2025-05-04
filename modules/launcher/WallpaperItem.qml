@@ -12,10 +12,10 @@ StyledRect {
 
     scale: PathView.isCurrentItem ? 1 : PathView.onPath ? 0.8 : 0
     opacity: PathView.onPath ? 1 : 0
-    z: PathView.isCurrentItem ? 1 : 0
+    z: PathView.z
 
     implicitWidth: image.width + Appearance.padding.larger * 2
-    implicitHeight: image.height + label.height + Appearance.spacing.small / 2 + Appearance.padding.normal * 2
+    implicitHeight: image.height + label.height + Appearance.spacing.small / 2 + Appearance.padding.large + Appearance.padding.normal
 
     StateLayer {
         radius: Appearance.rounding.normal
@@ -29,7 +29,7 @@ StyledRect {
         id: image
 
         anchors.horizontalCenter: parent.horizontalCenter
-        y: Appearance.padding.normal
+        y: Appearance.padding.large
 
         visible: false
         path: root.modelData.path
@@ -45,9 +45,20 @@ StyledRect {
         layer.enabled: true
         visible: false
         anchors.fill: image
-        width: image.width
-        height: image.height
         radius: Appearance.rounding.normal
+    }
+
+    RectangularShadow {
+        opacity: root.PathView.isCurrentItem ? 0.7 : 0
+        anchors.fill: mask
+        radius: mask.radius
+        color: Appearance.colours.m3shadow
+        blur: 10
+        spread: 3
+
+        Behavior on opacity {
+            Anim {}
+        }
     }
 
     MultiEffect {
@@ -73,18 +84,16 @@ StyledRect {
     }
 
     Behavior on scale {
-        NumberAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.standard
-        }
+        Anim {}
     }
 
     Behavior on opacity {
-        NumberAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.standard
-        }
+        Anim {}
+    }
+
+    component Anim: NumberAnimation {
+        duration: Appearance.anim.durations.normal
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Appearance.anim.curves.standard
     }
 }
