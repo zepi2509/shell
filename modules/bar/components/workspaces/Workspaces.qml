@@ -26,6 +26,7 @@ Item {
 
         spacing: 0
         layer.enabled: true
+        layer.smooth: true
 
         Repeater {
             model: BarConfig.workspaces.shown

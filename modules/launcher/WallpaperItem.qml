@@ -43,6 +43,7 @@ StyledRect {
         id: mask
 
         layer.enabled: true
+        layer.smooth: true
         visible: false
         anchors.fill: image
         radius: Appearance.rounding.normal
@@ -66,6 +67,8 @@ StyledRect {
         source: image
         maskEnabled: true
         maskSource: mask
+        maskSpreadAtMin: 1
+        maskThresholdMin: 0.5
     }
 
     StyledText {
