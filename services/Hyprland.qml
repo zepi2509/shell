@@ -40,8 +40,9 @@ Singleton {
 
     Process {
         id: getClients
-        command: ["sh", "-c", "hyprctl -j clients | jq -c"]
+        command: ["hyprctl", "-j", "clients"]
         stdout: SplitParser {
+            splitMarker: ""
             onRead: data => {
                 const clients = JSON.parse(data);
                 const rClients = root.clients;
@@ -69,8 +70,9 @@ Singleton {
 
     Process {
         id: getActiveClient
-        command: ["sh", "-c", "hyprctl -j activewindow | jq -c"]
+        command: ["hyprctl", "-j", "activewindow"]
         stdout: SplitParser {
+            splitMarker: ""
             onRead: data => {
                 const client = JSON.parse(data);
                 root.activeClient = client.address ? clientComp.createObject(root, {

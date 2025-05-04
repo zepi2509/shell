@@ -13,6 +13,7 @@ Variants {
         required property ShellScreen modelData
         readonly property Brightness.Monitor monitor: Brightness.getMonitorForScreen(modelData)
         property bool osdVisible
+        property bool hovered
 
         function show(): void {
             root.osdVisible = true;
@@ -43,7 +44,10 @@ Variants {
             id: timer
 
             interval: OsdConfig.hideDelay
-            onTriggered: root.osdVisible = false
+            onTriggered: {
+                if (!root.hovered)
+                    root.osdVisible = false;
+            }
         }
 
         LazyLoader {
@@ -89,6 +93,19 @@ Variants {
                         id: content
 
                         monitor: root.monitor
+                    }
+                }
+
+                HoverHandler {
+                    id: hoverHandler
+
+                    parent: win
+                    onHoveredChanged: {
+                        root.hovered = hovered;
+                        if (hovered)
+                            timer.stop();
+                        else
+                            root.osdVisible = false;
                     }
                 }
             }
