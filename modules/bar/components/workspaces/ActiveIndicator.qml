@@ -48,7 +48,7 @@ Rectangle {
         source: base
         maskSource: root.mask
         maskEnabled: true
-        maskSpreadAtMin: 1
+        maskSpreadAtMin: 0.6
         maskThresholdMin: 0.4
 
         x: root.vertical ? 0 : -parent.offset
