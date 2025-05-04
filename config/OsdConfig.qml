@@ -4,7 +4,7 @@ import Quickshell
 import QtQuick
 
 Singleton {
-    readonly property int hideDelay: 1500
+    readonly property int hideDelay: 2000
     readonly property Sizes sizes: Sizes {}
 
     component Sizes: QtObject {

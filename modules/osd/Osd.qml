@@ -4,47 +4,55 @@ import "root:/config"
 import Quickshell
 import QtQuick
 
-Scope {
-    id: root
+Variants {
+    model: Quickshell.screens
 
-    property bool osdVisible
+    Scope {
+        id: root
 
-    function show(): void {
-        root.osdVisible = true;
-        timer.restart();
-    }
+        required property ShellScreen modelData
+        readonly property Brightness.Monitor monitor: Brightness.getMonitorForScreen(modelData)
+        property bool osdVisible
 
-    Connections {
-        target: Audio
-
-        function onMutedChanged(): void {
-            root.show();
+        function show(): void {
+            root.osdVisible = true;
+            timer.restart();
         }
 
-        function onVolumeChanged(): void {
-            root.show();
+        Connections {
+            target: Audio
+
+            function onMutedChanged(): void {
+                root.show();
+            }
+
+            function onVolumeChanged(): void {
+                root.show();
+            }
         }
-    }
 
-    Timer {
-        id: timer
+        Connections {
+            target: root.monitor
 
-        interval: OsdConfig.hideDelay
-        onTriggered: root.osdVisible = false
-    }
+            function onBrightnessChanged(): void {
+                root.show();
+            }
+        }
 
-    Variants {
-        model: Quickshell.screens
+        Timer {
+            id: timer
+
+            interval: OsdConfig.hideDelay
+            onTriggered: root.osdVisible = false
+        }
 
         LazyLoader {
             loading: true
 
-            required property ShellScreen modelData
-
             StyledWindow {
                 id: win
 
-                screen: parent.modelData
+                screen: root.modelData
                 name: "osd"
                 visible: wrapper.shouldBeVisible
 
@@ -80,7 +88,7 @@ Scope {
                     Content {
                         id: content
 
-                        screen: parent.modelData
+                        monitor: root.monitor
                     }
                 }
             }

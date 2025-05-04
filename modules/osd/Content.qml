@@ -7,7 +7,7 @@ import QtQuick
 Column {
     id: root
 
-    required property ShellScreen screen
+    required property Brightness.Monitor monitor
 
     padding: Appearance.padding.large
 
@@ -35,6 +35,8 @@ Column {
 
     VerticalSlider {
         icon: "brightness_6"
+        value: root.monitor?.brightness ?? 0
+        onMoved: root.monitor?.setBrightness(value)
 
         implicitWidth: OsdConfig.sizes.sliderWidth
         implicitHeight: OsdConfig.sizes.sliderHeight
