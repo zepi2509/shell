@@ -13,13 +13,14 @@ Singleton {
 
     property list<Wallpaper> list
 
-    readonly property list<var> preppedPaths: list.map(w => ({
+    readonly property list<var> preppedWalls: list.map(w => ({
+                name: Fuzzy.prepare(w.name),
                 path: Fuzzy.prepare(w.path),
                 wall: w
             }))
 
     function fuzzyQuery(search: string): var {
-        return Fuzzy.go(search, preppedPaths, {
+        return Fuzzy.go(search, preppedWalls, {
             all: true,
             keys: ["name", "path"],
             scoreFn: r => r[0].score * 0.9 + r[1].score * 0.1
