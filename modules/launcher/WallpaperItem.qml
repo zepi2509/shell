@@ -25,22 +25,18 @@ StyledRect {
         }
     }
 
-    Image {
+    CachingImage {
         id: image
 
         anchors.horizontalCenter: parent.horizontalCenter
         y: Appearance.padding.normal
 
         visible: false
-        source: `file://${root.modelData.path}`
-        asynchronous: true
-        fillMode: Image.PreserveAspectCrop
+        path: root.modelData.path
         smooth: !root.PathView.view.moving
 
         width: LauncherConfig.sizes.wallpaperWidth
         height: width / 16 * 9
-        sourceSize.width: width
-        sourceSize.height: height
     }
 
     Rectangle {
@@ -70,7 +66,7 @@ StyledRect {
 
         renderType: Text.QtRendering
         text: root.modelData.name
-        font.pointSize: Appearance.font.size.small
+        font.pointSize: Appearance.font.size.normal
     }
 
     Behavior on scale {

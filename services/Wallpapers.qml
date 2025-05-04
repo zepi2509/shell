@@ -9,7 +9,7 @@ import Qt.labs.platform
 Singleton {
     id: root
 
-    readonly property string path: `${StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]}/Wallpapers`
+    readonly property string path: `${StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]}/Wallpapers`.slice(7)
 
     property list<Wallpaper> list
 
@@ -28,7 +28,7 @@ Singleton {
 
     Process {
         running: true
-        command: ["fd", ".", root.path.slice(7), "-t", "f", "-e", "jpg", "-e", "jpeg", "-e", "png", "-e", "svg"]
+        command: ["fd", ".", root.path, "-t", "f", "-e", "jpg", "-e", "jpeg", "-e", "png", "-e", "svg"]
         stdout: SplitParser {
             splitMarker: ""
             onRead: data => {
