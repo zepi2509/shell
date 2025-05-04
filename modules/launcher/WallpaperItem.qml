@@ -9,6 +9,7 @@ StyledRect {
     id: root
 
     required property Wallpapers.Wallpaper modelData
+    required property Scope launcher
 
     scale: 0.5
     opacity: 0
@@ -26,7 +27,8 @@ StyledRect {
         radius: Appearance.rounding.normal
 
         function onClicked(): void {
-            console.log("clicked");
+            Wallpapers.setWallpaper(root.modelData.path);
+            root.launcher.launcherVisible = false;
         }
     }
 

@@ -70,8 +70,8 @@ Item {
             const currentItem = list.currentList?.currentItem;
             if (currentItem) {
                 if (list.showWallpapers) {
-                    // TODO
-                    console.log(currentItem.modelData.path);
+                    Wallpapers.setWallpaper(currentItem.modelData.path);
+                    root.launcher.launcherVisible = false;
                 } else if (text.startsWith(LauncherConfig.actionPrefix)) {
                     currentItem.modelData.onClicked(list.currentList);
                 } else {

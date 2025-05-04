@@ -26,6 +26,19 @@ Singleton {
         }).map(r => r.obj.wall);
     }
 
+    function setWallpaper(path: string): void {
+        setWall.path = path;
+        setWall.startDetached();
+    }
+
+    Process {
+        id: setWall
+
+        property string path
+
+        command: ["caelestia", "wallpaper", "-f", path]
+    }
+
     Process {
         running: true
         command: ["fd", ".", root.path, "-t", "f", "-e", "jpg", "-e", "jpeg", "-e", "png", "-e", "svg"]

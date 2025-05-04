@@ -31,7 +31,9 @@ PathView {
     highlightRangeMode: PathView.StrictlyEnforceRange
     highlightMoveDuration: Appearance.anim.durations.short
 
-    delegate: WallpaperItem {}
+    delegate: WallpaperItem {
+        launcher: root.launcher
+    }
 
     path: Path {
         startY: root.height / 2
