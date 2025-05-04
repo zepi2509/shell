@@ -64,6 +64,9 @@ StyledRect {
         anchors.topMargin: Appearance.spacing.small / 2
         anchors.horizontalCenter: parent.horizontalCenter
 
+        width: image.width - Appearance.padding.normal * 2
+        horizontalAlignment: Text.AlignHCenter
+        elide: Text.ElideRight
         renderType: Text.QtRendering
         text: root.modelData.name
         font.pointSize: Appearance.font.size.normal
