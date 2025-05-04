@@ -1,12 +1,16 @@
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import "components"
 import "components/workspaces"
+import Quickshell
 import QtQuick
 import QtQuick.Layouts
 
 BoxLayout {
     id: root
+
+    required property ShellScreen screen
 
     function get(horiz, vert) {
         return BarConfig.vertical ? vert : horiz;
@@ -42,9 +46,16 @@ BoxLayout {
         }
     }
 
-    Item {
+    MouseArea {
         Layout.fillWidth: true
         Layout.fillHeight: true
+
+        onWheel: event => {
+            if (event.angleDelta.y > 0)
+                Audio.setVolume(Audio.volume + 0.1);
+            else if (event.angleDelta.y < 0)
+                Audio.setVolume(Audio.volume - 0.1);
+        }
     }
 
     Pill {
@@ -56,9 +67,17 @@ BoxLayout {
         }
     }
 
-    Item {
+    MouseArea {
         Layout.fillWidth: true
         Layout.fillHeight: true
+
+        onWheel: event => {
+            const monitor = Brightness.getMonitorForScreen(root.screen);
+            if (event.angleDelta.y > 0)
+                monitor.setBrightness(monitor.brightness + 0.1);
+            else if (event.angleDelta.y < 0)
+                monitor.setBrightness(monitor.brightness - 0.1);
+        }
     }
 
     Pill {

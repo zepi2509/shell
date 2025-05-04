@@ -99,7 +99,6 @@ Variants {
                 HoverHandler {
                     id: hoverHandler
 
-                    parent: win
                     onHoveredChanged: {
                         root.hovered = hovered;
                         if (hovered)

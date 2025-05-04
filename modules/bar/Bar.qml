@@ -45,12 +45,16 @@ Variants {
 
         Preset {
             presetName: "pills"
-            sourceComponent: Pills {}
+            sourceComponent: Pills {
+                screen: win.modelData
+            }
         }
 
         Preset {
             presetName: "panel"
-            sourceComponent: Panel {}
+            sourceComponent: Panel {
+                screen: win.modelData
+            }
         }
     }
 
