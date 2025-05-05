@@ -57,7 +57,7 @@ Item {
         leftPadding: root.padding
         rightPadding: root.padding
 
-        placeholderText: qsTr(`Type "${LauncherConfig.actionPrefix}" for commands`)
+        placeholderText: qsTr("Type \"%1\" for commands").arg(LauncherConfig.actionPrefix)
 
         background: StyledRect {
             color: Colours.alpha(Colours.palette.m3surfaceContainer, true)

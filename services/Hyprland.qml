@@ -13,7 +13,7 @@ Singleton {
     readonly property var monitors: Hyprland.monitors
     property Client activeClient: null
     readonly property HyprlandWorkspace activeWorkspace: focusedMonitor?.activeWorkspace ?? null
-    readonly property HyprlandMonitor focusedMonitor: Hyprland.monitors.values.find(m => m.lastIpcObject.focused) ?? null
+    readonly property HyprlandMonitor focusedMonitor: Hyprland.focusedMonitor
     readonly property int activeWsId: activeWorkspace?.id ?? 1
 
     function reload() {
