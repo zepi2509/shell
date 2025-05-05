@@ -64,7 +64,6 @@ Variants {
                     item: wrapper
                 }
 
-                margins.right: BackgroundConfig.border.thickness
                 anchors.left: true
                 anchors.right: true
                 height: wrapper.height
@@ -72,11 +71,17 @@ Variants {
                 Background {
                     id: bg
 
+                    visible: false
+
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
 
                     wrapperHeight: wrapper.height
                     realWrapperWidth: Math.min(wrapper.width, content.width)
+                }
+
+                LayerShadow {
+                    source: bg
                 }
 
                 Wrapper {

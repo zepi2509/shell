@@ -57,7 +57,7 @@ Slider {
 
                 animate: true
                 text: root.icon
-                color: Appearance.colours.m3onInverseSurface
+                color: Appearance.colours.m3inverseOnSurface
                 anchors.centerIn: parent
 
                 states: State {

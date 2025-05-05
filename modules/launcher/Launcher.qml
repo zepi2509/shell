@@ -25,7 +25,6 @@ Scope {
                 item: wrapper
             }
 
-            margins.bottom: BackgroundConfig.border.thickness
             anchors.top: true
             anchors.left: true
             anchors.bottom: true
@@ -34,11 +33,17 @@ Scope {
             Background {
                 id: bg
 
+                visible: false
+
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
 
                 wrapperWidth: wrapper.width
                 realWrapperHeight: Math.min(wrapper.height, content.height)
+            }
+
+            LayerShadow {
+                source: bg
             }
 
             Wrapper {

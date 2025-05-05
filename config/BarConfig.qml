@@ -19,7 +19,7 @@ Singleton {
         property int totalHeight: height
         property int height: 40
         property int innerHeight: 30
-        property int floatingGap: 10 + BackgroundConfig.border.thickness
+        property int floatingGap: 15
         property int maxLabelWidth: 600
         property int maxLabelHeight: 400
     }
