@@ -6,7 +6,7 @@ Image {
     id: root
 
     required property string path
-    property string thumbnail: path
+    property string thumbnail
 
     source: {
         if (thumbnail)
