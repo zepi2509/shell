@@ -28,23 +28,25 @@ Item {
         id: two
     }
 
-    component Img: Image {
+    component Img: CachingImage {
         id: img
 
         function update(): void {
-            if (source === root.source)
+            const srcPath = `${root.source}`.slice(7);
+            if (thumbnail.originalPath === srcPath) {
                 root.current = this;
-            else
-                source = root.source;
+            } else
+                path = srcPath;
         }
 
         anchors.fill: parent
+
         asynchronous: true
+        cache: false
         fillMode: Image.PreserveAspectCrop
+
         opacity: 0
         scale: Wallpapers.showPreview ? 1 : 0.8
-        sourceSize.width: width
-        sourceSize.height: height
 
         onStatusChanged: {
             if (status === Image.Ready)

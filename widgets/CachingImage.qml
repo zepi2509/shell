@@ -5,46 +5,23 @@ import QtQuick
 Image {
     id: root
 
-    required property string path
-    property string thumbnail
+    property string path
+    readonly property Thumbnailer.Thumbnail thumbnail: Thumbnailer.go(path, width, height)
 
-    source: {
-        if (thumbnail)
-            return `file://${thumbnail}`;
-        shaProc.running = true;
-        return "";
-    }
+    source: thumbnail.path ? `file://${thumbnail.path}` : ""
     asynchronous: true
     fillMode: Image.PreserveAspectCrop
 
-    onPathChanged: shaProc.running = true
-    onWidthChanged: shaProc.running = true
-    onHeightChanged: shaProc.running = true
-    onStatusChanged: {
-        if (status === Image.Error)
-            waitProc.running = true;
+    onPathChanged: {
+        thumbnail.originalPath = path;
+        thumbnail.reload();
     }
-
-    Process {
-        id: shaProc
-
-        command: ["sha1sum", root.path]
-        stdout: SplitParser {
-            onRead: data => root.thumbnail = Thumbnailer.go(data.split(" ")[0], root.path, root.width, root.height)
-        }
+    onWidthChanged: {
+        thumbnail.width = width;
+        thumbnail.reload();
     }
-
-    Process {
-        id: waitProc
-
-        command: ["inotifywait", "-q", "-e", "close_write", "--format", "%w%f", "-m", root.thumbnail.slice(0, root.thumbnail.lastIndexOf("/"))]
-        stdout: SplitParser {
-            onRead: file => {
-                if (file === root.thumbnail) {
-                    root.source = file;
-                    waitProc.running = false;
-                }
-            }
-        }
+    onHeightChanged: {
+        thumbnail.height = height;
+        thumbnail.reload();
     }
 }
