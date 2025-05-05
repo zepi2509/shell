@@ -41,6 +41,7 @@ Item {
 
         anchors.fill: parent
 
+        loadOriginal: true
         asynchronous: true
         cache: false
         fillMode: Image.PreserveAspectCrop

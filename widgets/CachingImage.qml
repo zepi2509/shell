@@ -6,22 +6,10 @@ Image {
     id: root
 
     property string path
-    readonly property Thumbnailer.Thumbnail thumbnail: Thumbnailer.go(path, width, height)
+    property bool loadOriginal
+    readonly property Thumbnailer.Thumbnail thumbnail: Thumbnailer.go(this)
 
     source: thumbnail.path ? `file://${thumbnail.path}` : ""
     asynchronous: true
     fillMode: Image.PreserveAspectCrop
-
-    onPathChanged: {
-        thumbnail.originalPath = path;
-        thumbnail.reload();
-    }
-    onWidthChanged: {
-        thumbnail.width = width;
-        thumbnail.reload();
-    }
-    onHeightChanged: {
-        thumbnail.height = height;
-        thumbnail.reload();
-    }
 }
