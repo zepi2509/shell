@@ -35,6 +35,7 @@ Singleton {
                 onRead: data => {
                     const sha = data.split(" ")[0];
                     obj.path = `${root.thumbDir}/${sha}@${obj.width}x${obj.height}-exact.png`;
+                    obj.thumbProc.signal(9);
                     obj.thumbProc.running = true;
                 }
             }
@@ -62,6 +63,7 @@ end`]
         }
 
         function reload(): void {
+            shaProc.signal(9);
             shaProc.running = true;
         }
     }
