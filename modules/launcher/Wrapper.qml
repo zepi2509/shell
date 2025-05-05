@@ -8,6 +8,7 @@ Item {
     required property real contentHeight
     property bool shouldBeVisible
 
+    visible: height > 0
     height: 0
     clip: true
 
