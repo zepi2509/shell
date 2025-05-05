@@ -16,6 +16,7 @@ Singleton {
     readonly property Presets presets: Presets {}
 
     component Sizes: QtObject {
+        property int exclusiveZone: totalHeight
         property int totalHeight: height
         property int height: 40
         property int innerHeight: 30
@@ -51,7 +52,8 @@ Singleton {
         readonly property Preset pills: Preset {
             name: "pills"
             sizes: Sizes {
-                totalHeight: height + floatingGap
+                totalHeight: height + floatingGap * 2
+                exclusiveZone: totalHeight - floatingGap
             }
         }
         readonly property Preset panel: Preset {

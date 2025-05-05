@@ -14,6 +14,7 @@ Variants {
         screen: modelData
         name: "bar"
 
+        exclusiveZone: BarConfig.sizes.exclusiveZone
         width: BarConfig.vertical ? BarConfig.sizes.totalHeight : -1
         height: BarConfig.vertical ? -1 : BarConfig.sizes.totalHeight
 
@@ -43,18 +44,28 @@ Variants {
             }
         }
 
-        Preset {
-            presetName: "pills"
-            sourceComponent: Pills {
-                screen: win.modelData
+        Item {
+            id: content
+
+            anchors.fill: parent
+
+            Preset {
+                presetName: "pills"
+                sourceComponent: Pills {
+                    screen: win.modelData
+                }
+            }
+
+            Preset {
+                presetName: "panel"
+                sourceComponent: Panel {
+                    screen: win.modelData
+                }
             }
         }
 
-        Preset {
-            presetName: "panel"
-            sourceComponent: Panel {
-                screen: win.modelData
-            }
+        LayerShadow {
+            source: content
         }
     }
 
