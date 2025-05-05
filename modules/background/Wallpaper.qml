@@ -42,7 +42,7 @@ Item {
         asynchronous: true
         fillMode: Image.PreserveAspectCrop
         opacity: 0
-        scale: 0.8
+        scale: Wallpapers.showPreview ? 1 : 0.8
 
         onStatusChanged: {
             if (status === Image.Ready)

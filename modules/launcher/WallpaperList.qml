@@ -24,6 +24,12 @@ PathView {
     }
 
     Component.onCompleted: currentIndex = Wallpapers.list.findIndex(w => w.path === Wallpapers.current)
+    Component.onDestruction: Wallpapers.stopPreview()
+
+    onCurrentItemChanged: {
+        if (currentItem)
+            Wallpapers.preview(currentItem.modelData.path);
+    }
 
     implicitWidth: Math.min(LauncherConfig.maxWallpapers, count) * (LauncherConfig.sizes.wallpaperWidth * 0.8 + Appearance.padding.larger * 2)
     pathItemCount: LauncherConfig.maxWallpapers

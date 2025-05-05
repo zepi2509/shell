@@ -9,13 +9,13 @@ import Qt.labs.platform
 Singleton {
     id: root
 
-    readonly property string currentPath: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/wallpaper/last.txt`.slice(7)
+    readonly property string currentNamePath: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/wallpaper/last.txt`.slice(7)
     readonly property string path: `${StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]}/Wallpapers`.slice(7)
 
     property list<Wallpaper> list
     property bool showPreview: false
-    readonly property string current: showPreview ? preview : actualCurrent
-    property string preview
+    readonly property string current: showPreview ? previewPath : actualCurrent
+    property string previewPath
     property string actualCurrent
 
     readonly property list<var> preppedWalls: list.map(w => ({
@@ -33,17 +33,42 @@ Singleton {
     }
 
     function setWallpaper(path: string): void {
+        actualCurrent = path;
         setWall.path = path;
         setWall.startDetached();
+    }
+
+    function preview(path: string): void {
+        previewPath = path;
+        showPreview = true;
+        getPreviewColoursProc.running = true;
+    }
+
+    function stopPreview(): void {
+        showPreview = false;
+        Colours.showPreview = false;
     }
 
     reloadableId: "wallpapers"
 
     FileView {
-        path: root.currentPath
+        path: root.currentNamePath
         watchChanges: true
         onFileChanged: reload()
         onLoaded: root.actualCurrent = text().trim()
+    }
+
+    Process {
+        id: getPreviewColoursProc
+
+        command: ["caelestia", "scheme", "print", root.previewPath]
+        stdout: SplitParser {
+            splitMarker: ""
+            onRead: data => {
+                Colours.load(data, true);
+                Colours.showPreview = true;
+            }
+        }
     }
 
     Process {

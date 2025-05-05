@@ -33,8 +33,8 @@ Singleton {
         return Qt.hsla(c.hslHue, c.hslSaturation, 0.2, 1);
     }
 
-    function load(data: string, preview: bool): void {
-        const colours = preview ? preview : current;
+    function load(data: string, isPreview: bool): void {
+        const colours = isPreview ? preview : current;
         for (const line of data.trim().split("\n")) {
             let [name, colour] = line.split(" ");
             name = name.trim();
