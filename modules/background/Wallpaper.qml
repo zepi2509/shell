@@ -43,6 +43,8 @@ Item {
         fillMode: Image.PreserveAspectCrop
         opacity: 0
         scale: Wallpapers.showPreview ? 1 : 0.8
+        sourceSize.width: width
+        sourceSize.height: height
 
         onStatusChanged: {
             if (status === Image.Ready)

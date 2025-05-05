@@ -58,5 +58,13 @@ Shape {
             radiusY: root.roundingY
             direction: PathArc.Counterclockwise
         }
+
+        Behavior on fillColor {
+            ColorAnimation {
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.standard
+            }
+        }
     }
 }
