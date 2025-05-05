@@ -16,7 +16,7 @@ Shape {
 
     ShapePath {
         strokeWidth: -1
-        fillColor: Appearance.colours.m3surfaceContainer
+        fillColor: Appearance.colours.m3surface
 
         startX: root.wrapperWidth
 

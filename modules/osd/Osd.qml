@@ -64,6 +64,7 @@ Variants {
                     item: wrapper
                 }
 
+                margins.right: BackgroundConfig.border.thickness
                 anchors.left: true
                 anchors.right: true
                 height: wrapper.height

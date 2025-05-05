@@ -8,7 +8,6 @@ import Qt.labs.platform
 Singleton {
     id: root
 
-    property bool borders: true
     property bool light: false
     readonly property Transparency transparency: Transparency {}
     readonly property Rounding rounding: Rounding {}

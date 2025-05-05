@@ -12,7 +12,7 @@ Slider {
     orientation: Qt.Vertical
 
     background: StyledRect {
-        color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
+        color: Appearance.alpha(Appearance.colours.m3surfaceContainer, true)
         radius: Appearance.rounding.full
 
         StyledRect {
@@ -57,7 +57,7 @@ Slider {
 
                 animate: true
                 text: root.icon
-                color: Appearance.colours.m3onPrimary
+                color: Appearance.colours.m3onInverseSurface
                 anchors.centerIn: parent
 
                 states: State {

@@ -39,7 +39,7 @@ ListView {
 
     highlight: StyledRect {
         radius: Appearance.rounding.normal
-        color: Appearance.alpha(Appearance.colours.m3surfaceContainerHighest, true)
+        color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
     }
 
     delegate: isAction ? actionItem : appItem

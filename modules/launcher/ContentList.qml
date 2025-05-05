@@ -139,7 +139,7 @@ Item {
             id: icon
 
             text: "manage_search"
-            color: Appearance.colours.m3outline
+            color: Appearance.colours.m3onSurfaceVariant
             font.pointSize: Appearance.font.size.extraLarge
 
             anchors.verticalCenter: parent.verticalCenter
@@ -153,7 +153,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             text: qsTr("No results")
-            color: Appearance.colours.m3outline
+            color: Appearance.colours.m3onSurfaceVariant
             font.pointSize: Appearance.font.size.larger
             font.weight: 500
         }

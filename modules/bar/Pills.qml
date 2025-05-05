@@ -20,10 +20,9 @@ BoxLayout {
     spacing: Appearance.padding.large
 
     anchors.fill: parent
-    anchors.leftMargin: get(BarConfig.sizes.floatingGapLarge, BarConfig.sizes.floatingGap)
-    anchors.topMargin: get(BarConfig.sizes.floatingGap, BarConfig.sizes.floatingGapLarge)
-    anchors.rightMargin: get(BarConfig.sizes.floatingGapLarge, 0)
-    anchors.bottomMargin: get(0, BarConfig.sizes.floatingGapLarge)
+    anchors.margins: BarConfig.sizes.floatingGap
+    anchors.rightMargin: get(BarConfig.sizes.floatingGap, 0)
+    anchors.bottomMargin: get(0, BarConfig.sizes.floatingGap)
 
     Pill {
         OsIcon {
@@ -126,7 +125,7 @@ BoxLayout {
     }
 
     component Pill: PaddedRect {
-        color: Appearance.alpha(Appearance.colours.m3surfaceContainer, false)
+        color: Appearance.alpha(Appearance.colours.m3surface, false)
         radius: Appearance.rounding.full
         padding: BarConfig.vertical ? [Appearance.padding.large, 0] : [0, Appearance.padding.large]
 

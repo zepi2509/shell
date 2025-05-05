@@ -25,6 +25,7 @@ Scope {
                 item: wrapper
             }
 
+            margins.bottom: BackgroundConfig.border.thickness
             anchors.top: true
             anchors.left: true
             anchors.bottom: true

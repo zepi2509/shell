@@ -24,7 +24,7 @@ Item {
     StyledRect {
         id: listWrapper
 
-        color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
+        color: Appearance.alpha(Appearance.colours.m3surfaceContainer, true)
         radius: root.rounding
 
         implicitWidth: list.width + root.padding * 2
@@ -61,7 +61,7 @@ Item {
         placeholderText: qsTr(`Type "${LauncherConfig.actionPrefix}" for commands`)
 
         background: StyledRect {
-            color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
+            color: Appearance.alpha(Appearance.colours.m3surfaceContainer, true)
             radius: root.rounding
         }
 
