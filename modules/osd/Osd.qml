@@ -12,6 +12,7 @@ Variants {
 
         required property ShellScreen modelData
         readonly property Brightness.Monitor monitor: Brightness.getMonitorForScreen(modelData)
+        property int winHeight
         property bool osdVisible
         property bool hovered
 
@@ -50,6 +51,15 @@ Variants {
             }
         }
 
+        Connections {
+            target: Drawers
+
+            function onPosChanged(screen: ShellScreen, x: int, y: int): void {
+                if (screen === root.modelData && x > screen.width / 2 && y > (screen.height - root.winHeight) / 2 && y < (screen.height + root.winHeight) / 2)
+                    root.show();
+            }
+        }
+
         LazyLoader {
             loading: true
 
@@ -67,6 +77,8 @@ Variants {
                 anchors.left: true
                 anchors.right: true
                 height: wrapper.height
+
+                Component.onCompleted: root.winHeight = height
 
                 Background {
                     id: bg

@@ -68,6 +68,12 @@ Scope {
         LayerShadow {
             source: effect
         }
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onPositionChanged: event => Drawers.setPosForScreen(root.screen, event.x, event.y)
+        }
     }
 
     ExclusionZone {
