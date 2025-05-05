@@ -9,9 +9,14 @@ import Qt.labs.platform
 Singleton {
     id: root
 
+    readonly property string currentPath: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/wallpaper/last.txt`.slice(7)
     readonly property string path: `${StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]}/Wallpapers`.slice(7)
 
     property list<Wallpaper> list
+    property bool showPreview: false
+    readonly property string current: showPreview ? preview : actualCurrent
+    property string preview
+    property string actualCurrent
 
     readonly property list<var> preppedWalls: list.map(w => ({
                 name: Fuzzy.prepare(w.name),
@@ -30,6 +35,15 @@ Singleton {
     function setWallpaper(path: string): void {
         setWall.path = path;
         setWall.startDetached();
+    }
+
+    reloadableId: "wallpapers"
+
+    FileView {
+        path: root.currentPath
+        watchChanges: true
+        onFileChanged: reload()
+        onLoaded: root.actualCurrent = text().trim()
     }
 
     Process {
