@@ -33,7 +33,7 @@ Rectangle {
 
         visible: false
         anchors.fill: parent
-        color: Appearance.on(root.color)
+        color: Colours.on(root.color)
 
         Behavior on color {
             ColorAnimation {

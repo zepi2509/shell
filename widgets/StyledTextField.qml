@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import "root:/services"
 import "root:/config"
 import QtQuick
 import QtQuick.Controls
@@ -7,8 +8,8 @@ import QtQuick.Controls
 TextField {
     id: root
 
-    color: Appearance.colours.m3onSurface
-    placeholderTextColor: Appearance.colours.m3outline
+    color: Colours.palette.m3onSurface
+    placeholderTextColor: Colours.palette.m3outline
     font.family: Appearance.font.family.sans
     font.pointSize: Appearance.font.size.smaller
 
@@ -18,7 +19,7 @@ TextField {
         property bool disableBlink
 
         implicitWidth: 2
-        color: Appearance.colours.m3primary
+        color: Colours.palette.m3primary
         radius: Appearance.rounding.normal
         onXChanged: {
             opacity = 1;

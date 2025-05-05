@@ -5,7 +5,6 @@ import "root:/services"
 import "root:/config"
 import Quickshell
 import QtQuick
-import QtQuick.Controls
 
 Item {
     id: root
@@ -24,7 +23,7 @@ Item {
     StyledRect {
         id: listWrapper
 
-        color: Appearance.alpha(Appearance.colours.m3surfaceContainer, true)
+        color: Colours.alpha(Colours.palette.m3surfaceContainer, true)
         radius: root.rounding
 
         implicitWidth: list.width + root.padding * 2
@@ -61,7 +60,7 @@ Item {
         placeholderText: qsTr(`Type "${LauncherConfig.actionPrefix}" for commands`)
 
         background: StyledRect {
-            color: Appearance.alpha(Appearance.colours.m3surfaceContainer, true)
+            color: Colours.alpha(Colours.palette.m3surfaceContainer, true)
             radius: root.rounding
         }
 

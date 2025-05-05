@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import Quickshell
 import QtQuick
@@ -51,7 +52,7 @@ Item {
             readonly property Workspace start: root.workspaces[modelData.start - 1 - root.groupOffset] ?? null
             readonly property Workspace end: root.workspaces[modelData.end - 1 - root.groupOffset] ?? null
 
-            color: Appearance.alpha(Appearance.colours.m3surfaceContainerHigh, true)
+            color: Colours.alpha(Colours.palette.m3surfaceContainerHigh, true)
             radius: BarConfig.workspaces.rounded ? Appearance.rounding.full : 0
 
             x: start?.x ?? 0

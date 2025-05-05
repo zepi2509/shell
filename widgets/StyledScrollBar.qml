@@ -1,3 +1,4 @@
+import "root:/services"
 import "root:/config"
 import QtQuick
 import QtQuick.Controls
@@ -8,7 +9,7 @@ ScrollBar {
     contentItem: StyledRect {
         opacity: root.pressed ? 0.8 : root.policy === ScrollBar.AlwaysOn || (root.active && root.size < 1) ? 0.6 : 0
         radius: Appearance.rounding.full
-        color: Appearance.colours.m3secondary
+        color: Colours.palette.m3secondary
 
         Behavior on opacity {
             NumberAnimation {
@@ -23,7 +24,7 @@ ScrollBar {
         implicitWidth: 10
         opacity: root.policy === ScrollBar.AlwaysOn || (root.active && root.size < 1) ? 0.4 : 0
         radius: Appearance.rounding.full
-        color: Appearance.colours.m3surfaceContainerLow
+        color: Colours.palette.m3surfaceContainerLow
 
         Behavior on opacity {
             NumberAnimation {

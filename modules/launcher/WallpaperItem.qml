@@ -60,7 +60,7 @@ StyledRect {
         opacity: root.PathView.isCurrentItem ? 0.7 : 0
         anchors.fill: mask
         radius: mask.radius
-        color: Appearance.colours.m3shadow
+        color: Colours.palette.m3shadow
         blur: 10
         spread: 3
 

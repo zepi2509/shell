@@ -1,4 +1,5 @@
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import Quickshell
 import QtQuick
@@ -33,7 +34,7 @@ Scope {
             id: rect
 
             anchors.fill: parent
-            color: Appearance.alpha(Appearance.colours.m3surface, false)
+            color: Colours.alpha(Colours.palette.m3surface, false)
             visible: false
         }
 

@@ -1,4 +1,5 @@
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import Quickshell
 import Quickshell.Widgets
@@ -52,7 +53,7 @@ PaddedRect {
         StyledText {
             text: root.modelData.comment || root.modelData.genericName || root.modelData.name
             font.pointSize: Appearance.font.size.small
-            color: Appearance.alpha(Appearance.colours.m3outline, true)
+            color: Colours.alpha(Colours.palette.m3outline, true)
 
             elide: Text.ElideRight
             width: root.width - icon.width - Appearance.rounding.normal * 2

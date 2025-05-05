@@ -1,4 +1,5 @@
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import QtQuick
 
@@ -10,7 +11,7 @@ Rectangle {
 
     anchors.fill: parent
 
-    color: Appearance.colours.m3onSurface
+    color: Colours.palette.m3onSurface
     opacity: mouse.pressed ? 0.1 : mouse.hovered ? 0.08 : 0
 
     MouseArea {

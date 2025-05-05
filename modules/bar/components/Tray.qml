@@ -1,4 +1,5 @@
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import Quickshell.Services.SystemTray
 import QtQuick
@@ -6,7 +7,7 @@ import QtQuick
 StyledRect {
     id: root
 
-    property color colour: Appearance.colours.lavender
+    property color colour: Colours.palette.lavender
 
     animate: true
     clip: true

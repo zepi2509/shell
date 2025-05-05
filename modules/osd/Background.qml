@@ -1,3 +1,4 @@
+import "root:/services"
 import "root:/config"
 import QtQuick
 import QtQuick.Shapes
@@ -12,11 +13,11 @@ Shape {
     readonly property real wrapperWidth: realWrapperWidth - 1 // Pixel issues :sob:
 
     preferredRendererType: Shape.CurveRenderer
-    opacity: Appearance.transparency.enabled ? Appearance.transparency.base : 1
+    opacity: Colours.transparency.enabled ? Colours.transparency.base : 1
 
     ShapePath {
         strokeWidth: -1
-        fillColor: Appearance.colours.m3surface
+        fillColor: Colours.palette.m3surface
 
         startX: root.wrapperWidth
 

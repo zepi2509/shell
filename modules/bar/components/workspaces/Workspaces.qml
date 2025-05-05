@@ -9,7 +9,7 @@ Item {
     id: root
 
     property alias vertical: layout.vertical
-    property color colour: Appearance.colours.mauve
+    property color colour: Colours.palette.mauve
 
     readonly property list<Workspace> workspaces: layout.children.filter(c => c.isWorkspace).sort((w1, w2) => w1.ws - w2.ws)
     readonly property var occupied: Hyprland.workspaces.values.reduce((acc, curr) => {

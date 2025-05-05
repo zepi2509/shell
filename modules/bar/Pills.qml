@@ -125,7 +125,7 @@ BoxLayout {
     }
 
     component Pill: PaddedRect {
-        color: Appearance.alpha(Appearance.colours.m3surface, false)
+        color: Colours.alpha(Colours.palette.m3surface, false)
         radius: Appearance.rounding.full
         padding: BarConfig.vertical ? [Appearance.padding.large, 0] : [0, Appearance.padding.large]
 

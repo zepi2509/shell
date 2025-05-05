@@ -9,7 +9,7 @@ import QtQuick
 StyledRect {
     id: root
 
-    property color colour: Appearance.colours.pink
+    property color colour: Colours.palette.pink
 
     animate: true
     clip: true

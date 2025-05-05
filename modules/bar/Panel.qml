@@ -1,4 +1,5 @@
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import "components"
 import "components/workspaces"
@@ -16,7 +17,7 @@ StyledRect {
     }
 
     vertical: BarConfig.vertical
-    color: Appearance.alpha(Appearance.colours.m3surface, false)
+    color: Colours.alpha(Colours.palette.m3surface, false)
     anchors.fill: parent
 
     BoxLayout {
@@ -28,10 +29,10 @@ StyledRect {
             spacing: 0
 
             Module {
-                color: Appearance.colours.mauve
+                color: Colours.palette.mauve
 
                 OsIcon {
-                    color: Appearance.on(Appearance.colours.mauve)
+                    color: Colours.on(Colours.palette.mauve)
 
                     anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                     anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
@@ -39,10 +40,10 @@ StyledRect {
             }
 
             Module {
-                color: Appearance.colours.pink
+                color: Colours.palette.pink
 
                 ActiveWindow {
-                    colour: Appearance.on(Appearance.colours.pink)
+                    colour: Colours.on(Colours.palette.pink)
 
                     anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                     anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
@@ -76,10 +77,10 @@ StyledRect {
         }
 
         Module {
-            color: Appearance.colours.green
+            color: Colours.palette.green
 
             Clock {
-                colour: Appearance.on(Appearance.colours.green)
+                colour: Colours.on(Colours.palette.green)
 
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
@@ -87,10 +88,10 @@ StyledRect {
         }
 
         Module {
-            color: Appearance.colours.yellow
+            color: Colours.palette.yellow
 
             Tray {
-                colour: Appearance.on(Appearance.colours.yellow)
+                colour: Colours.on(Colours.palette.yellow)
 
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
@@ -98,10 +99,10 @@ StyledRect {
         }
 
         Module {
-            color: Appearance.colours.peach
+            color: Colours.palette.peach
 
             StatusIcons {
-                colour: Appearance.on(Appearance.colours.peach)
+                colour: Colours.on(Colours.palette.peach)
 
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)
@@ -109,7 +110,7 @@ StyledRect {
         }
 
         Module {
-            color: Appearance.colours.m3error
+            color: Colours.palette.m3error
 
             Layout.maximumWidth: BarConfig.sizes.height
             Layout.maximumHeight: BarConfig.sizes.height
@@ -118,7 +119,7 @@ StyledRect {
                 x: (BarConfig.sizes.height - width) / 2
                 y: (BarConfig.sizes.height - height) / 2
 
-                color: Appearance.colours.m3onError
+                color: Colours.palette.m3onError
 
                 anchors.horizontalCenter: root.get(undefined, parent.horizontalCenter)
                 anchors.verticalCenter: root.get(parent.verticalCenter, undefined)

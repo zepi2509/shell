@@ -1,4 +1,5 @@
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import QtQuick
 import QtQuick.Controls
@@ -12,7 +13,7 @@ Slider {
     orientation: Qt.Vertical
 
     background: StyledRect {
-        color: Appearance.alpha(Appearance.colours.m3surfaceContainer, true)
+        color: Colours.alpha(Colours.palette.m3surfaceContainer, true)
         radius: Appearance.rounding.full
 
         StyledRect {
@@ -22,7 +23,7 @@ Slider {
             y: root.handle.y
             implicitHeight: parent.height - y
 
-            color: Appearance.alpha(Appearance.colours.m3secondary, true)
+            color: Colours.alpha(Colours.palette.m3secondary, true)
             radius: Appearance.rounding.full
         }
     }
@@ -39,7 +40,7 @@ Slider {
         RectangularShadow {
             anchors.fill: parent
             radius: rect.radius
-            color: Appearance.colours.m3shadow
+            color: Colours.palette.m3shadow
             blur: 5
             spread: 0
         }
@@ -49,7 +50,7 @@ Slider {
 
             anchors.fill: parent
 
-            color: Appearance.alpha(Appearance.colours.m3inverseSurface, true)
+            color: Colours.alpha(Colours.palette.m3inverseSurface, true)
             radius: Appearance.rounding.full
 
             MaterialIcon {
@@ -57,7 +58,7 @@ Slider {
 
                 animate: true
                 text: root.icon
-                color: Appearance.colours.m3inverseOnSurface
+                color: Colours.palette.m3inverseOnSurface
                 anchors.centerIn: parent
 
                 states: State {

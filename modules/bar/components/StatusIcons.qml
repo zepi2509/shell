@@ -8,7 +8,7 @@ import QtQuick
 StyledRect {
     id: root
 
-    property color colour: Appearance.colours.rosewater
+    property color colour: Colours.palette.rosewater
 
     animate: true
     clip: true

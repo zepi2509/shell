@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import "root:/services"
 import "root:/config"
 import QtQuick
 
@@ -11,7 +12,7 @@ Text {
     property int animateDuration: Appearance.anim.durations.normal
 
     renderType: Text.NativeRendering
-    color: Appearance.colours.m3onSurface
+    color: Colours.palette.m3onSurface
     font.family: Appearance.font.family.sans
     font.pointSize: Appearance.font.size.smaller
 
