@@ -9,6 +9,7 @@ Slider {
     id: root
 
     required property string icon
+    property real oldValue
 
     orientation: Qt.Vertical
 
@@ -56,7 +57,6 @@ Slider {
             MaterialIcon {
                 id: icon
 
-                animate: true
                 text: root.icon
                 color: Colours.palette.m3inverseOnSurface
                 anchors.centerIn: parent
@@ -66,7 +66,6 @@ Slider {
                     when: handle.moving
 
                     PropertyChanges {
-                        icon.animate: false
                         icon.text: Math.round(root.value * 100)
                         icon.font.pointSize: Appearance.font.size.small
                         icon.font.family: Appearance.font.family.sans
@@ -107,6 +106,9 @@ Slider {
     onPressedChanged: handle.moving = pressed
 
     onValueChanged: {
+        if (Math.abs(value - oldValue) < 0.01)
+            return;
+        oldValue = value;
         handle.moving = true;
         stateChangeDelay.restart();
     }
