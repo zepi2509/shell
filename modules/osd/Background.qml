@@ -8,8 +8,8 @@ Shape {
 
     required property real realWrapperWidth
     required property real wrapperHeight
-    readonly property int rounding: BorderConfig.rounding
-    readonly property int roundingX: Math.min(rounding, realWrapperWidth / 2)
+    readonly property real rounding: BorderConfig.rounding
+    readonly property real roundingX: Math.min(rounding, realWrapperWidth / 2)
     readonly property real wrapperWidth: realWrapperWidth - 1 // Pixel issues :sob:
 
     preferredRendererType: Shape.CurveRenderer
