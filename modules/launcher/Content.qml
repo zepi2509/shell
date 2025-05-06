@@ -17,7 +17,7 @@ Item {
     implicitWidth: listWrapper.width + padding * 2
     implicitHeight: search.height + listWrapper.height + padding * 2 + spacing
 
-    anchors.bottom: parent.bottom
+    anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
 
     StyledRect {

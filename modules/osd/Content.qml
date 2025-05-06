@@ -12,7 +12,7 @@ Column {
     padding: Appearance.padding.large
 
     anchors.verticalCenter: parent.verticalCenter
-    anchors.right: parent.right
+    anchors.left: parent.left
 
     spacing: Appearance.spacing.normal
 

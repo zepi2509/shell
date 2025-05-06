@@ -10,7 +10,6 @@ Item {
 
     visible: height > 0
     height: 0
-    clip: true
 
     states: State {
         name: "visible"
