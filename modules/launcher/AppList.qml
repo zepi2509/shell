@@ -44,16 +44,7 @@ ListView {
 
     delegate: isAction ? actionItem : appItem
 
-    ScrollBar.vertical: StyledScrollBar {
-        // Move half out
-        parent: root.parent
-        anchors.top: root.top
-        anchors.bottom: root.bottom
-        anchors.right: root.right
-        anchors.topMargin: root.padding / 2
-        anchors.bottomMargin: root.padding / 2
-        anchors.rightMargin: -root.padding / 2
-    }
+    ScrollBar.vertical: StyledScrollBar {}
 
     add: Transition {
         Anim {
