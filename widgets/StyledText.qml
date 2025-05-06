@@ -9,6 +9,8 @@ Text {
 
     property bool animate: false
     property string animateProp: "scale"
+    property real animateFrom: 0
+    property real animateTo: 1
     property int animateDuration: Appearance.anim.durations.normal
 
     renderType: Text.NativeRendering
@@ -29,12 +31,12 @@ Text {
 
         SequentialAnimation {
             Anim {
-                to: 0
+                to: root.animateFrom
                 easing.bezierCurve: Appearance.anim.curves.standardAccel
             }
             PropertyAction {}
             Anim {
-                to: 1
+                to: root.animateTo
                 easing.bezierCurve: Appearance.anim.curves.standardDecel
             }
         }

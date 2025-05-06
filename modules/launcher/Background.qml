@@ -8,7 +8,7 @@ Shape {
 
     required property real wrapperWidth
     required property real realWrapperHeight
-    readonly property int rounding: Appearance.rounding.large
+    readonly property int rounding: BorderConfig.rounding
     readonly property int roundingY: Math.min(rounding, realWrapperHeight / 2)
     readonly property real wrapperHeight: realWrapperHeight - 1 // Pixel issues :sob:
 
@@ -17,7 +17,7 @@ Shape {
 
     ShapePath {
         strokeWidth: -1
-        fillColor: Colours.palette.m3surface
+        fillColor: BorderConfig.colour
 
         startY: root.wrapperHeight
 

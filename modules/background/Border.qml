@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import "root:/widgets"
 import "root:/services"
 import "root:/config"
@@ -18,10 +20,10 @@ Scope {
         exclusionMode: ExclusionMode.Ignore
 
         mask: Region {
-            x: BackgroundConfig.border.thickness
-            y: BackgroundConfig.border.thickness
-            width: win.screen.width - BackgroundConfig.border.thickness * 2
-            height: win.screen.height - BackgroundConfig.border.thickness * 2
+            x: BorderConfig.thickness
+            y: BorderConfig.thickness
+            width: win.screen.width - BorderConfig.thickness * 2
+            height: win.screen.height - BorderConfig.thickness * 2
             intersection: Intersection.Xor
         }
 
@@ -34,7 +36,7 @@ Scope {
             id: rect
 
             anchors.fill: parent
-            color: Colours.alpha(Colours.palette.m3surface, false)
+            color: Colours.alpha(BorderConfig.colour, false)
             visible: false
         }
 
@@ -47,8 +49,8 @@ Scope {
 
             Rectangle {
                 anchors.fill: parent
-                anchors.margins: BackgroundConfig.border.thickness
-                radius: BackgroundConfig.border.rounding
+                anchors.margins: BorderConfig.thickness
+                radius: BorderConfig.rounding
             }
         }
 
@@ -95,8 +97,8 @@ Scope {
     component ExclusionZone: StyledWindow {
         screen: root.screen
         name: "border-exclusion"
-        width: BackgroundConfig.border.thickness
-        height: BackgroundConfig.border.thickness
+        width: BorderConfig.thickness
+        height: BorderConfig.thickness
 
         anchors.top: true
         anchors.left: true
