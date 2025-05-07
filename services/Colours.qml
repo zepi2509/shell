@@ -30,7 +30,7 @@ Singleton {
     function on(c: color): color {
         if (c.hslLightness < 0.5)
             return Qt.hsla(c.hslHue, c.hslSaturation, 0.9, 1);
-        return Qt.hsla(c.hslHue, c.hslSaturation, 0.2, 1);
+        return Qt.hsla(c.hslHue, c.hslSaturation, 0.1, 1);
     }
 
     function load(data: string, isPreview: bool): void {
