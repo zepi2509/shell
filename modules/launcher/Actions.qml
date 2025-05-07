@@ -1,6 +1,7 @@
 pragma Singleton
 
 import "root:/utils/scripts/fuzzysort.js" as Fuzzy
+import "root:/services"
 import "root:/config"
 import Quickshell
 import Quickshell.Io
@@ -53,7 +54,7 @@ Singleton {
 
             function onClicked(list: AppList): void {
                 list.launcher.launcherVisible = false;
-            // TODO
+                Colours.setMode("light");
             }
         },
         Action {
@@ -63,7 +64,7 @@ Singleton {
 
             function onClicked(list: AppList): void {
                 list.launcher.launcherVisible = false;
-            // TODO
+                Colours.setMode("dark");
             }
         },
         Action {

@@ -44,6 +44,15 @@ Singleton {
         }
     }
 
+    function setMode(mode: string): void {
+        setModeProc.command = ["caelestia", "scheme", "dynamic", "default", mode];
+        setModeProc.startDetached();
+    }
+
+    Process {
+        id: setModeProc
+    }
+
     FileView {
         path: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/scheme/current-mode.txt`
         watchChanges: true
