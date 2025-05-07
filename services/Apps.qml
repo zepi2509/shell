@@ -8,15 +8,17 @@ Singleton {
     id: root
 
     readonly property list<DesktopEntry> list: DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
-    readonly property list<var> preppedNames: list.map(a => ({
+    readonly property list<var> preppedApps: list.map(a => ({
                 name: Fuzzy.prepare(a.name),
+                comment: Fuzzy.prepare(a.comment),
                 entry: a
             }))
 
     function fuzzyQuery(search: string): var { // Idk why list<DesktopEntry> doesn't work
-        return Fuzzy.go(search, preppedNames, {
+        return Fuzzy.go(search, preppedApps, {
             all: true,
-            key: "name"
+            keys: ["name", "comment"],
+            scoreFn: r => r[0].score * 0.9 + r[1].score * 0.1
         }).map(r => r.obj.entry);
     }
 
