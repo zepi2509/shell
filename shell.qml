@@ -1,8 +1,9 @@
 import "modules/bar"
 import "modules/launcher"
 import "modules/osd"
-import "modules/background"
+import "modules/notifications"
 import "modules/drawers"
+import "modules/background"
 import Quickshell
 
 ShellRoot {
@@ -11,4 +12,5 @@ ShellRoot {
     Osd {}
     Background {}
     Drawers {}
+    Notifications {}
 }
