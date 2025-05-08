@@ -39,7 +39,7 @@ Scope {
                 anchors.bottom: parent.bottom
 
                 wrapperWidth: wrapper.width
-                realWrapperHeight: Math.min(wrapper.height, content.height)
+                wrapperHeight: Math.min(wrapper.height, content.height)
             }
 
             LayerShadow {

@@ -7,10 +7,10 @@ Shape {
     id: root
 
     required property real wrapperWidth
-    required property real realWrapperHeight
+    required property real wrapperHeight
     readonly property real rounding: BorderConfig.rounding
-    readonly property real roundingY: Math.min(rounding, realWrapperHeight / 2)
-    readonly property real wrapperHeight: realWrapperHeight - 1 // Pixel issues :sob:
+    readonly property bool flatten: wrapperHeight < rounding * 2
+    readonly property real roundingY: flatten ? wrapperHeight / 2 : rounding
 
     preferredRendererType: Shape.CurveRenderer
     opacity: Colours.transparency.enabled ? Colours.transparency.base : 1
@@ -19,13 +19,13 @@ Shape {
         strokeWidth: -1
         fillColor: BorderConfig.colour
 
-        startY: root.wrapperHeight
+        startY: root.wrapperHeight - 1
 
         PathArc {
             relativeX: root.rounding
             relativeY: -root.roundingY
             radiusX: root.rounding
-            radiusY: root.roundingY
+            radiusY: Math.min(root.rounding, root.wrapperHeight)
             direction: PathArc.Counterclockwise
         }
         PathLine {
@@ -36,7 +36,7 @@ Shape {
             relativeX: root.rounding
             relativeY: -root.roundingY
             radiusX: root.rounding
-            radiusY: root.roundingY
+            radiusY: Math.min(root.rounding, root.wrapperHeight)
         }
         PathLine {
             x: root.wrapperWidth - root.rounding * 2
@@ -45,17 +45,17 @@ Shape {
             relativeX: root.rounding
             relativeY: root.roundingY
             radiusX: root.rounding
-            radiusY: root.roundingY
+            radiusY: Math.min(root.rounding, root.wrapperHeight)
         }
         PathLine {
             relativeX: 0
-            y: root.wrapperHeight - root.roundingY
+            y: (root.flatten ? root.roundingY : root.wrapperHeight - root.rounding) - 1
         }
         PathArc {
             relativeX: root.rounding
             relativeY: root.roundingY
             radiusX: root.rounding
-            radiusY: root.roundingY
+            radiusY: Math.min(root.rounding, root.wrapperHeight)
             direction: PathArc.Counterclockwise
         }
 

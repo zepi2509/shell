@@ -15,7 +15,7 @@ Variants {
         property bool osdVisible
 
         Timer {
-            running: true
+            // running: true
             repeat: true
             interval: 2000
             onTriggered: root.osdVisible = !root.osdVisible
