@@ -88,8 +88,8 @@ Variants {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
 
+                    wrapperWidth: Math.min(wrapper.width, content.width)
                     wrapperHeight: wrapper.height
-                    realWrapperWidth: Math.min(wrapper.width, content.width)
                 }
 
                 LayerShadow {

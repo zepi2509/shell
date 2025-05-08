@@ -6,11 +6,11 @@ import QtQuick.Shapes
 Shape {
     id: root
 
-    required property real realWrapperWidth
+    required property real wrapperWidth
     required property real wrapperHeight
     readonly property real rounding: BorderConfig.rounding
-    readonly property real roundingX: Math.min(rounding, realWrapperWidth / 2)
-    readonly property real wrapperWidth: realWrapperWidth - 1 // Pixel issues :sob:
+    readonly property bool flatten: wrapperWidth < rounding * 2
+    readonly property real roundingX: flatten ? wrapperWidth / 2 : rounding
 
     preferredRendererType: Shape.CurveRenderer
     opacity: Colours.transparency.enabled ? Colours.transparency.base : 1
@@ -19,12 +19,12 @@ Shape {
         strokeWidth: -1
         fillColor: BorderConfig.colour
 
-        startX: root.wrapperWidth
+        startX: root.wrapperWidth - 1
 
         PathArc {
             relativeX: -root.roundingX
             relativeY: root.rounding
-            radiusX: root.roundingX
+            radiusX: Math.min(root.rounding, root.wrapperWidth)
             radiusY: root.rounding
         }
         PathLine {
@@ -34,7 +34,7 @@ Shape {
         PathArc {
             relativeX: -root.roundingX
             relativeY: root.rounding
-            radiusX: root.roundingX
+            radiusX: Math.min(root.rounding, root.wrapperWidth)
             radiusY: root.rounding
             direction: PathArc.Counterclockwise
         }
@@ -44,18 +44,18 @@ Shape {
         PathArc {
             relativeX: root.roundingX
             relativeY: root.rounding
-            radiusX: root.roundingX
+            radiusX: Math.min(root.rounding, root.wrapperWidth)
             radiusY: root.rounding
             direction: PathArc.Counterclockwise
         }
         PathLine {
-            x: root.wrapperWidth - root.roundingX
+            x: (root.flatten ? root.roundingX : root.wrapperWidth - root.rounding) - 1
             relativeY: 0
         }
         PathArc {
             relativeX: root.roundingX
             relativeY: root.rounding
-            radiusX: root.roundingX
+            radiusX: Math.min(root.rounding, root.wrapperWidth)
             radiusY: root.rounding
         }
 
