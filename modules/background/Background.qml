@@ -5,30 +5,22 @@ import Quickshell.Wayland
 Variants {
     model: Quickshell.screens
 
-    Scope {
-        id: scope
+    StyledWindow {
+        id: win
 
         required property ShellScreen modelData
 
-        Border {
-            screen: scope.modelData
-        }
+        screen: modelData
+        name: "background"
+        exclusionMode: ExclusionMode.Ignore
+        layer: WlrLayer.Background
+        color: "black"
 
-        StyledWindow {
-            id: win
+        anchors.top: true
+        anchors.bottom: true
+        anchors.left: true
+        anchors.right: true
 
-            screen: scope.modelData
-            name: "background"
-            exclusionMode: ExclusionMode.Ignore
-            layer: WlrLayer.Background
-            color: "black"
-
-            anchors.top: true
-            anchors.bottom: true
-            anchors.left: true
-            anchors.right: true
-
-            Wallpaper {}
-        }
+        Wallpaper {}
     }
 }
