@@ -21,6 +21,7 @@ Variants {
             name: "background"
             exclusionMode: ExclusionMode.Ignore
             layer: WlrLayer.Background
+            color: "black"
 
             anchors.top: true
             anchors.bottom: true
