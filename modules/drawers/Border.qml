@@ -8,8 +8,6 @@ import QtQuick.Effects
 Item {
     id: root
 
-    required property ShellScreen screen
-
     anchors.fill: parent
 
     StyledRect {
@@ -42,11 +40,5 @@ Item {
         source: rect
         maskThresholdMin: 0.5
         maskSpreadAtMin: 1
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onPositionChanged: event => Drawers.setPosForScreen(root.screen, event.x, event.y)
     }
 }

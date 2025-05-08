@@ -38,11 +38,14 @@ Variants {
                 id: border
 
                 visible: false
-                screen: scope.modelData
             }
 
             LayerShadow {
                 source: border
+            }
+
+            Interactions {
+                screen: scope.modelData
             }
         }
     }
