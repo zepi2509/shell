@@ -38,8 +38,9 @@ ListView {
     highlightResizeDuration: 0
 
     highlight: StyledRect {
-        radius: Appearance.rounding.normal
-        color: Colours.alpha(Colours.palette.m3surfaceContainerHigh, true)
+        radius: Appearance.rounding.full
+        color: Colours.palette.m3onSurface
+        opacity: 0.08
     }
 
     delegate: isAction ? actionItem : appItem

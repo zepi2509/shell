@@ -13,7 +13,6 @@ Item {
     required property Scope launcher
     required property TextField search
     required property int padding
-    required property int spacing
     required property int rounding
 
     property bool showWallpapers: search.text.startsWith(`${LauncherConfig.actionPrefix}wallpaper `)
@@ -21,7 +20,6 @@ Item {
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
-    anchors.bottomMargin: root.padding
 
     clip: true
     state: showWallpapers ? "wallpapers" : "apps"

@@ -11,27 +11,23 @@ Item {
 
     required property Scope launcher
     readonly property int padding: Appearance.padding.large
-    readonly property int spacing: Appearance.spacing.normal
     readonly property int rounding: Appearance.rounding.large
 
     implicitWidth: listWrapper.width + padding * 2
-    implicitHeight: search.height + listWrapper.height + padding * 2 + spacing
+    implicitHeight: searchWrapper.height + listWrapper.height + padding * 2
 
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
 
-    StyledRect {
+    Item {
         id: listWrapper
 
-        color: Colours.alpha(Colours.palette.m3surfaceContainer, true)
-        radius: root.rounding
-
-        implicitWidth: list.width + root.padding * 2
-        implicitHeight: list.height + root.padding * 2
+        implicitWidth: list.width
+        implicitHeight: list.height + root.padding
 
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: search.top
-        anchors.bottomMargin: root.spacing
+        anchors.bottom: searchWrapper.top
+        anchors.bottomMargin: root.padding
 
         ContentList {
             id: list
@@ -39,62 +35,129 @@ Item {
             launcher: root.launcher
             search: search
             padding: root.padding
-            spacing: root.spacing
             rounding: root.rounding
         }
     }
 
-    StyledTextField {
-        id: search
+    StyledRect {
+        id: searchWrapper
+
+        color: Colours.alpha(Colours.palette.m3surfaceContainer, true)
+        radius: Appearance.rounding.full
 
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: root.padding
 
-        topPadding: Appearance.padding.normal
-        bottomPadding: Appearance.padding.normal
-        leftPadding: root.padding
-        rightPadding: root.padding
+        MaterialIcon {
+            id: searchIcon
 
-        placeholderText: qsTr("Type \"%1\" for commands").arg(LauncherConfig.actionPrefix)
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: root.padding
 
-        background: StyledRect {
-            color: Colours.alpha(Colours.palette.m3surfaceContainer, true)
-            radius: root.rounding
+            text: "search"
+            color: Colours.palette.m3onSurfaceVariant
         }
 
-        onAccepted: {
-            const currentItem = list.currentList?.currentItem;
-            if (currentItem) {
-                if (list.showWallpapers) {
-                    Wallpapers.setWallpaper(currentItem.modelData.path);
-                    root.launcher.launcherVisible = false;
-                } else if (text.startsWith(LauncherConfig.actionPrefix)) {
-                    currentItem.modelData.onClicked(list.currentList);
-                } else {
-                    Apps.launch(currentItem.modelData);
-                    root.launcher.launcherVisible = false;
+        StyledTextField {
+            id: search
+
+            anchors.left: searchIcon.right
+            anchors.right: clearIcon.left
+            anchors.leftMargin: Appearance.spacing.small
+            anchors.rightMargin: Appearance.spacing.small
+
+            topPadding: Appearance.padding.larger
+            bottomPadding: Appearance.padding.larger
+
+            placeholderText: qsTr("Type \"%1\" for commands").arg(LauncherConfig.actionPrefix)
+            background: null
+
+            onAccepted: {
+                const currentItem = list.currentList?.currentItem;
+                if (currentItem) {
+                    if (list.showWallpapers) {
+                        Wallpapers.setWallpaper(currentItem.modelData.path);
+                        root.launcher.launcherVisible = false;
+                    } else if (text.startsWith(LauncherConfig.actionPrefix)) {
+                        currentItem.modelData.onClicked(list.currentList);
+                    } else {
+                        Apps.launch(currentItem.modelData);
+                        root.launcher.launcherVisible = false;
+                    }
+                }
+            }
+
+            Keys.onUpPressed: list.currentList?.decrementCurrentIndex()
+            Keys.onDownPressed: list.currentList?.incrementCurrentIndex()
+
+            Keys.onEscapePressed: root.launcher.launcherVisible = false
+
+            Connections {
+                target: root.launcher
+
+                function onLauncherVisibleChanged(): void {
+                    if (root.launcher.launcherVisible)
+                        search.forceActiveFocus();
+                    else {
+                        search.text = "";
+                        const current = list.currentList;
+                        if (current)
+                            current.currentIndex = 0;
+                    }
                 }
             }
         }
 
-        Keys.onUpPressed: list.currentList?.decrementCurrentIndex()
-        Keys.onDownPressed: list.currentList?.incrementCurrentIndex()
+        MaterialIcon {
+            id: clearIcon
 
-        Keys.onEscapePressed: root.launcher.launcherVisible = false
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.rightMargin: root.padding
 
-        Connections {
-            target: root.launcher
+            width: search.text ? implicitWidth : implicitWidth / 2
+            opacity: {
+                if (!search.text)
+                    return 0;
+                if (mouse.pressed)
+                    return 0.7;
+                if (mouse.hovered)
+                    return 0.8;
+                return 1;
+            }
 
-            function onLauncherVisibleChanged(): void {
-                if (root.launcher.launcherVisible)
-                    search.forceActiveFocus();
-                else {
-                    search.text = "";
-                    const current = list.currentList;
-                    if (current)
-                        current.currentIndex = 0;
+            text: "close"
+            color: Colours.palette.m3onSurfaceVariant
+
+            MouseArea {
+                id: mouse
+
+                property bool hovered
+
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onEntered: hovered = true
+                onExited: hovered = false
+                onClicked: search.text = ""
+            }
+
+            Behavior on width {
+                NumberAnimation {
+                    duration: Appearance.anim.durations.small
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.anim.curves.standard
+                }
+            }
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Appearance.anim.durations.small
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.anim.curves.standard
                 }
             }
         }
