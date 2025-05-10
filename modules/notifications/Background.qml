@@ -49,6 +49,10 @@ Shape {
             radiusX: root.rounding
             radiusY: root.rounding
         }
+        PathLine {
+            relativeX: 1
+            relativeY: 0
+        }
 
         Behavior on fillColor {
             ColorAnimation {

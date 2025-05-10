@@ -7,16 +7,18 @@ import QtQuick
 Column {
     id: root
 
-    // padding: Appearance.padding.large
+    padding: Appearance.padding.large
 
     anchors.bottom: parent.bottom
     anchors.right: parent.right
 
     spacing: Appearance.spacing.normal
 
-    StyledRect {
-        width: 300
-        height: 100
-        // color: Qt.rgba(255, 0, 0, 0.4)
+    Repeater {
+        model: ScriptModel {
+            values: [...Notifs.list]
+        }
+
+        Notification {}
     }
 }

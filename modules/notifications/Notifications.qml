@@ -12,14 +12,7 @@ Variants {
         id: root
 
         required property ShellScreen modelData
-        property bool osdVisible
-
-        Timer {
-            // running: true
-            repeat: true
-            interval: 2000
-            onTriggered: root.osdVisible = !root.osdVisible
-        }
+        property bool osdVisible: Notifs.list.length > 0
 
         LazyLoader {
             loading: true
@@ -38,7 +31,9 @@ Variants {
 
                 anchors.top: true
                 anchors.bottom: true
+                anchors.left: true
                 anchors.right: true
+
                 width: wrapper.width
                 height: wrapper.height
 

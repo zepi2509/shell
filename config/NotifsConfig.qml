@@ -1,0 +1,15 @@
+pragma Singleton
+
+import Quickshell
+import QtQuick
+
+Singleton {
+    readonly property int defaultExpireTimeout: 3000
+    readonly property Sizes sizes: Sizes {}
+
+    component Sizes: QtObject {
+        readonly property int width: 400
+        readonly property int image: 50
+        readonly property int badge: 20
+    }
+}

@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import "root:/widgets"
 import "root:/config"
 import Quickshell
 import Quickshell.Widgets
@@ -53,18 +54,9 @@ MouseArea {
         active: BarConfig.tray.recolourIcons
         asynchronous: true
 
-        sourceComponent: MultiEffect {
+        sourceComponent: Colouriser {
             source: icon
             colorizationColor: root.colour
-            colorization: 1
-
-            Behavior on colorizationColor {
-                ColorAnimation {
-                    duration: Appearance.anim.durations.normal
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.standard
-                }
-            }
         }
     }
 }
