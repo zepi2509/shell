@@ -59,7 +59,7 @@ StyledRect {
             }
         }
         onClicked: event => {
-            if (event.button !== Qt.LeftButton)
+            if (!NotifsConfig.actionOnClick || event.button !== Qt.LeftButton)
                 return;
 
             const actions = root.modelData.actions;
