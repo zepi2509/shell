@@ -4,7 +4,6 @@ import QtQuick
 Rectangle {
     id: root
 
-    property bool animate: false
     property bool vertical: parent.vertical ?? false // Convenience property for propagation to children
 
     color: "transparent"
@@ -16,26 +15,6 @@ Rectangle {
             duration: Appearance.anim.durations.normal
             easing.type: Easing.BezierSpline
             easing.bezierCurve: Appearance.anim.curves.standard
-        }
-    }
-
-    Behavior on implicitWidth {
-        enabled: root.animate
-
-        NumberAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.emphasized
-        }
-    }
-
-    Behavior on implicitHeight {
-        enabled: root.animate
-
-        NumberAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.emphasized
         }
     }
 }

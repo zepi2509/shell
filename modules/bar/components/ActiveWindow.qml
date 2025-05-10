@@ -11,7 +11,6 @@ StyledRect {
 
     property color colour: Colours.palette.pink
 
-    animate: true
     clip: true
 
     MaterialIcon {
@@ -52,5 +51,21 @@ StyledRect {
         font.family: Appearance.font.family.mono
         elide: Qt.ElideRight
         elideWidth: root.vertical ? BarConfig.sizes.maxLabelHeight : BarConfig.sizes.maxLabelWidth
+    }
+
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.emphasized
+        }
+    }
+
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.emphasized
+        }
     }
 }

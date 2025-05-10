@@ -10,7 +10,6 @@ StyledRect {
 
     property color colour: Colours.palette.rosewater
 
-    animate: true
     clip: true
 
     MaterialIcon {
@@ -56,6 +55,22 @@ StyledRect {
                 text: Icons.getBluetoothIcon(modelData.icon)
                 color: root.colour
             }
+        }
+    }
+
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.emphasized
+        }
+    }
+
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.emphasized
         }
     }
 }

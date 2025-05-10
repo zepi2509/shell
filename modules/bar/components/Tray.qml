@@ -9,7 +9,6 @@ StyledRect {
 
     property color colour: Colours.palette.lavender
 
-    animate: true
     clip: true
     visible: width > 0 && height > 0 // To avoid warnings about being visible with no size
 
@@ -20,6 +19,22 @@ StyledRect {
             TrayItem {
                 colour: root.colour
             }
+        }
+    }
+
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.emphasized
+        }
+    }
+
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.emphasized
         }
     }
 }
