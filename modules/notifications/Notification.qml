@@ -182,7 +182,7 @@ StyledRect {
                                 return "screenshot_monitor";
                             if (summary.includes("welcome"))
                                 return "waving_hand";
-                            if (summary.includes("time"))
+                            if (summary.includes("time") || summary.includes("a break"))
                                 return "schedule";
                             if (summary.includes("installed"))
                                 return "download";
