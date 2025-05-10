@@ -98,8 +98,8 @@ StyledRect {
 
             anchors.left: parent.left
             anchors.top: parent.top
-            width: root.hasImage || root.hasAppIcon ? root.imageSize : 0
-            height: root.hasImage || root.hasAppIcon ? root.imageSize : 0
+            width: root.imageSize
+            height: root.imageSize
             visible: root.hasImage || root.hasAppIcon
 
             sourceComponent: ClippingRectangle {
@@ -120,7 +120,7 @@ StyledRect {
         Loader {
             id: appIcon
 
-            active: root.hasAppIcon
+            active: root.hasAppIcon || !root.hasImage
             asynchronous: true
 
             anchors.horizontalCenter: root.hasImage ? undefined : image.horizontalCenter
@@ -134,14 +134,23 @@ StyledRect {
                 implicitWidth: root.hasImage ? NotifsConfig.sizes.badge : root.imageSize
                 implicitHeight: root.hasImage ? NotifsConfig.sizes.badge : root.imageSize
 
-                IconImage {
+                Loader {
                     id: icon
+
+                    active: root.hasAppIcon
+                    asynchronous: true
 
                     anchors.centerIn: parent
                     visible: !root.modelData.appIcon.includes("symbolic")
-                    implicitSize: Math.round(parent.width * 0.6)
-                    source: Quickshell.iconPath(root.modelData.appIcon)
-                    asynchronous: true
+
+                    width: Math.round(parent.width * 0.6)
+                    height: Math.round(parent.width * 0.6)
+
+                    sourceComponent: IconImage {
+                        implicitSize: Math.round(parent.width * 0.6)
+                        source: Quickshell.iconPath(root.modelData.appIcon)
+                        asynchronous: true
+                    }
                 }
 
                 Loader {
@@ -152,6 +161,42 @@ StyledRect {
                     sourceComponent: Colouriser {
                         source: icon
                         colorizationColor: root.modelData.urgency === NotificationUrgency.Critical ? Colours.palette.m3onError : root.modelData.urgency === NotificationUrgency.Low ? Colours.palette.m3onSurface : Colours.palette.m3onTertiaryContainer
+                    }
+                }
+
+                Loader {
+                    active: !root.hasAppIcon
+                    asynchronous: true
+                    anchors.centerIn: parent
+
+                    sourceComponent: MaterialIcon {
+                        text: {
+                            const summary = root.modelData.summary.toLowerCase();
+                            if (summary.includes("reboot"))
+                                return "restart_alt";
+                            if (summary.includes("recording"))
+                                return "screen_record";
+                            if (summary.includes("battery"))
+                                return "power";
+                            if (summary.includes("screenshot"))
+                                return "screenshot_monitor";
+                            if (summary.includes("welcome"))
+                                return "waving_hand";
+                            if (summary.includes("time"))
+                                return "schedule";
+                            if (summary.includes("installed"))
+                                return "download";
+                            if (summary.includes("update"))
+                                return "update";
+                            if (summary.startsWith("file"))
+                                return "folder_copy";
+                            if (root.modelData.urgency === NotificationUrgency.Critical)
+                                return "release_alert";
+                            return "chat";
+                        }
+
+                        color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.palette.m3onError : root.modelData.urgency === NotificationUrgency.Low ? Colours.palette.m3onSurface : Colours.palette.m3onTertiaryContainer
+                        font.pointSize: Appearance.font.size.large
                     }
                 }
             }
