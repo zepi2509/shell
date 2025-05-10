@@ -14,7 +14,7 @@ Item {
     anchors.right: parent.right
 
     implicitWidth: NotifsConfig.sizes.width + root.padding * 2
-    implicitHeight: Math.max(61, list.height) + root.padding * 2
+    implicitHeight: list.height + root.padding * 2
 
     ListView {
         id: list
@@ -32,9 +32,10 @@ Item {
             let height = (count - 1) * spacing;
             for (let i = 0; i < count; i++)
                 height += itemAtIndex(i).height;
-            return height;
+            return Math.max(61, height);
         }
 
+        clip: true
         orientation: Qt.Vertical
         spacing: Appearance.spacing.smaller
 
