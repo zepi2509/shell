@@ -14,7 +14,7 @@ Item {
     anchors.right: parent.right
 
     implicitWidth: NotifsConfig.sizes.width + root.padding * 2
-    implicitHeight: list.height + root.padding * 2
+    implicitHeight: Math.max(61, list.height) + root.padding * 2
 
     ListView {
         id: list
@@ -28,7 +28,6 @@ Item {
         anchors.right: parent.right
         anchors.margins: root.padding
 
-        clip: true
         implicitHeight: {
             let height = (count - 1) * spacing;
             for (let i = 0; i < count; i++)
