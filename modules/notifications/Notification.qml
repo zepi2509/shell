@@ -20,7 +20,7 @@ StyledRect {
     property bool expanded
 
     clip: true
-    color: Colours.palette.m3surfaceContainer
+    color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.palette.m3secondaryContainer : Colours.palette.m3surfaceContainer
     radius: Appearance.rounding.normal
     implicitWidth: NotifsConfig.sizes.width
     implicitHeight: inner.height
@@ -130,7 +130,7 @@ StyledRect {
 
             sourceComponent: StyledRect {
                 radius: Appearance.rounding.full
-                color: Colours.palette.m3tertiaryContainer
+                color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.palette.m3error : root.modelData.urgency === NotificationUrgency.Low ? Colours.palette.m3surfaceContainerHighest : Colours.palette.m3tertiaryContainer
                 implicitWidth: root.hasImage ? NotifsConfig.sizes.badge : root.imageSize
                 implicitHeight: root.hasImage ? NotifsConfig.sizes.badge : root.imageSize
 
@@ -151,7 +151,7 @@ StyledRect {
 
                     sourceComponent: Colouriser {
                         source: icon
-                        colorizationColor: Colours.palette.m3onTertiaryContainer
+                        colorizationColor: root.modelData.urgency === NotificationUrgency.Critical ? Colours.palette.m3onError : root.modelData.urgency === NotificationUrgency.Low ? Colours.palette.m3onSurface : Colours.palette.m3onTertiaryContainer
                     }
                 }
             }

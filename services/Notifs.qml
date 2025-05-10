@@ -55,6 +55,7 @@ Singleton {
         readonly property string appIcon: notification.appIcon
         readonly property string appName: notification.appName
         readonly property string image: notification.image
+        readonly property var urgency: notification.urgency // Idk why NotificationUrgency doesn't work
         readonly property list<NotificationAction> actions: notification.actions
 
         readonly property Timer timer: Timer {
