@@ -54,10 +54,12 @@ Item {
         }
 
         remove: Transition {
+            id: remove
+
             Anim {
                 property: "x"
-                from: 0
-                to: NotifsConfig.sizes.width
+                to: remove.ViewTransition.item.x > 0 ? NotifsConfig.sizes.width : -NotifsConfig.sizes.width
+                duration: Appearance.anim.durations.large
                 easing.bezierCurve: Appearance.anim.curves.emphasizedAccel
             }
         }

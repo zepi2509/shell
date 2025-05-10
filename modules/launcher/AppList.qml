@@ -67,6 +67,10 @@ ListView {
         Anim {
             property: "y"
         }
+        Anim {
+            properties: "opacity,scale"
+            to: 1
+        }
     }
 
     addDisplaced: Transition {
@@ -74,11 +78,19 @@ ListView {
             property: "y"
             duration: Appearance.anim.durations.small
         }
+        Anim {
+            properties: "opacity,scale"
+            to: 1
+        }
     }
 
     displaced: Transition {
         Anim {
             property: "y"
+        }
+        Anim {
+            properties: "opacity,scale"
+            to: 1
         }
     }
 
