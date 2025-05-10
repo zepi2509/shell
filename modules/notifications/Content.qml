@@ -3,7 +3,6 @@ import "root:/services"
 import "root:/config"
 import Quickshell
 import QtQuick
-import QtQuick.Controls
 
 Item {
     id: root
@@ -40,8 +39,6 @@ Item {
         spacing: Appearance.spacing.smaller
 
         delegate: Notification {}
-
-        ScrollBar.vertical: StyledScrollBar {}
 
         add: Transition {
             Anim {

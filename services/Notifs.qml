@@ -59,7 +59,10 @@ Singleton {
         readonly property Timer timer: Timer {
             running: true
             interval: notif.notification.expireTimeout > 0 ? notif.notification.expireTimeout : NotifsConfig.defaultExpireTimeout
-            onTriggered: notif.popup = false
+            onTriggered: {
+                if (NotifsConfig.expire)
+                    notif.popup = false;
+            }
         }
 
         readonly property Connections conn: Connections {
