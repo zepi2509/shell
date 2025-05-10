@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 
 import "root:/config"
 import Quickshell
@@ -52,6 +53,7 @@ Singleton {
         readonly property string summary: notification.summary
         readonly property string body: notification.body
         readonly property string appIcon: notification.appIcon
+        readonly property string appName: notification.appName
         readonly property string image: notification.image
 
         readonly property Timer timer: Timer {
@@ -64,6 +66,7 @@ Singleton {
             target: notif.notification
 
             function onClosed(): void {
+                root.list.splice(root.list.indexOf(notif), 1);
                 notif.destroy();
             }
         }

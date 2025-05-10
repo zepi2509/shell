@@ -20,6 +20,7 @@ Rectangle {
         property bool hovered
 
         anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
 
         onEntered: hovered = true

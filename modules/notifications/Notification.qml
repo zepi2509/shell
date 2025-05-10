@@ -15,8 +15,10 @@ StyledRect {
     readonly property bool hasImage: modelData.image.length > 0
     readonly property bool hasAppIcon: modelData.appIcon.length > 0
     readonly property int imageSize: summary.height + bodyPreview.height
+    readonly property int nonAnimHeight: summary.height + (root.expanded ? appName.height + body.height : bodyPreview.height) + inner.anchors.margins * 2
     property bool expanded
 
+    clip: true
     color: Colours.palette.m3surfaceContainer
     radius: Appearance.rounding.normal
     implicitWidth: NotifsConfig.sizes.width
@@ -67,7 +69,11 @@ StyledRect {
         anchors.top: parent.top
         anchors.margins: Appearance.padding.normal
 
-        implicitHeight: summary.height + bodyPreview.height + anchors.margins * 2
+        implicitHeight: root.nonAnimHeight
+
+        Behavior on implicitHeight {
+            Anim {}
+        }
 
         Loader {
             id: image
@@ -76,8 +82,7 @@ StyledRect {
             asynchronous: true
 
             anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -parent.anchors.margins
+            anchors.top: parent.top
             width: root.hasImage || root.hasAppIcon ? root.imageSize : 0
             height: root.hasImage || root.hasAppIcon ? root.imageSize : 0
             visible: root.hasImage || root.hasAppIcon
@@ -93,16 +98,6 @@ StyledRect {
                     fillMode: Image.PreserveAspectCrop
                     cache: false
                     asynchronous: true
-                }
-            }
-
-            states: State {
-                name: "expanded"
-                when: root.expanded
-
-                AnchorChanges {
-                    anchors.verticalCenter: undefined
-                    anchors.top: image.parent.top
                 }
             }
         }
@@ -140,16 +135,36 @@ StyledRect {
                     colorizationColor: Colours.palette.m3onTertiaryContainer
                 }
             }
+        }
 
-            states: State {
-                name: "expanded"
-                when: !root.hasImage && root.expanded
+        StyledText {
+            id: appName
 
-                AnchorChanges {
-                    anchors.verticalCenter: undefined
-                    anchors.top: image.parent.top
-                }
+            anchors.top: parent.top
+            anchors.left: image.right
+            anchors.leftMargin: Appearance.spacing.smaller
+
+            animate: true
+            text: appNameMetrics.elidedText
+            maximumLineCount: 1
+            color: Colours.palette.m3onSurfaceVariant
+            font.pointSize: Appearance.font.size.small
+
+            opacity: root.expanded ? 1 : 0
+
+            Behavior on opacity {
+                Anim {}
             }
+        }
+
+        TextMetrics {
+            id: appNameMetrics
+
+            text: root.modelData.appName
+            font.family: appName.font.family
+            font.pointSize: appName.font.pointSize
+            elide: Text.ElideRight
+            elideWidth: expandBtn.x - time.width - timeSep.width - summary.x - Appearance.spacing.small * 3
         }
 
         StyledText {
@@ -157,10 +172,39 @@ StyledRect {
 
             anchors.top: parent.top
             anchors.left: image.right
-            anchors.leftMargin: Appearance.spacing.small
+            anchors.leftMargin: Appearance.spacing.smaller
+
+            animate: true
+            text: summaryMetrics.elidedText
+            maximumLineCount: 1
+
+            states: State {
+                name: "expanded"
+                when: root.expanded
+
+                AnchorChanges {
+                    target: summary
+                    anchors.top: appName.bottom
+                }
+            }
+
+            transitions: Transition {
+                AnchorAnimation {
+                    duration: Appearance.anim.durations.normal
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.anim.curves.standard
+                }
+            }
+        }
+
+        TextMetrics {
+            id: summaryMetrics
 
             text: root.modelData.summary
-            maximumLineCount: 1
+            font.family: summary.font.family
+            font.pointSize: summary.font.pointSize
+            elide: Text.ElideRight
+            elideWidth: expandBtn.x - time.width - timeSep.width - summary.x - Appearance.spacing.small * 3
         }
 
         StyledText {
@@ -173,6 +217,24 @@ StyledRect {
             text: "•"
             color: Colours.palette.m3onSurfaceVariant
             font.pointSize: Appearance.font.size.small
+
+            states: State {
+                name: "expanded"
+                when: root.expanded
+
+                AnchorChanges {
+                    target: timeSep
+                    anchors.left: appName.right
+                }
+            }
+
+            transitions: Transition {
+                AnchorAnimation {
+                    duration: Appearance.anim.durations.normal
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.anim.curves.standard
+                }
+            }
         }
 
         StyledText {
@@ -189,21 +251,31 @@ StyledRect {
             font.pointSize: Appearance.font.size.small
         }
 
-        StyledRect {
+        Item {
             id: expandBtn
 
             anchors.right: parent.right
             anchors.top: parent.top
 
-            MaterialIcon {
-                animate: true
-                text: root.expanded ? "expand_less" : "expand_more"
-                font.pointSize: Appearance.font.size.smaller
+            implicitWidth: expandIcon.height
+            implicitHeight: expandIcon.height
+
+            StateLayer {
+                radius: Appearance.rounding.full
+
+                function onClicked() {
+                    root.expanded = !root.expanded;
+                }
             }
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.expanded = !root.expanded
+            MaterialIcon {
+                id: expandIcon
+
+                anchors.centerIn: parent
+
+                animate: true
+                text: root.expanded ? "expand_less" : "expand_more"
+                font.pointSize: Appearance.font.size.normal
             }
         }
 
@@ -215,9 +287,16 @@ StyledRect {
             anchors.top: summary.bottom
             anchors.rightMargin: Appearance.spacing.small
 
+            animate: true
             text: bodyPreviewMetrics.elidedText
             color: Colours.palette.m3onSurfaceVariant
             font.pointSize: Appearance.font.size.small
+
+            opacity: root.expanded ? 0 : 1
+
+            Behavior on opacity {
+                Anim {}
+            }
         }
 
         TextMetrics {
@@ -229,5 +308,32 @@ StyledRect {
             elide: Text.ElideRight
             elideWidth: bodyPreview.width
         }
+
+        StyledText {
+            id: body
+
+            anchors.left: summary.left
+            anchors.right: expandBtn.left
+            anchors.top: summary.bottom
+            anchors.rightMargin: Appearance.spacing.small
+
+            animate: true
+            text: root.modelData.body
+            color: Colours.palette.m3onSurfaceVariant
+            font.pointSize: Appearance.font.size.small
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+            opacity: root.expanded ? 1 : 0
+
+            Behavior on opacity {
+                Anim {}
+            }
+        }
+    }
+
+    component Anim: NumberAnimation {
+        duration: Appearance.anim.durations.normal
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Appearance.anim.curves.standard
     }
 }

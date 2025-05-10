@@ -31,7 +31,7 @@ Item {
         implicitHeight: {
             let height = (count - 1) * spacing;
             for (let i = 0; i < count; i++)
-                height += itemAtIndex(i).height;
+                height += itemAtIndex(i).nonAnimHeight;
             return Math.max(61, height);
         }
 
