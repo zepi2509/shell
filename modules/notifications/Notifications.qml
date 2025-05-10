@@ -12,7 +12,7 @@ Variants {
         id: root
 
         required property ShellScreen modelData
-        property bool osdVisible: Notifs.list.length > 0
+        property bool osdVisible: Notifs.popups.length > 0
 
         LazyLoader {
             loading: true

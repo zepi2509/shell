@@ -50,7 +50,7 @@ Item {
                     property: "height"
                     duration: Appearance.anim.durations.normal
                     easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.emphasizedAccel
+                    easing.bezierCurve: Appearance.anim.curves.standard
                 }
                 PropertyAction {
                     target: root
