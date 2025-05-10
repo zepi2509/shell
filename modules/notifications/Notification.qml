@@ -20,8 +20,48 @@ StyledRect {
     color: Colours.palette.m3surfaceContainer
     radius: Appearance.rounding.normal
     implicitWidth: NotifsConfig.sizes.width
+    implicitHeight: inner.height
+
+    MouseArea {
+        property int startY
+
+        anchors.fill: parent
+        hoverEnabled: true
+        preventStealing: true
+
+        onEntered: root.modelData.timer.stop()
+        onExited: root.modelData.timer.start()
+
+        drag.target: parent
+        drag.axis: Drag.XAxis
+
+        onPressed: event => startY = event.y
+        onReleased: event => {
+            if (Math.abs(root.x) < NotifsConfig.sizes.width * NotifsConfig.clearThreshold)
+                root.x = 0;
+            else
+                root.modelData.popup = false;
+        }
+        onPositionChanged: event => {
+            if (pressed) {
+                const diffY = event.y - startY;
+                if (Math.abs(diffY) > NotifsConfig.expandThreshold)
+                    root.expanded = diffY > 0;
+            }
+        }
+    }
+
+    Behavior on x {
+        NumberAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
+        }
+    }
 
     Item {
+        id: inner
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
@@ -159,6 +199,11 @@ StyledRect {
                 animate: true
                 text: root.expanded ? "expand_less" : "expand_more"
                 font.pointSize: Appearance.font.size.smaller
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: root.expanded = !root.expanded
             }
         }
 

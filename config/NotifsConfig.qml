@@ -5,6 +5,8 @@ import QtQuick
 
 Singleton {
     readonly property int defaultExpireTimeout: 3000
+    readonly property real clearThreshold: 0.3
+    readonly property int expandThreshold: 30
     readonly property Sizes sizes: Sizes {}
 
     component Sizes: QtObject {
