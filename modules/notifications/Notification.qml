@@ -30,14 +30,20 @@ StyledRect {
         anchors.fill: parent
         hoverEnabled: true
         preventStealing: true
+        cursorShape: pressed ? Qt.ClosedHandCursor : undefined
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
 
-        onEntered: root.modelData.timer.stop()
-        onExited: root.modelData.timer.start()
+        onEntered: root.modelData?.timer.stop()
+        onExited: root.modelData?.timer.start()
 
         drag.target: parent
         drag.axis: Drag.XAxis
 
-        onPressed: event => startY = event.y
+        onPressed: event => {
+            startY = event.y;
+            if (event.button === Qt.MiddleButton)
+                root.modelData.notification.dismiss();
+        }
         onReleased: event => {
             if (Math.abs(root.x) < NotifsConfig.sizes.width * NotifsConfig.clearThreshold)
                 root.x = 0;
