@@ -5,8 +5,9 @@ import "root:/services"
 import "root:/config"
 import Quickshell
 import Quickshell.Widgets
+import Quickshell.Services.Notifications
 import QtQuick
-import QtQuick.Effects
+import QtQuick.Layouts
 
 StyledRect {
     id: root
@@ -15,7 +16,7 @@ StyledRect {
     readonly property bool hasImage: modelData.image.length > 0
     readonly property bool hasAppIcon: modelData.appIcon.length > 0
     readonly property int imageSize: summary.height + bodyPreview.height
-    readonly property int nonAnimHeight: summary.height + (root.expanded ? appName.height + body.height : bodyPreview.height) + inner.anchors.margins * 2
+    readonly property int nonAnimHeight: summary.height + (root.expanded ? appName.height + body.height + actions.height + actions.anchors.topMargin : bodyPreview.height) + inner.anchors.margins * 2
     property bool expanded
 
     clip: true
@@ -57,10 +58,13 @@ StyledRect {
                     root.expanded = diffY > 0;
             }
         }
-        onClicked: {
+        onClicked: event => {
+            if (event.button !== Qt.LeftButton)
+                return;
+
             const actions = root.modelData.actions;
             if (actions.length === 1)
-                root.modelData.actions[0].invoke();
+                actions[0].invoke();
         }
     }
 
@@ -134,16 +138,21 @@ StyledRect {
                     id: icon
 
                     anchors.centerIn: parent
-                    visible: false
+                    visible: !root.modelData.appIcon.includes("symbolic")
                     implicitSize: Math.round(parent.width * 0.6)
                     source: Quickshell.iconPath(root.modelData.appIcon)
                     asynchronous: true
                 }
 
-                Colouriser {
+                Loader {
+                    active: root.modelData.appIcon.includes("symbolic")
+                    asynchronous: true
                     anchors.fill: icon
-                    source: icon
-                    colorizationColor: Colours.palette.m3onTertiaryContainer
+
+                    sourceComponent: Colouriser {
+                        source: icon
+                        colorizationColor: Colours.palette.m3onTertiaryContainer
+                    }
                 }
             }
         }
@@ -338,6 +347,68 @@ StyledRect {
 
             Behavior on opacity {
                 Anim {}
+            }
+        }
+
+        RowLayout {
+            id: actions
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: body.bottom
+            anchors.topMargin: Appearance.spacing.small
+
+            spacing: Appearance.spacing.smaller
+
+            opacity: root.expanded ? 1 : 0
+
+            Behavior on opacity {
+                Anim {}
+            }
+
+            Repeater {
+                model: root.modelData.actions
+
+                delegate: StyledRect {
+                    id: action
+
+                    required property NotificationAction modelData
+
+                    radius: Appearance.rounding.full
+                    color: Colours.palette.m3surfaceContainerHigh
+
+                    Layout.preferredWidth: actionText.width + Appearance.padding.normal * 2
+                    Layout.preferredHeight: actionText.height + Appearance.padding.small * 2
+
+                    StateLayer {
+                        radius: Appearance.rounding.full
+
+                        function onClicked(): void {
+                            action.modelData.invoke();
+                        }
+                    }
+
+                    StyledText {
+                        id: actionText
+
+                        anchors.centerIn: parent
+                        text: actionTextMetrics.elidedText
+                        color: Colours.palette.m3onSurfaceVariant
+                        font.pointSize: Appearance.font.size.small
+                    }
+
+                    TextMetrics {
+                        id: actionTextMetrics
+
+                        text: modelData.text
+                        font.family: actionText.font.family
+                        font.pointSize: actionText.font.pointSize
+                        elide: Text.ElideRight
+                        elideWidth: {
+                            const numActions = root.modelData.actions.length;
+                            return (inner.width - actions.spacing * (numActions - 1)) / numActions - Appearance.padding.normal * 2;
+                        }
+                    }
+                }
             }
         }
     }
