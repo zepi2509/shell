@@ -57,6 +57,11 @@ StyledRect {
                     root.expanded = diffY > 0;
             }
         }
+        onClicked: {
+            const actions = root.modelData.actions;
+            if (actions.length === 1)
+                root.modelData.actions[0].invoke();
+        }
     }
 
     Behavior on x {
