@@ -353,6 +353,7 @@ StyledRect {
             anchors.rightMargin: Appearance.spacing.small
 
             animate: true
+            textFormat: Text.MarkdownText
             text: bodyPreviewMetrics.elidedText
             color: Colours.palette.m3onSurfaceVariant
             font.pointSize: Appearance.font.size.small
@@ -383,6 +384,7 @@ StyledRect {
             anchors.rightMargin: Appearance.spacing.small
 
             animate: true
+            textFormat: Text.MarkdownText
             text: root.modelData.body
             color: Colours.palette.m3onSurfaceVariant
             font.pointSize: Appearance.font.size.small
