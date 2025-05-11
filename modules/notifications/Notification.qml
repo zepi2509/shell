@@ -30,7 +30,6 @@ StyledRect {
 
         anchors.fill: parent
         hoverEnabled: true
-        preventStealing: true
         cursorShape: pressed ? Qt.ClosedHandCursor : undefined
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
 

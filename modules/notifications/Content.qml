@@ -37,6 +37,7 @@ Item {
         clip: true
         orientation: Qt.Vertical
         spacing: Appearance.spacing.smaller
+        interactive: false
 
         delegate: Notification {}
 
