@@ -55,7 +55,7 @@ Variants {
             target: Drawers
 
             function onPosChanged(screen: ShellScreen, x: int, y: int): void {
-                if (screen === root.modelData && x > screen.width / 2 && y > (screen.height - root.winHeight) / 2 && y < (screen.height + root.winHeight) / 2)
+                if (screen === root.modelData && x > screen.width - BorderConfig.thickness && y > (screen.height - root.winHeight) / 2 && y < (screen.height + root.winHeight) / 2)
                     root.show();
             }
         }
