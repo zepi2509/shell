@@ -80,49 +80,60 @@ Variants {
 
                 Component.onCompleted: root.winHeight = height
 
-                Background {
-                    id: bg
-
-                    visible: false
-
+                Item {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
+                    anchors.rightMargin: Drawers.rightExclusion
 
-                    wrapperWidth: Math.min(wrapper.width, content.width)
-                    wrapperHeight: wrapper.height
-                }
+                    clip: true
+                    visible: width > 0
+                    implicitWidth: wrapper.width
+                    implicitHeight: wrapper.height
 
-                LayerShadow {
-                    source: bg
-                }
+                    Background {
+                        id: bg
 
-                Wrapper {
-                    id: wrapper
+                        visible: false
 
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
 
-                    implicitHeight: content.height + bg.rounding * 2
-
-                    osdVisible: root.osdVisible
-                    contentWidth: content.width
-
-                    Content {
-                        id: content
-
-                        monitor: root.monitor
+                        wrapperWidth: Math.min(wrapper.width, content.width)
+                        wrapperHeight: wrapper.height
                     }
-                }
 
-                HoverHandler {
-                    id: hoverHandler
+                    LayerShadow {
+                        source: bg
+                    }
 
-                    onHoveredChanged: {
-                        root.hovered = hovered;
-                        if (hovered)
-                            timer.stop();
-                        else
-                            root.osdVisible = false;
+                    Wrapper {
+                        id: wrapper
+
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+
+                        implicitHeight: content.height + bg.rounding * 2
+
+                        osdVisible: root.osdVisible
+                        contentWidth: content.width
+
+                        Content {
+                            id: content
+
+                            monitor: root.monitor
+                        }
+                    }
+
+                    HoverHandler {
+                        id: hoverHandler
+
+                        onHoveredChanged: {
+                            root.hovered = hovered;
+                            if (hovered)
+                                timer.stop();
+                            else
+                                root.osdVisible = false;
+                        }
                     }
                 }
             }

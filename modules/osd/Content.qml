@@ -1,7 +1,6 @@
 import "root:/widgets"
 import "root:/services"
 import "root:/config"
-import Quickshell
 import QtQuick
 
 Column {

@@ -6,6 +6,7 @@ Singleton {
     id: root
 
     property var positions: ({})
+    property int rightExclusion
 
     signal posChanged(screen: ShellScreen, x: int, y: int)
 

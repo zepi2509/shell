@@ -6,6 +6,9 @@ import QtQuick
 Rectangle {
     id: root
 
+    readonly property alias hovered: mouse.hovered
+    readonly property alias pressed: mouse.pressed
+
     function onClicked(event: MouseEvent): void {
     }
 
