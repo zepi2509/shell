@@ -91,6 +91,7 @@ Column {
         color: button.activeFocus ? Colours.palette.m3secondaryContainer : Colours.palette.m3surfaceContainer
 
         Keys.onEnterPressed: proc.startDetached()
+        Keys.onReturnPressed: proc.startDetached()
         Keys.onEscapePressed: root.session.sessionVisible = false
 
         Process {
