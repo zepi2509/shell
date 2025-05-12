@@ -15,8 +15,7 @@ StyledRect {
     required property Notifs.Notif modelData
     readonly property bool hasImage: modelData.image.length > 0
     readonly property bool hasAppIcon: modelData.appIcon.length > 0
-    readonly property int imageSize: summary.height + bodyPreview.height
-    readonly property int nonAnimHeight: summary.height + (root.expanded ? appName.height + body.height + actions.height + actions.anchors.topMargin : bodyPreview.height) + inner.anchors.margins * 2
+    readonly property int nonAnimHeight: summary.implicitHeight + (root.expanded ? appName.height + body.height + actions.height + actions.anchors.topMargin : bodyPreview.height) + inner.anchors.margins * 2
     property bool expanded
 
     clip: true
@@ -97,14 +96,14 @@ StyledRect {
 
             anchors.left: parent.left
             anchors.top: parent.top
-            width: root.imageSize
-            height: root.imageSize
+            width: NotifsConfig.sizes.image
+            height: NotifsConfig.sizes.image
             visible: root.hasImage || root.hasAppIcon
 
             sourceComponent: ClippingRectangle {
                 radius: Appearance.rounding.full
-                width: root.imageSize
-                height: root.imageSize
+                width: NotifsConfig.sizes.image
+                height: NotifsConfig.sizes.image
 
                 Image {
                     anchors.fill: parent
@@ -130,8 +129,8 @@ StyledRect {
             sourceComponent: StyledRect {
                 radius: Appearance.rounding.full
                 color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.palette.m3error : root.modelData.urgency === NotificationUrgency.Low ? Colours.palette.m3surfaceContainerHighest : Colours.palette.m3tertiaryContainer
-                implicitWidth: root.hasImage ? NotifsConfig.sizes.badge : root.imageSize
-                implicitHeight: root.hasImage ? NotifsConfig.sizes.badge : root.imageSize
+                implicitWidth: root.hasImage ? NotifsConfig.sizes.badge : NotifsConfig.sizes.image
+                implicitHeight: root.hasImage ? NotifsConfig.sizes.badge : NotifsConfig.sizes.image
 
                 Loader {
                     id: icon
@@ -246,6 +245,10 @@ StyledRect {
                 name: "expanded"
                 when: root.expanded
 
+                PropertyChanges {
+                    summary.maximumLineCount: undefined
+                }
+
                 AnchorChanges {
                     target: summary
                     anchors.top: appName.bottom
@@ -253,6 +256,10 @@ StyledRect {
             }
 
             transitions: Transition {
+                PropertyAction {
+                    target: summary
+                    property: "maximumLineCount"
+                }
                 AnchorAnimation {
                     duration: Appearance.anim.durations.normal
                     easing.type: Easing.BezierSpline
@@ -424,6 +431,8 @@ StyledRect {
 
                     Layout.preferredWidth: actionText.width + Appearance.padding.normal * 2
                     Layout.preferredHeight: actionText.height + Appearance.padding.small * 2
+                    implicitWidth: actionText.width + Appearance.padding.normal * 2
+                    implicitHeight: actionText.height + Appearance.padding.small * 2
 
                     StateLayer {
                         radius: Appearance.rounding.full

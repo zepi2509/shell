@@ -13,7 +13,7 @@ Singleton {
 
     component Sizes: QtObject {
         readonly property int width: 400
-        readonly property int image: 50
+        readonly property int image: 41
         readonly property int badge: 20
     }
 }
