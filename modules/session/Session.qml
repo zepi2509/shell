@@ -11,14 +11,14 @@ Scope {
     property int winHeight
     property bool sessionVisible
 
-    Connections {
-        target: Drawers
+    // Connections {
+    //     target: Drawers
 
-        function onPosChanged(screen: ShellScreen, x: int, y: int): void {
-            if (x > screen.width - BorderConfig.thickness && y > (screen.height - root.winHeight) / 2 && y < (screen.height + root.winHeight) / 2)
-                root.sessionVisible = true;
-        }
-    }
+    //     function onPosChanged(screen: ShellScreen, x: int, y: int): void {
+    //         if (x > screen.width - BorderConfig.thickness && y > (screen.height - root.winHeight) / 2 && y < (screen.height + root.winHeight) / 2)
+    //             root.sessionVisible = true;
+    //     }
+    // }
 
     LazyLoader {
         loading: true

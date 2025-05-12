@@ -53,7 +53,7 @@ Column {
         sourceSize.width: width
         sourceSize.height: height
 
-        playing: session.sessionVisible
+        playing: visible
         asynchronous: true
         speed: 0.7
         source: "root:/assets/kurukuru.gif"
