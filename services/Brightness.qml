@@ -95,13 +95,18 @@ Singleton {
             if (Math.round(brightness * 100) === rounded)
                 return;
             brightness = value;
-            setProc.command = isDdc ? ["ddcutil", "-b", busNum, "setvcp", "10", rounded] : ["brightnessctl", "s", rounded];
+            setProc.command = isDdc ? ["ddcutil", "-b", busNum, "setvcp", "10", rounded] : ["brightnessctl", "s", `${rounded}%`];
             setProc.startDetached();
         }
 
         onBusNumChanged: {
             initProc.command = isDdc ? ["ddcutil", "-b", busNum, "getvcp", "10", "--brief"] : ["sh", "-c", `echo "a b c $(brightnessctl g) $(brightnessctl m)"`];
             initProc.running = true;
+        }
+
+        Component.onCompleted: {
+            initProc.command = isDdc ? ["ddcutil", "-b", busNum, "getvcp", "10", "--brief"] : ["sh", "-c", `echo "a b c $(brightnessctl g) $(brightnessctl m)"`];
+    	    initProc.running = true;
         }
     }
 
