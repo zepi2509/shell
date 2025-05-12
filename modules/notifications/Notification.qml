@@ -240,6 +240,7 @@ StyledRect {
             animate: true
             text: summaryMetrics.elidedText
             maximumLineCount: 1
+            height: implicitHeight
 
             states: State {
                 name: "expanded"
@@ -265,6 +266,10 @@ StyledRect {
                     easing.type: Easing.BezierSpline
                     easing.bezierCurve: Appearance.anim.curves.standard
                 }
+            }
+
+            Behavior on height {
+                Anim {}
             }
         }
 
