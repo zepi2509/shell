@@ -75,7 +75,7 @@ Variants {
 
                 property bool launcher
                 property bool osd
-                property bool notifs
+                property bool notifications: Notifs.popups.length > 0
                 property bool session
             }
 

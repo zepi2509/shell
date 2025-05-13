@@ -1,23 +1,23 @@
 import "root:/config"
+import Quickshell
 import QtQuick
 
 Item {
     id: root
 
-    required property bool osdVisible
-    required property real contentHeight
-    property bool shouldBeVisible
+    required property ShellScreen screen
+    required property bool visibility
 
     visible: height > 0
-    height: 0
+    implicitHeight: 0
+    implicitWidth: content.width + BorderConfig.rounding
 
     states: State {
         name: "visible"
-        when: root.osdVisible
+        when: root.visibility
 
         PropertyChanges {
-            root.height: contentHeight
-            root.shouldBeVisible: true
+            root.implicitHeight: content.height
         }
     }
 
@@ -26,37 +26,29 @@ Item {
             from: ""
             to: "visible"
 
-            SequentialAnimation {
-                PropertyAction {
-                    target: root
-                    property: "shouldBeVisible"
-                }
-                NumberAnimation {
-                    target: root
-                    property: "height"
-                    duration: Appearance.anim.durations.large
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
-                }
+            NumberAnimation {
+                target: root
+                property: "implicitHeight"
+                duration: Appearance.anim.durations.large
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
             }
         },
         Transition {
             from: "visible"
             to: ""
 
-            SequentialAnimation {
-                NumberAnimation {
-                    target: root
-                    property: "height"
-                    duration: Appearance.anim.durations.normal
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.standard
-                }
-                PropertyAction {
-                    target: root
-                    property: "shouldBeVisible"
-                }
+            NumberAnimation {
+                target: root
+                property: "implicitHeight"
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.standard
             }
         }
     ]
+
+    Content {
+        id: content
+    }
 }
