@@ -3,8 +3,7 @@ import "root:/config"
 import "root:/modules/osd" as Osd
 import "root:/modules/notifications" as Notifications
 import "root:/modules/session" as Session
-import Quickshell
-import QtQuick
+import "root:/modules/launcher" as Launcher
 import QtQuick.Shapes
 
 Shape {
@@ -36,5 +35,12 @@ Shape {
 
         startX: root.width
         startY: (root.height - wrapper.height) / 2
+    }
+
+    Launcher.Background {
+        wrapper: panels.launcher
+
+        startX: (root.width - wrapper.width) / 2
+        startY: root.height
     }
 }

@@ -9,7 +9,7 @@ PaddedRect {
     id: root
 
     required property DesktopEntry modelData
-    required property Scope launcher
+    required property PersistentProperties visibilities
 
     implicitHeight: LauncherConfig.sizes.itemHeight
     padding: [Appearance.padding.smaller, Appearance.padding.normal]
@@ -22,7 +22,7 @@ PaddedRect {
 
         function onClicked(): void {
             Apps.launch(root.modelData);
-            root.launcher.launcherVisible = false;
+            root.visibilities.launcher = false;
         }
     }
 

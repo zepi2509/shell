@@ -9,7 +9,7 @@ import QtQuick
 Item {
     id: root
 
-    required property Scope launcher
+    required property PersistentProperties visibilities
     readonly property int padding: Appearance.padding.large
     readonly property int rounding: Appearance.rounding.large
 
@@ -32,7 +32,7 @@ Item {
         ContentList {
             id: list
 
-            launcher: root.launcher
+            visibilities: root.visibilities
             search: search
             padding: root.padding
             rounding: root.rounding
@@ -80,12 +80,12 @@ Item {
                 if (currentItem) {
                     if (list.showWallpapers) {
                         Wallpapers.setWallpaper(currentItem.modelData.path);
-                        root.launcher.launcherVisible = false;
+                        root.visibilities.launcher = false;
                     } else if (text.startsWith(LauncherConfig.actionPrefix)) {
                         currentItem.modelData.onClicked(list.currentList);
                     } else {
                         Apps.launch(currentItem.modelData);
-                        root.launcher.launcherVisible = false;
+                        root.visibilities.launcher = false;
                     }
                 }
             }
@@ -93,13 +93,13 @@ Item {
             Keys.onUpPressed: list.currentList?.decrementCurrentIndex()
             Keys.onDownPressed: list.currentList?.incrementCurrentIndex()
 
-            Keys.onEscapePressed: root.launcher.launcherVisible = false
+            Keys.onEscapePressed: root.visibilities.launcher = false
 
             Connections {
-                target: root.launcher
+                target: root.visibilities
 
-                function onLauncherVisibleChanged(): void {
-                    if (root.launcher.launcherVisible)
+                function onLauncherChanged(): void {
+                    if (root.visibilities.launcher)
                         search.forceActiveFocus();
                     else {
                         search.text = "";

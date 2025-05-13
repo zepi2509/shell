@@ -9,7 +9,7 @@ PathView {
     id: root
 
     required property TextField search
-    required property Scope launcher
+    required property PersistentProperties visibilities
 
     model: ScriptModel {
         readonly property string search: root.search.text.split(" ").slice(1).join(" ")
@@ -42,7 +42,7 @@ PathView {
     highlightMoveDuration: Appearance.anim.durations.short
 
     delegate: WallpaperItem {
-        launcher: root.launcher
+        visibilities: root.visibilities
     }
 
     path: Path {

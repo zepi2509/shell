@@ -10,7 +10,7 @@ import QtQuick.Controls
 Item {
     id: root
 
-    required property Scope launcher
+    required property PersistentProperties visibilities
     required property TextField search
     required property int padding
     required property int rounding
@@ -101,7 +101,7 @@ Item {
         sourceComponent: AppList {
             padding: root.padding
             search: root.search
-            launcher: root.launcher
+            visibilities: root.visibilities
         }
     }
 
@@ -117,7 +117,7 @@ Item {
 
         sourceComponent: WallpaperList {
             search: root.search
-            launcher: root.launcher
+            visibilities: root.visibilities
         }
     }
 

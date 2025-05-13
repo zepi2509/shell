@@ -9,7 +9,7 @@ StyledRect {
     id: root
 
     required property Wallpapers.Wallpaper modelData
-    required property Scope launcher
+    required property PersistentProperties visibilities
 
     scale: 0.5
     opacity: 0
@@ -28,7 +28,7 @@ StyledRect {
 
         function onClicked(): void {
             Wallpapers.setWallpaper(root.modelData.path);
-            root.launcher.launcherVisible = false;
+            root.visibilities.launcher = false;
         }
     }
 

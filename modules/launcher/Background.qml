@@ -3,68 +3,61 @@ import "root:/config"
 import QtQuick
 import QtQuick.Shapes
 
-Shape {
+ShapePath {
     id: root
 
-    required property real wrapperWidth
-    required property real wrapperHeight
+    required property Wrapper wrapper
     readonly property real rounding: BorderConfig.rounding
-    readonly property bool flatten: wrapperHeight < rounding * 2
-    readonly property real roundingY: flatten ? wrapperHeight / 2 : rounding
+    readonly property bool flatten: wrapper.height < rounding * 2
+    readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
 
-    preferredRendererType: Shape.CurveRenderer
-    opacity: Colours.transparency.enabled ? Colours.transparency.base : 1
+    strokeWidth: -1
+    fillColor: BorderConfig.colour
 
-    ShapePath {
-        strokeWidth: -1
-        fillColor: BorderConfig.colour
+    PathArc {
+        relativeX: root.rounding
+        relativeY: -root.roundingY
+        radiusX: root.rounding
+        radiusY: Math.min(root.rounding, root.wrapper.height)
+        direction: PathArc.Counterclockwise
+    }
+    PathLine {
+        relativeX: 0
+        relativeY: -(root.wrapper.height - root.roundingY * 2)
+    }
+    PathArc {
+        relativeX: root.rounding
+        relativeY: -root.roundingY
+        radiusX: root.rounding
+        radiusY: Math.min(root.rounding, root.wrapper.height)
+    }
+    PathLine {
+        relativeX: root.wrapper.width - root.rounding * 4
+        relativeY: 0
+    }
+    PathArc {
+        relativeX: root.rounding
+        relativeY: root.roundingY
+        radiusX: root.rounding
+        radiusY: Math.min(root.rounding, root.wrapper.height)
+    }
+    PathLine {
+        relativeX: 0
+        relativeY: root.wrapper.height - root.roundingY * 2
+    }
+    PathArc {
+        relativeX: root.rounding
+        relativeY: root.roundingY
+        radiusX: root.rounding
+        radiusY: Math.min(root.rounding, root.wrapper.height)
+        direction: PathArc.Counterclockwise
+    }
 
-        startY: root.wrapperHeight - 1
-
-        PathArc {
-            relativeX: root.rounding
-            relativeY: -root.roundingY
-            radiusX: root.rounding
-            radiusY: Math.min(root.rounding, root.wrapperHeight)
-            direction: PathArc.Counterclockwise
-        }
-        PathLine {
-            relativeX: 0
-            y: root.roundingY
-        }
-        PathArc {
-            relativeX: root.rounding
-            relativeY: -root.roundingY
-            radiusX: root.rounding
-            radiusY: Math.min(root.rounding, root.wrapperHeight)
-        }
-        PathLine {
-            x: root.wrapperWidth - root.rounding * 2
-        }
-        PathArc {
-            relativeX: root.rounding
-            relativeY: root.roundingY
-            radiusX: root.rounding
-            radiusY: Math.min(root.rounding, root.wrapperHeight)
-        }
-        PathLine {
-            relativeX: 0
-            y: (root.flatten ? root.roundingY : root.wrapperHeight - root.rounding) - 1
-        }
-        PathArc {
-            relativeX: root.rounding
-            relativeY: root.roundingY
-            radiusX: root.rounding
-            radiusY: Math.min(root.rounding, root.wrapperHeight)
-            direction: PathArc.Counterclockwise
-        }
-
-        Behavior on fillColor {
-            ColorAnimation {
-                duration: Appearance.anim.durations.normal
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Appearance.anim.curves.standard
-            }
+    Behavior on fillColor {
+        ColorAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.standard
         }
     }
 }

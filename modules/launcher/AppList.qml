@@ -12,7 +12,7 @@ ListView {
 
     required property int padding
     required property TextField search
-    required property Scope launcher
+    required property PersistentProperties visibilities
 
     property bool isAction: search.text.startsWith(LauncherConfig.actionPrefix)
 
@@ -98,7 +98,7 @@ ListView {
         id: appItem
 
         AppItem {
-            launcher: root.launcher
+            visibilities: root.visibilities
         }
     }
 
