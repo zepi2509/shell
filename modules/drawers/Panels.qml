@@ -1,5 +1,3 @@
-import "root:/widgets"
-import "root:/services"
 import "root:/config"
 import "root:/modules/osd" as Osd
 import Quickshell
@@ -9,6 +7,8 @@ Item {
     id: root
 
     required property ShellScreen screen
+    required property PersistentProperties visibilities
+
     readonly property Osd.Wrapper osd: osd
 
     anchors.fill: parent
@@ -18,6 +18,7 @@ Item {
         id: osd
 
         screen: root.screen
+        visibility: visibilities.osd
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right

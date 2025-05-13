@@ -70,14 +70,24 @@ Variants {
                 source: background
             }
 
-            Panels {
-                id: panels
+            PersistentProperties {
+                id: visibilities
 
-                screen: scope.modelData
+                property bool launcher
+                property bool osd
+                property bool notifs
+                property bool session
             }
 
             Interactions {
-                screen: scope.modelData
+                visibilities: visibilities
+
+                Panels {
+                    id: panels
+
+                    screen: scope.modelData
+                    visibilities: visibilities
+                }
             }
         }
     }

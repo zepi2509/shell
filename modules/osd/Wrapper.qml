@@ -7,6 +7,7 @@ Item {
     id: root
 
     required property ShellScreen screen
+    required property bool visibility
 
     visible: width > 0
     implicitWidth: 0
@@ -14,7 +15,7 @@ Item {
 
     states: State {
         name: "visible"
-        when: Drawers.visibilities[root.screen].osd
+        when: root.visibility
 
         PropertyChanges {
             root.implicitWidth: content.width
