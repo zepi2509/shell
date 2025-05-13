@@ -80,6 +80,7 @@ Variants {
             }
 
             Interactions {
+                screen: scope.modelData
                 visibilities: visibilities
 
                 Panels {

@@ -95,6 +95,7 @@ Singleton {
             if (Math.round(brightness * 100) === rounded)
                 return;
             brightness = value;
+            console.log(brightness)
             setProc.command = isDdc ? ["ddcutil", "-b", busNum, "setvcp", "10", rounded] : ["brightnessctl", "s", `${rounded}%`];
             setProc.startDetached();
         }

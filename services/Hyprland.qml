@@ -15,6 +15,7 @@ Singleton {
     readonly property HyprlandWorkspace activeWorkspace: focusedMonitor?.activeWorkspace ?? null
     readonly property HyprlandMonitor focusedMonitor: Hyprland.focusedMonitor
     readonly property int activeWsId: activeWorkspace?.id ?? 1
+    property point cursorPos
 
     function reload() {
         Hyprland.refreshWorkspaces();
@@ -35,6 +36,19 @@ Singleton {
         function onRawEvent(event: HyprlandEvent): void {
             if (!event.name.endsWith("v2"))
                 root.reload();
+        }
+    }
+
+    FrameAnimation {
+        running: true
+        onTriggered: getCursorPos.running = true
+    }
+
+    Process {
+        id: getCursorPos
+        command: ["hyprctl", "cursorpos"]
+        stdout: SplitParser {
+            onRead: data => root.cursorPos = data
         }
     }
 
