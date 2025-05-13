@@ -10,7 +10,7 @@ import Quickshell
 ShellRoot {
     Bar {}
     Launcher {}
-    Osd {}
+    //Osd {}
     Background {}
     Drawers {}
     Notifications {}

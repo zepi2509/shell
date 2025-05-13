@@ -1,6 +1,10 @@
+pragma ComponentBehavior: Bound
+
 import "root:/widgets"
+import "root:/services"
 import "root:/config"
 import Quickshell
+import QtQuick
 
 Variants {
     model: Quickshell.screens
@@ -27,6 +31,13 @@ Variants {
                 width: scope.modelData.width - BorderConfig.thickness * 2
                 height: scope.modelData.height - BorderConfig.thickness * 2
                 intersection: Intersection.Xor
+
+                regions: panels.children.map(c => regionComp.createObject(this, {
+                    x: c.x,
+                    y: c.y,
+                    width: c.width,
+                    height: c.height
+                }))
             }
 
             anchors.top: true
@@ -34,14 +45,35 @@ Variants {
             anchors.left: true
             anchors.right: true
 
-            Border {
-                id: border
+            Component {
+                id: regionComp
 
+                Region {
+                    intersection: Intersection.Subtract
+                }
+            }
+
+            Item {
+                id: background
+
+                anchors.fill: parent
                 visible: false
+
+                Border {}
+
+                Backgrounds {
+                    panels: panels
+                }
             }
 
             LayerShadow {
-                source: border
+                source: background
+            }
+
+            Panels {
+                id: panels
+
+                screen: scope.modelData
             }
 
             Interactions {
