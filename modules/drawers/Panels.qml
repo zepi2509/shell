@@ -21,6 +21,7 @@ Item {
     Osd.Wrapper {
         id: osd
 
+        clip: root.visibilities.session
         screen: root.screen
         visibility: root.visibilities.osd
 

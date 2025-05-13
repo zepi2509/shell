@@ -13,9 +13,12 @@ MouseArea {
     property bool osdHovered
     property point dragStart
 
-    function inOsd(x: real, y: real): bool {
-        const osd = panels.osd;
-        return x > width - BorderConfig.thickness - osd.width && y >= osd.y && y <= osd.y + osd.height;
+    function withinPanelHeight(panel: Item, x: real, y: real): bool {
+        return y >= panel.y && y <= panel.y + panel.height;
+    }
+
+    function inRightPanel(panel: Item, x: real, y: real): bool {
+        return x > panel.x && withinPanelHeight(panel, x, y);
     }
 
     anchors.fill: parent
@@ -30,9 +33,18 @@ MouseArea {
             const {x, y} = Hyprland.cursorPos;
 
             // Show osd on hover
-            const showOsd = root.inOsd(x, y);
+            const showOsd = root.inRightPanel(panels.osd, x, y);
             root.visibilities.osd = showOsd;
             root.osdHovered = showOsd;
+
+            // Show/hide session on drag
+            if (root.pressed && root.withinPanelHeight(panels.session, x, y)) {
+                const dragX = x - root.dragStart.x;
+                if (dragX < -SessionConfig.dragThreshold)
+                    root.visibilities.session = true;
+                else if (dragX > SessionConfig.dragThreshold)
+                    root.visibilities.session = false;
+            }
         }
     }
 
