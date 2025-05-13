@@ -2,6 +2,7 @@ import "root:/widgets"
 import "root:/services"
 import "root:/config"
 import Quickshell
+import Quickshell.Widgets
 import QtQuick
 
 Item {
@@ -34,20 +35,25 @@ Item {
             return Math.max(61, height);
         }
 
-        clip: true
         orientation: Qt.Vertical
         spacing: Appearance.spacing.smaller
         interactive: false
 
-        delegate: Notification {}
+        delegate: ClippingRectangle {
+            id: wrapper
 
-        add: Transition {
-            Anim {
-                property: "x"
-                from: NotifsConfig.sizes.width
-                to: 0
-                duration: Appearance.anim.durations.large
-                easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
+            required property Notifs.Notif modelData
+            readonly property alias nonAnimHeight: notif.nonAnimHeight
+
+            color: "transparent"
+            radius: notif.radius
+            implicitWidth: notif.width
+            implicitHeight: notif.height
+
+            Notification {
+                id: notif
+
+                modelData: wrapper.modelData
             }
         }
 
