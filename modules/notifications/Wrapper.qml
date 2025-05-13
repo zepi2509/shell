@@ -5,7 +5,6 @@ import QtQuick
 Item {
     id: root
 
-    required property ShellScreen screen
     required property bool visibility
 
     visible: height > 0

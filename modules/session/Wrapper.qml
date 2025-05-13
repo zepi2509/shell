@@ -1,23 +1,23 @@
+import "root:/services"
 import "root:/config"
+import Quickshell
 import QtQuick
 
 Item {
     id: root
 
-    required property bool sessionVisible
-    required property real contentWidth
-    property bool shouldBeVisible
+    required property PersistentProperties visibilities
 
     visible: width > 0
-    width: 0
+    implicitWidth: 0
+    implicitHeight: content.height + BorderConfig.rounding * 2
 
     states: State {
         name: "visible"
-        when: root.sessionVisible
+        when: root.visibilities.session
 
         PropertyChanges {
-            root.width: contentWidth
-            root.shouldBeVisible: true
+            root.implicitWidth: content.width
         }
     }
 
@@ -26,37 +26,31 @@ Item {
             from: ""
             to: "visible"
 
-            SequentialAnimation {
-                PropertyAction {
-                    target: root
-                    property: "shouldBeVisible"
-                }
-                NumberAnimation {
-                    target: root
-                    property: "width"
-                    duration: Appearance.anim.durations.large
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
-                }
+            NumberAnimation {
+                target: root
+                property: "implicitWidth"
+                duration: Appearance.anim.durations.large
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
             }
         },
         Transition {
             from: "visible"
             to: ""
 
-            SequentialAnimation {
-                NumberAnimation {
-                    target: root
-                    property: "width"
-                    duration: Appearance.anim.durations.normal
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.emphasizedAccel
-                }
-                PropertyAction {
-                    target: root
-                    property: "shouldBeVisible"
-                }
+            NumberAnimation {
+                target: root
+                property: "implicitWidth"
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.emphasizedAccel
             }
         }
     ]
+
+    Content {
+        id: content
+
+        visibilities: root.visibilities
+    }
 }

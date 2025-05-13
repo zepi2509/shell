@@ -4,6 +4,7 @@ import "root:/widgets"
 import "root:/services"
 import "root:/config"
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
 
 Variants {
@@ -24,6 +25,7 @@ Variants {
             screen: scope.modelData
             name: "drawers"
             exclusionMode: ExclusionMode.Ignore
+            keyboardFocus: visibilities.launcher || visibilities.session ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
             mask: Region {
                 x: BorderConfig.thickness
@@ -77,6 +79,8 @@ Variants {
                 property bool osd
                 property bool notifications: Notifs.popups.length > 0
                 property bool session
+
+                Component.onCompleted: Visibilities.screens[scope.modelData] = this
             }
 
             Interactions {

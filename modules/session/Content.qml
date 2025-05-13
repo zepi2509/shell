@@ -10,7 +10,7 @@ import QtQuick
 Column {
     id: root
 
-    required property Scope session
+    required property PersistentProperties visibilities
 
     padding: Appearance.padding.large
 
@@ -28,10 +28,10 @@ Column {
         KeyNavigation.down: shutdown
 
         Connections {
-            target: session
+            target: root.visibilities
 
-            function onSessionVisibleChanged(): void {
-                if (session.sessionVisible)
+            function onSessionChanged(): void {
+                if (root.visibilities.session)
                     logout.focus = true;
             }
         }
@@ -92,7 +92,7 @@ Column {
 
         Keys.onEnterPressed: proc.startDetached()
         Keys.onReturnPressed: proc.startDetached()
-        Keys.onEscapePressed: root.session.sessionVisible = false
+        Keys.onEscapePressed: root.visibilities.session = false
 
         Process {
             id: proc

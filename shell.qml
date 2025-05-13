@@ -1,6 +1,6 @@
+import "modules"
 import "modules/bar"
 import "modules/launcher"
-import "modules/session"
 import "modules/drawers"
 import "modules/background"
 import Quickshell
@@ -10,5 +10,6 @@ ShellRoot {
     Launcher {}
     Background {}
     Drawers {}
-    Session {}
+
+    Shortcuts {}
 }

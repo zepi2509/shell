@@ -2,6 +2,7 @@ import "root:/services"
 import "root:/config"
 import "root:/modules/osd" as Osd
 import "root:/modules/notifications" as Notifications
+import "root:/modules/session" as Session
 import Quickshell
 import QtQuick
 import QtQuick.Shapes
@@ -19,8 +20,8 @@ Shape {
     Osd.Background {
         wrapper: panels.osd
 
-        startX: root.width
-        startY: (root.height - panels.osd.height) / 2
+        startX: root.width - panels.session.width
+        startY: (root.height - wrapper.height) / 2
     }
 
     Notifications.Background {
@@ -28,5 +29,12 @@ Shape {
 
         startX: root.width
         startY: 0
+    }
+
+    Session.Background {
+        wrapper: panels.session
+
+        startX: root.width
+        startY: (root.height - wrapper.height) / 2
     }
 }
