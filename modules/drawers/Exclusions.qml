@@ -28,8 +28,8 @@ Scope {
     component ExclusionZone: StyledWindow {
         screen: root.screen
         name: "border-exclusion"
-        width: BorderConfig.thickness
-        height: BorderConfig.thickness
+        implicitWidth: BorderConfig.thickness
+        implicitHeight: BorderConfig.thickness
 
         anchors.top: true
         anchors.left: true

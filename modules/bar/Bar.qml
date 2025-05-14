@@ -16,8 +16,8 @@ Variants {
         name: "bar"
 
         exclusiveZone: BarConfig.sizes.exclusiveZone
-        width: BarConfig.vertical ? BarConfig.sizes.totalHeight : -1
-        height: BarConfig.vertical ? -1 : BarConfig.sizes.totalHeight
+        implicitWidth: BarConfig.vertical ? BarConfig.sizes.totalHeight : -1
+        implicitHeight: BarConfig.vertical ? -1 : BarConfig.sizes.totalHeight
 
         anchors.top: true
         anchors.left: true
