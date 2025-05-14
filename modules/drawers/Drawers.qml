@@ -35,11 +35,11 @@ Variants {
                 intersection: Intersection.Xor
 
                 regions: panels.children.map(c => regionComp.createObject(this, {
-                    x: c.x,
-                    y: c.y,
-                    width: c.width,
-                    height: c.height
-                }))
+                        x: c.x,
+                        y: c.y,
+                        width: c.width,
+                        height: c.height
+                    }))
             }
 
             anchors.top: true
@@ -52,6 +52,20 @@ Variants {
 
                 Region {
                     intersection: Intersection.Subtract
+                }
+            }
+
+            StyledRect {
+                anchors.fill: parent
+                opacity: visibilities.session ? 0.5 : 0
+                color: Colours.palette.m3scrim
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Appearance.anim.durations.normal
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.anim.curves.standard
+                    }
                 }
             }
 
