@@ -14,11 +14,13 @@ MouseArea {
     property point dragStart
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
-        return y >= panel.y && y <= panel.y + panel.height;
+        const panelY = BorderConfig.thickness + panel.y;
+        return y >= panelY && y <= panelY + panel.height;
     }
 
     function inRightPanel(panel: Item, x: real, y: real): bool {
-        return x > panel.x && withinPanelHeight(panel, x, y);
+        return x > BorderConfig.thickness + panel.x && withinPanelHeight(panel, x, y);
+    }
     }
 
     anchors.fill: parent
@@ -30,7 +32,10 @@ MouseArea {
         target: Hyprland
 
         function onCursorPosChanged(): void {
-            const {x, y} = Hyprland.cursorPos;
+            const {
+                x,
+                y
+            } = Hyprland.cursorPos;
 
             // Show osd on hover
             const showOsd = root.inRightPanel(panels.osd, x, y);
