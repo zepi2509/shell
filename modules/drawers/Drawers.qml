@@ -89,10 +89,11 @@ Variants {
             PersistentProperties {
                 id: visibilities
 
-                property bool launcher
                 property bool osd
                 property bool notifications: Notifs.popups.length > 0
                 property bool session
+                property bool launcher
+                property bool dashboard
 
                 Component.onCompleted: Visibilities.screens[scope.modelData] = this
             }

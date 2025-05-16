@@ -4,6 +4,7 @@ import "root:/modules/osd" as Osd
 import "root:/modules/notifications" as Notifications
 import "root:/modules/session" as Session
 import "root:/modules/launcher" as Launcher
+import "root:/modules/dashboard" as Dashboard
 import QtQuick.Shapes
 
 Shape {
@@ -42,5 +43,12 @@ Shape {
 
         startX: (root.width - wrapper.width) / 2
         startY: root.height
+    }
+
+    Dashboard.Background {
+        wrapper: panels.dashboard
+
+        startX: (root.width - wrapper.width) / 2
+        startY: 0
     }
 }

@@ -21,6 +21,10 @@ MouseArea {
     function inRightPanel(panel: Item, x: real, y: real): bool {
         return x > BorderConfig.thickness + panel.x && withinPanelHeight(panel, x, y);
     }
+
+    function inTopPanel(panel: Item, x: real, y: real): bool {
+        const panelX = BorderConfig.thickness + panel.x;
+        return y < BorderConfig.thickness + panel.y + panel.height && x >= panelX && x <= panelX + panel.width;
     }
 
     anchors.fill: parent
@@ -50,6 +54,9 @@ MouseArea {
                 else if (dragX > SessionConfig.dragThreshold)
                     root.visibilities.session = false;
             }
+
+            const showDashboard = root.inTopPanel(panels.dashboard, x, y);
+            root.visibilities.dashboard = showDashboard;
         }
     }
 

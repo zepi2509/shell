@@ -3,6 +3,7 @@ import "root:/modules/osd" as Osd
 import "root:/modules/notifications" as Notifications
 import "root:/modules/session" as Session
 import "root:/modules/launcher" as Launcher
+import "root:/modules/dashboard" as Dashboard
 import Quickshell
 import QtQuick
 
@@ -16,6 +17,7 @@ Item {
     readonly property Notifications.Wrapper notifications: notifications
     readonly property Session.Wrapper session: session
     readonly property Launcher.Wrapper launcher: launcher
+    readonly property Dashboard.Wrapper dashboard: dashboard
 
     anchors.fill: parent
     anchors.margins: BorderConfig.thickness
@@ -57,5 +59,14 @@ Item {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
+    }
+
+    Dashboard.Wrapper {
+        id: dashboard
+
+        visibilities: root.visibilities
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
     }
 }
