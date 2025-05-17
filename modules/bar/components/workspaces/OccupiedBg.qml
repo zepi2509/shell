@@ -57,8 +57,8 @@ Item {
 
             x: start?.x ?? 0
             y: start?.y ?? 0
-            width: root.vertical ? BarConfig.sizes.innerHeight : end?.x + end?.width - start?.x
-            height: root.vertical ? end?.y + end?.height - start?.y : BarConfig.sizes.innerHeight
+            implicitWidth: root.vertical ? BarConfig.sizes.innerHeight : end?.x + end?.width - start?.x
+            implicitHeight: root.vertical ? end?.y + end?.height - start?.y : BarConfig.sizes.innerHeight
 
             anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
             anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter

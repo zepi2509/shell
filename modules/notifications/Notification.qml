@@ -104,8 +104,8 @@ StyledRect {
 
             sourceComponent: ClippingRectangle {
                 radius: Appearance.rounding.full
-                width: NotifsConfig.sizes.image
-                height: NotifsConfig.sizes.image
+                implicitWidth: NotifsConfig.sizes.image
+                implicitHeight: NotifsConfig.sizes.image
 
                 Image {
                     anchors.fill: parent

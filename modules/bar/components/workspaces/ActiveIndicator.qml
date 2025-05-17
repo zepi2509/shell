@@ -24,8 +24,8 @@ Rectangle {
     clip: true
     x: vertical ? 1 : offset + 1
     y: vertical ? offset + 1 : 1
-    width: (vertical ? BarConfig.sizes.innerHeight : size) - 2
-    height: (vertical ? size : BarConfig.sizes.innerHeight) - 2
+    implicitWidth: (vertical ? BarConfig.sizes.innerHeight : size) - 2
+    implicitHeight: (vertical ? size : BarConfig.sizes.innerHeight) - 2
     radius: BarConfig.workspaces.rounded ? Appearance.rounding.full : 0
 
     Rectangle {
@@ -53,8 +53,8 @@ Rectangle {
 
         x: root.vertical ? 0 : -parent.offset
         y: root.vertical ? -parent.offset : 0
-        width: root.maskWidth
-        height: root.maskHeight
+        implicitWidth: root.maskWidth
+        implicitHeight: root.maskHeight
 
         anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
         anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
