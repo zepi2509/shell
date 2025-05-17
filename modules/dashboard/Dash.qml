@@ -7,8 +7,8 @@ import QtQuick.Layouts
 GridLayout {
     id: root
 
-    rowSpacing: Appearance.spacing.small
-    columnSpacing: Appearance.spacing.small
+    rowSpacing: Appearance.spacing.normal
+    columnSpacing: Appearance.spacing.normal
 
     Rect {
         Layout.columnSpan: 3

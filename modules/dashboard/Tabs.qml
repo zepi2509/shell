@@ -84,7 +84,6 @@ Item {
 
         required property string iconName
         readonly property bool current: TabBar.tabBar.currentItem === this
-        property real fill: current ? 1 : 0
 
         background: null
 
@@ -204,10 +203,16 @@ Item {
 
                 text: tab.iconName
                 color: tab.current ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
+                fill: tab.current ? 1 : 0
                 font.pointSize: Appearance.font.size.large
-                font.variableAxes: ({
-                    FILL: tab.fill
-                })
+
+                Behavior on fill {
+                    NumberAnimation {
+                        duration: Appearance.anim.durations.normal
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.anim.curves.standard
+                    }
+                }
             }
 
             StyledText {
@@ -220,14 +225,6 @@ Item {
                 color: tab.current ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
             }
 
-        }
-
-        Behavior on fill {
-            NumberAnimation {
-                duration: Appearance.anim.durations.normal
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Appearance.anim.curves.standard
-            }
         }
     }
 

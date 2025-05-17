@@ -15,8 +15,8 @@ Row {
     spacing: Appearance.spacing.large
 
     ClippingRectangle {
-        implicitWidth: DashboardConfig.sizes.faceSize
-        implicitHeight: DashboardConfig.sizes.faceSize
+        implicitWidth: info.implicitHeight
+        implicitHeight: info.implicitHeight
 
         radius: Appearance.rounding.full
         color: Colours.palette.m3surfaceContainerHigh
@@ -25,7 +25,8 @@ Row {
             anchors.centerIn: parent
 
             text: "person"
-            font.pointSize: DashboardConfig.sizes.faceSize / 2
+            fill: 1
+            font.pointSize: (info.implicitHeight / 2) || 1
         }
 
         CachingImage {
@@ -43,6 +44,8 @@ Row {
     }
 
     Column {
+        id: info
+
         spacing: Appearance.spacing.normal
 
         InfoLine {
