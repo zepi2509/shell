@@ -151,6 +151,7 @@ Singleton {
         })
 
     property string osIcon: ""
+    property string osName
 
     function getAppCategoryIcon(name: string, fallback: string): string {
         const categories = DesktopEntries.applications.values.find(app => app.id === name)?.categories;
@@ -187,14 +188,22 @@ Singleton {
     FileView {
         path: "/etc/os-release"
         onLoaded: {
-            const osId = this.text().split("\n").find(l => l.startsWith("ID="))?.split("=")[1];
+            const lines = text().split("\n");
+            let osId = lines.find(l => l.startsWith("ID="))?.split("=")[1];
             if (root.osIcons.hasOwnProperty(osId))
-                return root.osIcon = root.osIcons[osId];
-            const osIdLike = this.text().split("\n").find(l => l.startsWith("ID_LIKE="))?.split("=")[1];
-            if (osIdLike)
-                for (const id of osIdLike.split(" "))
-                    if (root.osIcons.hasOwnProperty(id))
-                        return root.osIcon = root.osIcons[id];
+                root.osIcon = root.osIcons[osId];
+            else {
+                const osIdLike = lines.find(l => l.startsWith("ID_LIKE="))?.split("=")[1];
+                if (osIdLike)
+                    for (const id of osIdLike.split(" "))
+                        if (root.osIcons.hasOwnProperty(id))
+                            return root.osIcon = root.osIcons[id];
+            }
+
+            let nameLine = lines.find(l => l.startsWith("PRETTY_NAME="));
+            if (!nameLine)
+                nameLine = lines.find(l => l.startsWith("NAME="));
+            root.osName = nameLine.split("=")[1].slice(1, -1);
         }
     }
 }

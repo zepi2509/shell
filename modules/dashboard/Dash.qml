@@ -1,7 +1,7 @@
 import "root:/widgets"
 import "root:/services"
 import "root:/config"
-import Quickshell
+import "dash"
 import QtQuick.Layouts
 
 GridLayout {
@@ -11,11 +11,9 @@ GridLayout {
     columnSpacing: Appearance.spacing.small
 
     Rect {
-        text: "user"
-
         Layout.columnSpan: 3
-        Layout.preferredWidth: 300
-        Layout.preferredHeight: 150
+
+        User {}
     }
 
     Rect {
@@ -65,7 +63,7 @@ GridLayout {
     }
 
     component Rect: StyledRect {
-        required property string text
+        property string text
 
         radius: Appearance.rounding.small
         color: Colours.palette.m3surfaceContainer
