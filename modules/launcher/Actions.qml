@@ -53,7 +53,7 @@ Singleton {
             icon: "light_mode"
 
             function onClicked(list: AppList): void {
-                list.launcher.launcherVisible = false;
+                list.visibilities.launcher = false;
                 Colours.setMode("light");
             }
         },
@@ -63,7 +63,7 @@ Singleton {
             icon: "dark_mode"
 
             function onClicked(list: AppList): void {
-                list.launcher.launcherVisible = false;
+                list.visibilities.launcher = false;
                 Colours.setMode("dark");
             }
         },
@@ -73,7 +73,7 @@ Singleton {
             icon: "lock"
 
             function onClicked(list: AppList): void {
-                list.launcher.launcherVisible = false;
+                list.visibilities.launcher = false;
                 lock.running = true;
             }
         },
@@ -83,7 +83,7 @@ Singleton {
             icon: "bedtime"
 
             function onClicked(list: AppList): void {
-                list.launcher.launcherVisible = false;
+                list.visibilities.launcher = false;
                 sleep.running = true;
             }
         }
