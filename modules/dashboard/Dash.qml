@@ -51,13 +51,12 @@ GridLayout {
     }
 
     Rect {
-        text: "media"
-
         Layout.row: 0
         Layout.column: 5
         Layout.rowSpan: 2
-        Layout.preferredWidth: 250
         Layout.fillHeight: true
+
+        Media {}
     }
 
     component Rect: StyledRect {

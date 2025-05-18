@@ -8,6 +8,7 @@ Rectangle {
 
     readonly property alias hovered: mouse.hovered
     readonly property alias pressed: mouse.pressed
+    property bool disabled
 
     function onClicked(event: MouseEvent): void {
     }
@@ -15,7 +16,7 @@ Rectangle {
     anchors.fill: parent
 
     color: Colours.palette.m3onSurface
-    opacity: mouse.pressed ? 0.1 : mouse.hovered ? 0.08 : 0
+    opacity: disabled ? 0 : mouse.pressed ? 0.1 : mouse.hovered ? 0.08 : 0
 
     MouseArea {
         id: mouse
@@ -23,13 +24,13 @@ Rectangle {
         property bool hovered
 
         anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: root.disabled ? undefined : Qt.PointingHandCursor
         hoverEnabled: true
 
         onEntered: hovered = true
         onExited: hovered = false
 
-        onClicked: event => root.onClicked(event)
+        onClicked: event => !root.disabled && root.onClicked(event)
     }
 
     Behavior on opacity {
