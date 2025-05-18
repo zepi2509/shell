@@ -42,7 +42,7 @@ Item {
         }
     }
 
-    StyledRect {
+    Item {
         id: indicator
 
         anchors.top: bar.bottom
@@ -56,8 +56,18 @@ Item {
             return tab.x + (tab.width - tab.implicitWidth) / 2;
         }
 
-        color: Colours.palette.m3primary
-        radius: Appearance.rounding.full
+        clip: true
+
+        StyledRect {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            implicitHeight: parent.implicitHeight * 2
+
+            color: Colours.palette.m3primary
+            radius: Appearance.rounding.full
+
+        }
 
         Behavior on x {
             Anim {}
