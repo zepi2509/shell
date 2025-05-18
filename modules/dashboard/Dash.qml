@@ -26,11 +26,9 @@ GridLayout {
     }
 
     Rect {
-        text: "time"
-
         Layout.row: 1
-        Layout.preferredWidth: 100
-        Layout.fillHeight: true
+
+        DateTime {}
     }
 
     Rect {
@@ -40,7 +38,7 @@ GridLayout {
         Layout.column: 1
         Layout.columnSpan: 3
         Layout.fillWidth: true
-        Layout.preferredHeight: 200
+        Layout.fillHeight: true
     }
 
     Rect {

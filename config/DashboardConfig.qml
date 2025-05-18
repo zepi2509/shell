@@ -11,5 +11,6 @@ Singleton {
         readonly property int tabIndicatorSpacing: 5
         readonly property int infoWidth: 200
         readonly property int infoIconSize: 25
+        readonly property int dateTimeWidth: 110
     }
 }
