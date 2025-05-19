@@ -5,6 +5,7 @@ import "root:/services"
 import "root:/config"
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import QtQuick
 
 Variants {
@@ -25,7 +26,7 @@ Variants {
             screen: scope.modelData
             name: "drawers"
             exclusionMode: ExclusionMode.Ignore
-            keyboardFocus: visibilities.launcher || visibilities.session ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            keyboardFocus: visibilities.launcher || visibilities.session ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
             mask: Region {
                 x: BorderConfig.thickness
@@ -52,6 +53,15 @@ Variants {
 
                 Region {
                     intersection: Intersection.Subtract
+                }
+            }
+
+            HyprlandFocusGrab {
+                active: visibilities.launcher || visibilities.session
+                windows: [win]
+                onCleared: {
+                    visibilities.launcher = false;
+                    visibilities.session = false;
                 }
             }
 
