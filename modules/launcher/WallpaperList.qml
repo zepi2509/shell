@@ -10,6 +10,18 @@ PathView {
 
     required property TextField search
     required property PersistentProperties visibilities
+    readonly property int numItems: {
+        const screenWidth = QsWindow.window?.screen.width - BorderConfig.thickness * 2 - BorderConfig.rounding * 4 - Appearance.padding.large * 2;
+        if (!screenWidth)
+            return 0;
+        const itemWidth = LauncherConfig.sizes.wallpaperWidth * 0.8;
+        const max = LauncherConfig.maxWallpapers;
+        if (max * itemWidth > screenWidth) {
+            const items = Math.floor(screenWidth / itemWidth);
+            return items > 1 && items % 2 === 0 ? items - 1 : items;
+        }
+        return max;
+    }
 
     model: ScriptModel {
         readonly property string search: root.search.text.split(" ").slice(1).join(" ")
@@ -31,8 +43,8 @@ PathView {
             Wallpapers.preview(currentItem.modelData.path);
     }
 
-    implicitWidth: Math.min(LauncherConfig.maxWallpapers, count) * (LauncherConfig.sizes.wallpaperWidth * 0.8 + Appearance.padding.larger * 2)
-    pathItemCount: LauncherConfig.maxWallpapers
+    implicitWidth: Math.min(numItems, count) * (LauncherConfig.sizes.wallpaperWidth * 0.8 + Appearance.padding.larger * 2)
+    pathItemCount: numItems
     cacheItemCount: 4
 
     snapMode: PathView.SnapToItem
