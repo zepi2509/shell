@@ -13,11 +13,13 @@ Item {
         return active ? active.position / active.length : 0;
     }
 
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
     implicitWidth: DashboardConfig.sizes.mediaWidth
 
     Behavior on playerProgress {
         NumberAnimation {
-            duration: Appearance.anim.durations.normal
+            duration: Appearance.anim.durations.large
             easing.type: Easing.BezierSpline
             easing.bezierCurve: Appearance.anim.curves.standard
         }

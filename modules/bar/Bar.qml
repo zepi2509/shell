@@ -1,5 +1,4 @@
 import "root:/widgets"
-import "root:/services"
 import "root:/config"
 import Quickshell
 import QtQuick
@@ -27,7 +26,6 @@ Variants {
                 win.anchors.bottom = true;
             else
                 win.anchors.right = true;
-            console.log(Players.list);
         }
 
         Connections {

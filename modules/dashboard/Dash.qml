@@ -1,7 +1,7 @@
-import "root:/widgets"
 import "root:/services"
 import "root:/config"
 import "dash"
+import QtQuick
 import QtQuick.Layouts
 
 GridLayout {
@@ -17,7 +17,7 @@ GridLayout {
     }
 
     Rect {
-        text: "toggles"
+        // text: "toggles"
 
         Layout.column: 3
         Layout.columnSpan: 2
@@ -32,7 +32,7 @@ GridLayout {
     }
 
     Rect {
-        text: "calendar"
+        // text: "calendar"
 
         Layout.row: 1
         Layout.column: 1
@@ -42,12 +42,11 @@ GridLayout {
     }
 
     Rect {
-        text: "perf"
-
         Layout.row: 1
         Layout.column: 4
-        Layout.preferredWidth: 120
         Layout.fillHeight: true
+
+        Resources {}
     }
 
     Rect {
@@ -59,15 +58,22 @@ GridLayout {
         Media {}
     }
 
-    component Rect: StyledRect {
-        property string text
+    component Rect: Rectangle {
+        default property Item child
+
+        children: [child]
+        implicitWidth: child.implicitWidth
+        implicitHeight: child.implicitHeight
 
         radius: Appearance.rounding.small
         color: Colours.palette.m3surfaceContainer
 
-        StyledText {
-            anchors.centerIn: parent
-            text: parent.text
+        Behavior on color {
+            ColorAnimation {
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.standard
+            }
         }
     }
 }
