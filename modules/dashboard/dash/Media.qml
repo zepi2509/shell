@@ -48,6 +48,14 @@ Item {
                 startAngle: -90 - DashboardConfig.sizes.mediaProgressSweep / 2
                 sweepAngle: DashboardConfig.sizes.mediaProgressSweep
             }
+
+            Behavior on strokeColor {
+                ColorAnimation {
+                    duration: Appearance.anim.durations.normal
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.anim.curves.standard
+                }
+            }
         }
 
         ShapePath {
@@ -63,6 +71,14 @@ Item {
                 radiusY: (cover.height + DashboardConfig.sizes.mediaProgressThickness) / 2 + Appearance.spacing.small
                 startAngle: -90 - DashboardConfig.sizes.mediaProgressSweep / 2
                 sweepAngle: DashboardConfig.sizes.mediaProgressSweep * root.playerProgress
+            }
+
+            Behavior on strokeColor {
+                ColorAnimation {
+                    duration: Appearance.anim.durations.normal
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.anim.curves.standard
+                }
             }
         }
     }
