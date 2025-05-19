@@ -1,8 +1,8 @@
 import "root:/widgets"
 import "root:/services"
 import "root:/config"
+import Quickshell.Widgets
 import QtQuick
-import QtQuick.Effects
 import QtQuick.Shapes
 
 Item {
@@ -83,7 +83,7 @@ Item {
         }
     }
 
-    StyledRect {
+    ClippingRectangle {
         id: cover
 
         anchors.top: parent.top
@@ -108,29 +108,19 @@ Item {
 
             anchors.fill: parent
 
-            visible: false
             source: Players.active?.trackArtUrl ?? ""
             asynchronous: true
             fillMode: Image.PreserveAspectCrop
+            sourceSize.width: width
+            sourceSize.height: height
         }
 
-        Rectangle {
-            id: mask
-
-            layer.enabled: true
-            layer.smooth: true
-            visible: false
-            anchors.fill: image
-            radius: parent.radius
-        }
-
-        MultiEffect {
-            anchors.fill: image
-            source: image
-            maskEnabled: true
-            maskSource: mask
-            maskSpreadAtMin: 1
-            maskThresholdMin: 0.5
+        Behavior on color {
+            ColorAnimation {
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.standard
+            }
         }
     }
 
