@@ -6,8 +6,9 @@ import QtQuick
 Item {
     id: root
 
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
     implicitWidth: DashboardConfig.sizes.dateTimeWidth
-    implicitHeight: date.y + date.implicitHeight + Appearance.padding.large * 2
 
     StyledText {
         id: hours
@@ -15,7 +16,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.topMargin: Appearance.padding.large * 2
+        anchors.topMargin: (root.height - (hours.implicitHeight + sep.implicitHeight + sep.anchors.topMargin + mins.implicitHeight + mins.anchors.topMargin + date.implicitHeight + date.anchors.topMargin)) / 2
 
         horizontalAlignment: Text.AlignHCenter
         text: Time.format("HH")

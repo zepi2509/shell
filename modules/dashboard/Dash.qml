@@ -27,18 +27,18 @@ GridLayout {
 
     Rect {
         Layout.row: 1
+        Layout.fillHeight: true
 
         DateTime {}
     }
 
     Rect {
-        // text: "calendar"
-
         Layout.row: 1
         Layout.column: 1
         Layout.columnSpan: 3
         Layout.fillWidth: true
-        Layout.fillHeight: true
+
+        Calendar {}
     }
 
     Rect {
