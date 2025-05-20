@@ -11,7 +11,7 @@ PathView {
     required property TextField search
     required property PersistentProperties visibilities
     readonly property int numItems: {
-        const screenWidth = QsWindow.window?.screen.width - BorderConfig.thickness * 2 - BorderConfig.rounding * 4 - Appearance.padding.large * 2;
+        const screenWidth = QsWindow.window?.screen.width * 0.8;
         if (!screenWidth)
             return 0;
         const itemWidth = LauncherConfig.sizes.wallpaperWidth * 0.8;
