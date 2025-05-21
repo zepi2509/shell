@@ -19,10 +19,14 @@ ColumnLayout {
         Layout.topMargin: Appearance.padding.large
         Layout.fillWidth: true
 
-        font.family: Appearance.font.family.sans
-        font.weight: 500
+        delegate: StyledText {
+            required property var model
 
-        // delegate: StyledText {}
+            horizontalAlignment: Text.AlignHCenter
+            text: model.shortName
+            font.family: Appearance.font.family.sans
+            font.weight: 500
+        }
     }
 
     MonthGrid {
@@ -57,7 +61,7 @@ ColumnLayout {
 
                     horizontalAlignment: Text.AlignHCenter
                     text: grid.locale.toString(day.model.date, "d")
-                    color: day.model.today ? Colours.palette.m3onPrimary : day.model.month === grid.month ? Colours.palette.m3onSurface : Colours.palette.m3outline
+                    color: day.model.today ? Colours.palette.m3onPrimary : day.model.month === grid.month ? Colours.palette.m3onSurfaceVariant : Colours.palette.m3outline
                 }
             }
         }
