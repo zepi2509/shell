@@ -1,6 +1,8 @@
 import "root:/widgets"
 import "root:/services"
 import "root:/config"
+import Quickshell
+import Quickshell.Io
 import Quickshell.Widgets
 import QtQuick
 import QtQuick.Shapes
@@ -206,6 +208,33 @@ Item {
 
             function onClicked(): void {
                 Players.active?.next();
+            }
+        }
+    }
+
+    AnimatedImage {
+        id: bongocat
+
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottomMargin: Appearance.padding.large
+        anchors.margins: Appearance.padding.large * 2
+
+        playing: false
+        source: "root:/assets/bongocat.gif"
+        asynchronous: true
+        fillMode: AnimatedImage.PreserveAspectFit
+        z: -1
+
+        Process {
+            running: true
+            command: [`${Quickshell.shellRoot}/assets/realtime-beat-detector.py`]
+            stdout: SplitParser {
+                onRead: data => {
+                    if (Players.active?.isPlaying)
+                        bongocat.currentFrame++;
+                }
             }
         }
     }
