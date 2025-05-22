@@ -221,7 +221,7 @@ Item {
         anchors.bottomMargin: Appearance.padding.large
         anchors.margins: Appearance.padding.large * 2
 
-        playing: false
+        playing: Players.active?.isPlaying
         source: "root:/assets/bongocat.gif"
         asynchronous: true
         fillMode: AnimatedImage.PreserveAspectFit
@@ -231,10 +231,7 @@ Item {
             running: true
             command: [`${Quickshell.shellRoot}/assets/realtime-beat-detector.py`]
             stdout: SplitParser {
-                onRead: data => {
-                    if (Players.active?.isPlaying)
-                        bongocat.currentFrame++;
-                }
+                onRead: data => bongocat.speed = parseFloat(data) / 300
             }
         }
     }
