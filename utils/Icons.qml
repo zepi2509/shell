@@ -52,59 +52,54 @@ Singleton {
         })
 
     readonly property var weatherIcons: ({
-            warning: "󰼯",
-            sunny: "󰖙",
-            clear: "󰖔",
-            partly_cloudy: "󰖕",
-            partly_cloudy_night: "󰼱",
-            cloudy: "󰖐",
-            overcast: "󰖕",
-            mist: "󰖑",
-            patchy_rain_nearby: "󰼳",
-            patchy_rain_possible: "󰼳",
-            patchy_snow_possible: "󰼴",
-            patchy_sleet_possible: "󰙿",
-            patchy_freezing_drizzle_possible: "󰙿",
-            thundery_outbreaks_possible: "󰙾",
-            blowing_snow: "󰼶",
-            blizzard: "󰼶",
-            fog: "󰖑",
-            freezing_fog: "󰖑",
-            patchy_light_drizzle: "󰼳",
-            light_drizzle: "󰼳",
-            freezing_drizzle: "󰙿",
-            heavy_freezing_drizzle: "󰙿",
-            patchy_light_rain: "󰼳",
-            light_rain: "󰼳",
-            moderate_rain_at_times: "󰖗",
-            moderate_rain: "󰼳",
-            heavy_rain_at_times: "󰖖",
-            heavy_rain: "󰖖",
-            light_freezing_rain: "󰙿",
-            moderate_or_heavy_freezing_rain: "󰙿",
-            light_sleet: "󰙿",
-            moderate_or_heavy_sleet: "󰙿",
-            patchy_light_snow: "󰼴",
-            light_snow: "󰼴",
-            patchy_moderate_snow: "󰼴",
-            moderate_snow: "󰼶",
-            patchy_heavy_snow: "󰼶",
-            heavy_snow: "󰼶",
-            ice_pellets: "󰖒",
-            light_rain_shower: "󰖖",
-            moderate_or_heavy_rain_shower: "󰖖",
-            torrential_rain_shower: "󰖖",
-            light_sleet_showers: "󰼵",
-            moderate_or_heavy_sleet_showers: "󰼵",
-            light_snow_showers: "󰼵",
-            moderate_or_heavy_snow_showers: "󰼵",
-            light_showers_of_ice_pellets: "󰖒",
-            moderate_or_heavy_showers_of_ice_pellets: "󰖒",
-            patchy_light_rain_with_thunder: "󰙾",
-            moderate_or_heavy_rain_with_thunder: "󰙾",
-            moderate_or_heavy_rain_in_area_with_thunder: "󰙾",
-            patchy_light_snow_with_thunder: "󰼶",
-            moderate_or_heavy_snow_with_thunder: "󰼶"
+            "113": "clear_day",
+            "116": "partly_cloudy_day",
+            "119": "cloud",
+            "122": "cloud",
+            "143": "foggy",
+            "176": "rainy",
+            "179": "rainy",
+            "182": "rainy",
+            "185": "rainy",
+            "200": "thunderstorm",
+            "227": "cloudy_snowing",
+            "230": "snowing_heavy",
+            "248": "foggy",
+            "260": "foggy",
+            "263": "rainy",
+            "266": "rainy",
+            "281": "rainy",
+            "284": "rainy",
+            "293": "rainy",
+            "296": "rainy",
+            "299": "rainy",
+            "302": "weather_hail",
+            "305": "rainy",
+            "308": "weather_hail",
+            "311": "rainy",
+            "314": "rainy",
+            "317": "rainy",
+            "320": "cloudy_snowing",
+            "323": "cloudy_snowing",
+            "326": "cloudy_snowing",
+            "329": "snowing_heavy",
+            "332": "snowing_heavy",
+            "335": "snowing",
+            "338": "snowing_heavy",
+            "350": "rainy",
+            "353": "rainy",
+            "356": "rainy",
+            "359": "weather_hail",
+            "362": "rainy",
+            "365": "rainy",
+            "368": "cloudy_snowing",
+            "371": "snowing",
+            "374": "rainy",
+            "377": "rainy",
+            "386": "thunderstorm",
+            "389": "thunderstorm",
+            "392": "thunderstorm",
+            "395": "snowing"
         })
 
     readonly property var desktopEntrySubs: ({
@@ -157,7 +152,7 @@ Singleton {
         const categories = DesktopEntries.applications.values.find(app => app.id === name)?.categories;
 
         if (categories)
-            for (const [key, value] of Object.entries(this.categoryIcons))
+            for (const [key, value] of Object.entries(categoryIcons))
                 if (categories.includes(key))
                     return value;
         return fallback;
@@ -183,6 +178,12 @@ Singleton {
         if (icon.includes("phone"))
             return "smartphone";
         return "bluetooth";
+    }
+
+    function getWeatherIcon(code: string): string {
+        if (weatherIcons.hasOwnProperty(code))
+            return weatherIcons[code];
+        return "air";
     }
 
     FileView {

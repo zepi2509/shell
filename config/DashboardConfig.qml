@@ -17,5 +17,6 @@ Singleton {
         readonly property int mediaProgressSweep: 180
         readonly property int mediaProgressThickness: 8
         readonly property int resourceProgessThickness: 10
+        readonly property int weatherWidth: 250
     }
 }

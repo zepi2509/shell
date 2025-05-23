@@ -11,20 +11,20 @@ GridLayout {
     columnSpacing: Appearance.spacing.normal
 
     Rect {
+        Layout.column: 2
         Layout.columnSpan: 3
 
         User {}
     }
 
     Rect {
-        // text: "toggles"
-
-        Layout.column: 3
+        // Layout.column: 3
+        Layout.row: 0
         Layout.columnSpan: 2
-        Layout.preferredWidth: 250
+        Layout.preferredWidth: DashboardConfig.sizes.weatherWidth
         Layout.fillHeight: true
 
-        Item {}
+        Weather {}
     }
 
     Rect {
