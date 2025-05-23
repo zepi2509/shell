@@ -5,19 +5,20 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-ColumnLayout {
+Column {
     id: root
 
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.margins: Appearance.padding.large
+    padding: Appearance.padding.large
     spacing: Appearance.spacing.small
 
     DayOfWeekRow {
         id: days
 
-        Layout.topMargin: Appearance.padding.large
-        Layout.fillWidth: true
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.margins: parent.padding
 
         delegate: StyledText {
             required property var model
@@ -32,8 +33,9 @@ ColumnLayout {
     MonthGrid {
         id: grid
 
-        Layout.bottomMargin: Appearance.padding.large
-        Layout.fillWidth: true
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.margins: parent.padding
 
         spacing: 3
 
