@@ -35,7 +35,7 @@ Rectangle {
 
     Behavior on opacity {
         NumberAnimation {
-            duration: Appearance.anim.durations.smaller
+            duration: Appearance.anim.durations.small
             easing.type: Easing.BezierSpline
             easing.bezierCurve: Appearance.anim.curves.standard
         }
