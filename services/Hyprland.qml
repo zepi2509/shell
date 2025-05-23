@@ -93,7 +93,7 @@ Singleton {
                         root.activeClient = clientComp.createObject(root, {
                             lastIpcObject: client
                         });
-                } else {
+                } else if (rClient) {
                     rClient.destroy();
                     root.activeClient = null;
                 }
