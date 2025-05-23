@@ -221,7 +221,7 @@ Item {
         anchors.bottomMargin: Appearance.padding.large
         anchors.margins: Appearance.padding.large * 2
 
-        playing: Players.active?.isPlaying
+        playing: Players.active?.isPlaying ?? false
         source: "root:/assets/bongocat.gif"
         asynchronous: true
         fillMode: AnimatedImage.PreserveAspectFit
