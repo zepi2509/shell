@@ -43,12 +43,9 @@ Singleton {
                 const devices = JSON.parse(data).filter(d => d.Name);
                 const rDevices = root.devices;
 
-                const len = rDevices.length;
-                for (let i = 0; i < len; i++) {
-                    const device = rDevices[i];
-                    if (!devices.find(d => d.Address === device?.address))
-                        rDevices.splice(i, 1);
-                }
+                const destroyed = rDevices.filter(rd => !devices.find(d => d.Address === rd.address));
+                for (const device of destroyed)
+                    rDevices.splice(rDevices.indexOf(device), 1).forEach(d => d.destroy());
 
                 for (const device of devices) {
                     const match = rDevices.find(d => d.address === device.Address);

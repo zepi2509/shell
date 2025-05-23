@@ -35,12 +35,7 @@ Variants {
                 height: scope.modelData.height - BorderConfig.thickness * 2
                 intersection: Intersection.Xor
 
-                regions: panels.children.map(c => regionComp.createObject(this, {
-                        x: c.x,
-                        y: c.y,
-                        width: c.width,
-                        height: c.height
-                    }))
+                regions: regions.instances
             }
 
             anchors.top: true
@@ -48,10 +43,18 @@ Variants {
             anchors.left: true
             anchors.right: true
 
-            Component {
-                id: regionComp
+            Variants {
+                id: regions
+
+                model: panels.children
 
                 Region {
+                    required property Item modelData
+
+                    x: modelData.x
+                    y: modelData.y
+                    width: modelData.width
+                    height: modelData.height
                     intersection: Intersection.Subtract
                 }
             }

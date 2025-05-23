@@ -10,24 +10,22 @@ Singleton {
     id: root
 
     property var ddcMonitors: []
-    readonly property list<Monitor> monitors: Quickshell.screens.map(screen => monitorComp.createObject(root, {
-            screen
-        }))
+    readonly property list<Monitor> monitors: variants.instances
 
     function getMonitorForScreen(screen: ShellScreen): var {
-        return monitors.find(m => m.screen === screen);
+        return monitors.find(m => m.modelData === screen);
     }
 
     function increaseBrightness(): void {
         const focusedName = Hyprland.focusedMonitor.name;
-        const monitor = monitors.find(m => focusedName === m.screen.name);
+        const monitor = monitors.find(m => focusedName === m.modelData.name);
         if (monitor)
             monitor.setBrightness(monitor.brightness + 0.1);
     }
 
     function decreaseBrightness(): void {
         const focusedName = Hyprland.focusedMonitor.name;
-        const monitor = monitors.find(m => focusedName === m.screen.name);
+        const monitor = monitors.find(m => focusedName === m.modelData.name);
         if (monitor)
             monitor.setBrightness(monitor.brightness - 0.1);
     }
@@ -37,6 +35,14 @@ Singleton {
     onMonitorsChanged: {
         ddcMonitors = [];
         ddcProc.running = true;
+    }
+
+    Variants {
+        id: variants
+
+        model: Quickshell.screens
+
+        Monitor {}
     }
 
     Process {
@@ -75,9 +81,9 @@ Singleton {
     component Monitor: QtObject {
         id: monitor
 
-        required property ShellScreen screen
-        readonly property bool isDdc: root.ddcMonitors.some(m => m.model === screen.model)
-        readonly property string busNum: root.ddcMonitors.find(m => m.model === screen.model)?.busNum ?? ""
+        required property ShellScreen modelData
+        readonly property bool isDdc: root.ddcMonitors.some(m => m.model === modelData.model)
+        readonly property string busNum: root.ddcMonitors.find(m => m.model === modelData.model)?.busNum ?? ""
         property real brightness
 
         readonly property Process initProc: Process {
@@ -108,11 +114,5 @@ Singleton {
             initProc.command = isDdc ? ["ddcutil", "-b", busNum, "getvcp", "10", "--brief"] : ["sh", "-c", `echo "a b c $(brightnessctl g) $(brightnessctl m)"`];
             initProc.running = true;
         }
-    }
-
-    Component {
-        id: monitorComp
-
-        Monitor {}
     }
 }

@@ -60,12 +60,9 @@ Singleton {
                 const clients = JSON.parse(data);
                 const rClients = root.clients;
 
-                const len = rClients.length;
-                for (let i = 0; i < len; i++) {
-                    const client = rClients[i];
-                    if (!clients.find(c => c.address === client?.address))
-                        rClients.splice(i, 1);
-                }
+                const destroyed = rClients.filter(rc => !clients.find(c => c.address === rc.address));
+                for (const client of destroyed)
+                    rClients.splice(rClients.indexOf(client), 1).forEach(c => c.destroy());
 
                 for (const client of clients) {
                     const match = rClients.find(c => c.address === client.address);
@@ -88,9 +85,18 @@ Singleton {
             splitMarker: ""
             onRead: data => {
                 const client = JSON.parse(data);
-                root.activeClient = client.address ? clientComp.createObject(root, {
-                    lastIpcObject: client
-                }) : null;
+                const rClient = root.activeClient;
+                if (client.address) {
+                    if (rClient)
+                        rClient.lastIpcObject = client;
+                    else
+                        root.activeClient = clientComp.createObject(root, {
+                            lastIpcObject: client
+                        });
+                } else {
+                    rClient.destroy();
+                    root.activeClient = null;
+                }
             }
         }
     }

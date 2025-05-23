@@ -12,7 +12,7 @@ Singleton {
     readonly property string currentNamePath: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/wallpaper/last.txt`.slice(7)
     readonly property string path: `${StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]}/Wallpapers`.slice(7)
 
-    property list<Wallpaper> list
+    readonly property list<Wallpaper> list: wallpapers.instances
     property bool showPreview: false
     readonly property string current: showPreview ? previewPath : actualCurrent
     property string previewPath
@@ -84,23 +84,19 @@ Singleton {
         command: ["fd", ".", root.path, "-t", "f", "-e", "jpg", "-e", "jpeg", "-e", "png", "-e", "svg"]
         stdout: SplitParser {
             splitMarker: ""
-            onRead: data => {
-                const list = data.trim().split("\n");
-                root.list = list.map(p => wallpaperComp.createObject(root, {
-                        path: p
-                    }));
-            }
+            onRead: data => wallpapers.model = data.trim().split("\n")
         }
     }
 
-    component Wallpaper: QtObject {
-        required property string path
-        readonly property string name: path.slice(path.lastIndexOf("/") + 1, path.lastIndexOf("."))
-    }
-
-    Component {
-        id: wallpaperComp
+    Variants {
+        id: wallpapers
 
         Wallpaper {}
+    }
+
+    component Wallpaper: QtObject {
+        required property string modelData
+        readonly property string path: modelData
+        readonly property string name: path.slice(path.lastIndexOf("/") + 1, path.lastIndexOf("."))
     }
 }

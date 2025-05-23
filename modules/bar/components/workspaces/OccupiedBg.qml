@@ -36,7 +36,7 @@ Item {
             }
         }
         if (pills.length > count)
-            pills.splice(count, pills.length - count);
+            pills.splice(count, pills.length - count).forEach(p => p.destroy());
     }
 
     Repeater {
