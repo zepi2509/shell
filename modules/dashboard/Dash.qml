@@ -23,6 +23,8 @@ GridLayout {
         Layout.columnSpan: 2
         Layout.preferredWidth: 250
         Layout.fillHeight: true
+
+        Item {}
     }
 
     Rect {

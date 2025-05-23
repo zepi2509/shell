@@ -1,5 +1,4 @@
 pragma Singleton
-pragma ComponentBehavior: Bound
 
 import Quickshell
 import QtQuick
@@ -7,26 +6,16 @@ import QtQuick
 Singleton {
     id: root
 
-    property bool vertical: true
-    property Preset preset: presets.pills
-
-    readonly property Sizes sizes: preset.sizes
-    readonly property Workspaces workspaces: preset.workspaces
-    readonly property Tray tray: preset.tray
-    readonly property Presets presets: Presets {}
+    readonly property Sizes sizes: Sizes {}
+    readonly property Workspaces workspaces: Workspaces {}
+    readonly property Tray tray: Tray {}
 
     component Sizes: QtObject {
-        property int exclusiveZone: totalHeight
-        property int totalHeight: height
-        property int height: 40
         property int innerHeight: 30
-        property int floatingGap: 15
-        property int maxLabelWidth: 600
-        property int maxLabelHeight: 400
     }
 
     component Workspaces: QtObject {
-        property int shown: root.vertical ? 5 : 10
+        property int shown: 5
         property bool rounded: true
         property bool activeIndicator: true
         property bool occupiedBg: false
@@ -39,38 +28,5 @@ Singleton {
 
     component Tray: QtObject {
         property bool recolourIcons: false
-    }
-
-    component Preset: QtObject {
-        required property string name
-        property Sizes sizes: Sizes {}
-        property Workspaces workspaces: Workspaces {}
-        property Tray tray: Tray {}
-    }
-
-    component Presets: QtObject {
-        readonly property Preset pills: Preset {
-            name: "pills"
-            sizes: Sizes {
-                totalHeight: height + floatingGap * 2
-                exclusiveZone: totalHeight - floatingGap
-            }
-        }
-        readonly property Preset panel: Preset {
-            name: "panel"
-            sizes: Sizes {
-                height: 30
-            }
-            workspaces: Workspaces {
-                rounded: false
-                showWindows: false
-                label: ""
-                occupiedLabel: ""
-                activeLabel: ""
-            }
-            tray: Tray {
-                recolourIcons: true
-            }
-        }
     }
 }

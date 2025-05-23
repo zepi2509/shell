@@ -15,8 +15,8 @@ MouseArea {
     required property color colour
 
     acceptedButtons: Qt.LeftButton | Qt.RightButton
-    implicitWidth: Appearance.font.size.smaller * 2
-    implicitHeight: Appearance.font.size.smaller * 2
+    implicitWidth: Appearance.font.size.small * 2
+    implicitHeight: Appearance.font.size.small * 2
 
     onClicked: event => {
         if (event.button === Qt.LeftButton)

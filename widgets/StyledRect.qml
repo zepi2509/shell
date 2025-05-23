@@ -4,7 +4,7 @@ import QtQuick
 Rectangle {
     id: root
 
-    property bool vertical: parent.vertical ?? false // Convenience property for propagation to children
+    property bool vertical: parent?.vertical ?? false // Convenience property for propagation to children
 
     color: "transparent"
     implicitWidth: childrenRect.width

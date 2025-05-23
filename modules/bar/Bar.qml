@@ -14,121 +14,16 @@ Variants {
         screen: modelData
         name: "bar"
 
-        exclusiveZone: BarConfig.sizes.exclusiveZone
-        implicitWidth: BarConfig.vertical ? BarConfig.sizes.totalHeight : -1
-        implicitHeight: BarConfig.vertical ? -1 : BarConfig.sizes.totalHeight
+        implicitWidth: content.implicitWidth
 
         anchors.top: true
+        anchors.bottom: true
         anchors.left: true
 
-        Component.onCompleted: {
-            if (BarConfig.vertical)
-                win.anchors.bottom = true;
-            else
-                win.anchors.right = true;
-        }
-
-        Connections {
-            target: BarConfig
-
-            function onVerticalChanged(): void {
-                win.visible = false;
-                if (BarConfig.vertical) {
-                    win.anchors.right = false;
-                    win.anchors.bottom = true;
-                } else {
-                    win.anchors.bottom = false;
-                    win.anchors.right = true;
-                }
-                win.visible = true;
-            }
-        }
-
-        Item {
+        Content {
             id: content
 
-            anchors.fill: parent
-
-            Preset {
-                presetName: "pills"
-                sourceComponent: Pills {
-                    screen: win.modelData
-                }
-            }
-
-            Preset {
-                presetName: "panel"
-                sourceComponent: Panel {
-                    screen: win.modelData
-                }
-            }
-        }
-
-        LayerShadow {
-            source: content
-        }
-    }
-
-    component Preset: Loader {
-        id: loader
-
-        required property string presetName
-
-        anchors.fill: parent
-        asynchronous: true
-        active: false
-        opacity: 0
-
-        states: State {
-            name: "visible"
-            when: BarConfig.preset.name === loader.presetName
-
-            PropertyChanges {
-                loader.opacity: 1
-                loader.active: true
-            }
-        }
-
-        transitions: [
-            Transition {
-                from: ""
-                to: "visible"
-
-                SequentialAnimation {
-                    PropertyAction {}
-                    NumberAnimation {
-                        property: "opacity"
-                        duration: Appearance.anim.durations.large
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.anim.curves.standard
-                    }
-                }
-            },
-            Transition {
-                from: "visible"
-                to: ""
-
-                SequentialAnimation {
-                    NumberAnimation {
-                        property: "opacity"
-                        duration: Appearance.anim.durations.large
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.anim.curves.standard
-                    }
-                    PropertyAction {}
-                }
-            }
-        ]
-
-        Connections {
-            target: BarConfig
-
-            function onVerticalChanged(): void {
-                if (loader.state === "visible") {
-                    loader.active = false;
-                    loader.active = true;
-                }
-            }
+            screen: win.modelData
         }
     }
 }

@@ -6,66 +6,76 @@ import "root:/utils"
 import "root:/config"
 import QtQuick
 
-StyledRect {
+Item {
     id: root
 
+    readonly property bool vertical: parent?.vertical ?? false
     property color colour: Colours.palette.pink
 
-    clip: true
+    implicitWidth: child.implicitWidth
+    implicitHeight: child.implicitHeight
 
-    MaterialIcon {
-        id: icon
+    StyledRect {
+        id: child
 
-        animate: true
-        text: Icons.getAppCategoryIcon(Hyprland.activeClient?.wmClass, "desktop_windows")
-        color: root.colour
+        anchors.centerIn: parent
 
-        anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
-    }
+        clip: true
 
-    AnchorText {
-        id: text
+        MaterialIcon {
+            id: icon
 
-        prevAnchor: icon
+            animate: true
+            text: Icons.getAppCategoryIcon(Hyprland.activeClient?.wmClass, "desktop_windows")
+            color: root.colour
 
-        text: metrics.elidedText
-        font.pointSize: metrics.font.pointSize
-        font.family: metrics.font.family
-        color: root.colour
-
-        transform: Rotation {
-            angle: vertical ? 90 : 0
-            origin.x: text.implicitHeight / 2
-            origin.y: text.implicitHeight / 2
+            anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
         }
 
-        width: vertical ? implicitHeight : implicitWidth
-        height: vertical ? implicitWidth : implicitHeight
-    }
+        AnchorText {
+            id: text
 
-    TextMetrics {
-        id: metrics
+            prevAnchor: icon
 
-        text: Hyprland.activeClient?.title ?? qsTr("Desktop")
-        font.pointSize: Appearance.font.size.smaller
-        font.family: Appearance.font.family.mono
-        elide: Qt.ElideRight
-        elideWidth: root.vertical ? BarConfig.sizes.maxLabelHeight : BarConfig.sizes.maxLabelWidth
-    }
+            text: metrics.elidedText
+            font.pointSize: metrics.font.pointSize
+            font.family: metrics.font.family
+            color: root.colour
 
-    Behavior on implicitWidth {
-        NumberAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.emphasized
+            transform: Rotation {
+                angle: vertical ? 90 : 0
+                origin.x: text.implicitHeight / 2
+                origin.y: text.implicitHeight / 2
+            }
+
+            width: vertical ? implicitHeight : implicitWidth
+            height: vertical ? implicitWidth : implicitHeight
         }
-    }
 
-    Behavior on implicitHeight {
-        NumberAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.emphasized
+        TextMetrics {
+            id: metrics
+
+            text: Hyprland.activeClient?.title ?? qsTr("Desktop")
+            font.pointSize: Appearance.font.size.smaller
+            font.family: Appearance.font.family.mono
+            elide: Qt.ElideRight
+            elideWidth: root.vertical ? root.height - icon.height : root.width - icon.width
+        }
+
+        Behavior on implicitWidth {
+            NumberAnimation {
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.emphasized
+            }
+        }
+
+        Behavior on implicitHeight {
+            NumberAnimation {
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.emphasized
+            }
         }
     }
 }
