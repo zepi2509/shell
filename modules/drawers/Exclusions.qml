@@ -10,30 +10,24 @@ Scope {
     required property ShellScreen screen
 
     ExclusionZone {
-        anchors.left: false
+        anchors.left: true
     }
 
     ExclusionZone {
-        anchors.top: false
+        anchors.top: true
     }
 
     ExclusionZone {
-        anchors.right: false
+        anchors.right: true
     }
 
     ExclusionZone {
-        anchors.bottom: false
+        anchors.bottom: true
     }
 
     component ExclusionZone: StyledWindow {
         screen: root.screen
         name: "border-exclusion"
-        implicitWidth: BorderConfig.thickness
-        implicitHeight: BorderConfig.thickness
-
-        anchors.top: true
-        anchors.left: true
-        anchors.bottom: true
-        anchors.right: true
+        exclusiveZone: BorderConfig.thickness
     }
 }

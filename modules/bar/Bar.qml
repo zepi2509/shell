@@ -15,6 +15,7 @@ Variants {
         name: "bar"
 
         implicitWidth: content.implicitWidth
+        exclusiveZone: content.implicitWidth
 
         anchors.top: true
         anchors.bottom: true
