@@ -9,7 +9,7 @@ Item {
     id: root
 
     readonly property bool vertical: parent?.vertical ?? false
-    property color colour: Colours.palette.rosewater
+    property color colour: Colours.palette.m3secondary
 
     clip: true
     implicitWidth: vertical ? Math.max(network.implicitWidth, bluetooth.implicitWidth, devices.implicitWidth) : network.implicitWidth + bluetooth.implicitWidth + bluetooth.anchors.leftMargin + (repeater.count > 0 ? devices.implicitWidth + devices.anchors.leftMargin : 0)

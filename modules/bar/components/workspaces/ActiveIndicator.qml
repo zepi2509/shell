@@ -27,13 +27,14 @@ Rectangle {
     implicitWidth: (vertical ? BarConfig.sizes.innerHeight : size) - 2
     implicitHeight: (vertical ? size : BarConfig.sizes.innerHeight) - 2
     radius: BarConfig.workspaces.rounded ? Appearance.rounding.full : 0
+    color: Colours.palette.m3primary
 
     Rectangle {
         id: base
 
         visible: false
         anchors.fill: parent
-        color: Colours.on(root.color)
+        color: Colours.palette.m3onPrimary
 
         Behavior on color {
             ColorAnimation {

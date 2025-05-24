@@ -10,7 +10,7 @@ Item {
     id: root
 
     readonly property bool vertical: parent?.vertical ?? false
-    property color colour: Colours.palette.pink
+    property color colour: Colours.palette.m3primary
 
     implicitWidth: child.implicitWidth
     implicitHeight: child.implicitHeight

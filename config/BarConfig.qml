@@ -8,7 +8,6 @@ Singleton {
 
     readonly property Sizes sizes: Sizes {}
     readonly property Workspaces workspaces: Workspaces {}
-    readonly property Tray tray: Tray {}
 
     component Sizes: QtObject {
         property int innerHeight: 30
@@ -24,9 +23,5 @@ Singleton {
         property string label: "  "
         property string occupiedLabel: "󰮯 "
         property string activeLabel: "󰮯 "
-    }
-
-    component Tray: QtObject {
-        property bool recolourIcons: false
     }
 }

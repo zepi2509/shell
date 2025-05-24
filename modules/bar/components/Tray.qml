@@ -8,7 +8,6 @@ Item {
     id: root
 
     readonly property bool vertical: parent?.vertical ?? false
-    property color colour: Colours.palette.lavender
 
     clip: true
     visible: width > 0 && height > 0 // To avoid warnings about being visible with no size
@@ -22,9 +21,7 @@ Item {
         Repeater {
             model: SystemTray.items
 
-            TrayItem {
-                colour: root.colour
-            }
+            TrayItem {}
         }
     }
 

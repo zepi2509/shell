@@ -6,13 +6,11 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 import QtQuick
-import QtQuick.Effects
 
 MouseArea {
     id: root
 
     required property SystemTrayItem modelData
-    required property color colour
 
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     implicitWidth: Appearance.font.size.small * 2
@@ -36,7 +34,6 @@ MouseArea {
     IconImage {
         id: icon
 
-        visible: !BarConfig.tray.recolourIcons
         source: {
             let icon = root.modelData.icon;
             if (icon.includes("?path=")) {
@@ -47,16 +44,5 @@ MouseArea {
         }
         asynchronous: true
         anchors.fill: parent
-    }
-
-    Loader {
-        anchors.fill: icon
-        active: BarConfig.tray.recolourIcons
-        asynchronous: true
-
-        sourceComponent: Colouriser {
-            source: icon
-            colorizationColor: root.colour
-        }
     }
 }

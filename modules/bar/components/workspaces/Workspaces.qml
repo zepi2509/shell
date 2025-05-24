@@ -9,7 +9,6 @@ Item {
     id: root
 
     property alias vertical: layout.vertical
-    property color colour: Colours.palette.mauve
 
     readonly property list<Workspace> workspaces: layout.children.filter(c => c.isWorkspace).sort((w1, w2) => w1.ws - w2.ws)
     readonly property var occupied: Hyprland.workspaces.values.reduce((acc, curr) => {
@@ -59,7 +58,6 @@ Item {
         asynchronous: true
 
         sourceComponent: ActiveIndicator {
-            color: root.colour
             vertical: root.vertical
             workspaces: root.workspaces
             mask: layout

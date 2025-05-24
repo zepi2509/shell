@@ -7,7 +7,7 @@ Item {
     id: root
 
     readonly property bool vertical: parent?.vertical ?? false
-    property color colour: Colours.palette.peach
+    property color colour: Colours.palette.m3tertiary
 
     implicitWidth: vertical ? Math.max(icon.implicitWidth, text.implicitWidth) : icon.implicitWidth + text.implicitWidth + text.anchors.leftMargin
     implicitHeight: vertical ? icon.implicitHeight + text.implicitHeight + text.anchors.topMargin : Math.max(icon.implicitHeight, text.implicitHeight)
