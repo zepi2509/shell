@@ -3,59 +3,65 @@ import "root:/services"
 import "root:/config"
 import QtQuick
 
-PaddedRect {
+Item {
     id: root
 
     required property Actions.Action modelData
     required property var list
 
     implicitHeight: LauncherConfig.sizes.itemHeight
-    padding: [Appearance.padding.smaller, Appearance.padding.larger]
 
     anchors.left: parent.left
     anchors.right: parent.right
 
     StateLayer {
-        radius: Appearance.rounding.normal
+        radius: Appearance.rounding.full
 
         function onClicked(): void {
             root.modelData.onClicked(root.list);
         }
     }
 
-    MaterialIcon {
-        id: icon
-
-        text: root.modelData.icon
-        font.pointSize: Appearance.font.size.extraLarge
-
-        anchors.verticalCenter: parent.verticalCenter
-    }
-
     Item {
-        anchors.left: icon.right
-        anchors.leftMargin: Appearance.spacing.larger
-        anchors.verticalCenter: icon.verticalCenter
+        anchors.fill: parent
+        anchors.leftMargin: Appearance.padding.larger
+        anchors.rightMargin: Appearance.padding.larger
+        anchors.margins: Appearance.padding.smaller
 
-        implicitWidth: parent.width - icon.width
-        implicitHeight: childrenRect.height
+        MaterialIcon {
+            id: icon
 
-        StyledText {
-            id: name
+            text: root.modelData.icon
+            font.pointSize: Appearance.font.size.extraLarge
 
-            text: root.modelData.name
-            font.pointSize: Appearance.font.size.normal
+            anchors.verticalCenter: parent.verticalCenter
         }
 
-        StyledText {
-            text: root.modelData.desc
-            font.pointSize: Appearance.font.size.small
-            color: Colours.alpha(Colours.palette.m3outline, true)
+        Item {
+            anchors.left: icon.right
+            anchors.leftMargin: Appearance.spacing.larger
+            anchors.verticalCenter: icon.verticalCenter
 
-            elide: Text.ElideRight
-            width: root.width - icon.width - Appearance.rounding.normal * 2
+            implicitWidth: parent.width - icon.width
+            implicitHeight: childrenRect.height
 
-            anchors.top: name.bottom
+            StyledText {
+                id: name
+
+                text: root.modelData.name
+                font.pointSize: Appearance.font.size.normal
+            }
+
+            StyledText {
+                text: root.modelData.desc
+                font.pointSize: Appearance.font.size.small
+                color: Colours.alpha(Colours.palette.m3outline, true)
+
+                elide: Text.ElideRight
+                width: root.width - icon.width - Appearance.rounding.normal * 2
+
+                anchors.top: name.bottom
+            }
         }
     }
 }

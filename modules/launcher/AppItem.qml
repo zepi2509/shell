@@ -5,14 +5,13 @@ import Quickshell
 import Quickshell.Widgets
 import QtQuick
 
-PaddedRect {
+Item {
     id: root
 
     required property DesktopEntry modelData
     required property PersistentProperties visibilities
 
     implicitHeight: LauncherConfig.sizes.itemHeight
-    padding: [Appearance.padding.smaller, Appearance.padding.normal]
 
     anchors.left: parent.left
     anchors.right: parent.right
@@ -26,39 +25,46 @@ PaddedRect {
         }
     }
 
-    IconImage {
-        id: icon
-
-        source: Quickshell.iconPath(root.modelData.icon, "image-missing")
-        implicitSize: parent.height * 0.8
-
-        anchors.verticalCenter: parent.verticalCenter
-    }
-
     Item {
-        anchors.left: icon.right
-        anchors.leftMargin: Appearance.spacing.normal
-        anchors.verticalCenter: icon.verticalCenter
+        anchors.fill: parent
+        anchors.leftMargin: Appearance.padding.larger
+        anchors.rightMargin: Appearance.padding.larger
+        anchors.margins: Appearance.padding.smaller
 
-        implicitWidth: parent.width - icon.width
-        implicitHeight: childrenRect.height
+        IconImage {
+            id: icon
 
-        StyledText {
-            id: name
+            source: Quickshell.iconPath(root.modelData.icon, "image-missing")
+            implicitSize: parent.height * 0.8
 
-            text: root.modelData.name
-            font.pointSize: Appearance.font.size.normal
+            anchors.verticalCenter: parent.verticalCenter
         }
 
-        StyledText {
-            text: root.modelData.comment || root.modelData.genericName || root.modelData.name
-            font.pointSize: Appearance.font.size.small
-            color: Colours.alpha(Colours.palette.m3outline, true)
+        Item {
+            anchors.left: icon.right
+            anchors.leftMargin: Appearance.spacing.normal
+            anchors.verticalCenter: icon.verticalCenter
 
-            elide: Text.ElideRight
-            width: root.width - icon.width - Appearance.rounding.normal * 2
+            implicitWidth: parent.width - icon.width
+            implicitHeight: childrenRect.height
 
-            anchors.top: name.bottom
+            StyledText {
+                id: name
+
+                text: root.modelData.name
+                font.pointSize: Appearance.font.size.normal
+            }
+
+            StyledText {
+                text: root.modelData.comment || root.modelData.genericName || root.modelData.name
+                font.pointSize: Appearance.font.size.small
+                color: Colours.alpha(Colours.palette.m3outline, true)
+
+                elide: Text.ElideRight
+                width: root.width - icon.width - Appearance.rounding.normal * 2
+
+                anchors.top: name.bottom
+            }
         }
     }
 }
