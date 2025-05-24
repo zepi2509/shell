@@ -3,7 +3,6 @@ import "root:/services"
 import "root:/config"
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 
 Column {
     id: root

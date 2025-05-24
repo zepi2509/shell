@@ -1,7 +1,7 @@
+import "root:/widgets"
 import "root:/services"
 import "root:/config"
 import "dash"
-import QtQuick
 import QtQuick.Layouts
 
 GridLayout {
@@ -13,8 +13,12 @@ GridLayout {
     Rect {
         Layout.column: 2
         Layout.columnSpan: 3
+        Layout.preferredWidth: user.implicitWidth
+        Layout.preferredHeight: user.implicitHeight
 
-        User {}
+        User {
+            id: user
+        }
     }
 
     Rect {
@@ -28,9 +32,12 @@ GridLayout {
 
     Rect {
         Layout.row: 1
+        Layout.preferredWidth: dateTime.implicitWidth
         Layout.fillHeight: true
 
-        DateTime {}
+        DateTime {
+            id: dateTime
+        }
     }
 
     Rect {
@@ -38,43 +45,38 @@ GridLayout {
         Layout.column: 1
         Layout.columnSpan: 3
         Layout.fillWidth: true
+        Layout.preferredHeight: calendar.implicitHeight
 
-        Calendar {}
+        Calendar {
+            id: calendar
+        }
     }
 
     Rect {
         Layout.row: 1
         Layout.column: 4
+        Layout.preferredWidth: resources.implicitWidth
         Layout.fillHeight: true
 
-        Resources {}
+        Resources {
+            id: resources
+        }
     }
 
     Rect {
         Layout.row: 0
         Layout.column: 5
         Layout.rowSpan: 2
+        Layout.preferredWidth: media.implicitWidth
         Layout.fillHeight: true
 
-        Media {}
+        Media {
+            id: media
+        }
     }
 
-    component Rect: Rectangle {
-        default property Item child
-
-        children: [child]
-        implicitWidth: child.implicitWidth
-        implicitHeight: child.implicitHeight
-
+    component Rect: StyledRect {
         radius: Appearance.rounding.small
         color: Colours.palette.m3surfaceContainer
-
-        Behavior on color {
-            ColorAnimation {
-                duration: Appearance.anim.durations.normal
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Appearance.anim.curves.standard
-            }
-        }
     }
 }
