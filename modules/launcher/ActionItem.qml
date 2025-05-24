@@ -43,7 +43,7 @@ Item {
             anchors.verticalCenter: icon.verticalCenter
 
             implicitWidth: parent.width - icon.width
-            implicitHeight: childrenRect.height
+            implicitHeight: name.implicitHeight + desc.implicitHeight
 
             StyledText {
                 id: name
@@ -53,6 +53,8 @@ Item {
             }
 
             StyledText {
+                id: desc
+
                 text: root.modelData?.desc ?? ""
                 font.pointSize: Appearance.font.size.small
                 color: Colours.alpha(Colours.palette.m3outline, true)
