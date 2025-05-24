@@ -87,7 +87,9 @@ Item {
                 const charging = device.changeRate >= 0;
                 if (perc === 1)
                     return charging ? "battery_charging_full" : "battery_full";
-                const level = Math.floor(perc * 7);
+                let level = Math.floor(perc * 7);
+                if (charging && (level === 4 || level === 1))
+                    level--;
                 return charging ? `battery_charging_${(level + 3) * 10}` : `battery_${level}_bar`;
             }
             color: UPower.displayDevice.percentage > 0.2 ? root.colour : Colours.palette.m3error
