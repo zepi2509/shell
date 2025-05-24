@@ -42,7 +42,7 @@ Item {
         animate: true
         text: root.icon || "cloud_alert"
         color: Colours.palette.m3secondary
-        font.pointSize: root.parent.height / 2 || 1
+        font.pointSize: Appearance.font.size.extraLarge * 2
     }
 
     Column {

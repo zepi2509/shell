@@ -18,7 +18,6 @@ GridLayout {
     }
 
     Rect {
-        // Layout.column: 3
         Layout.row: 0
         Layout.columnSpan: 2
         Layout.preferredWidth: DashboardConfig.sizes.weatherWidth
