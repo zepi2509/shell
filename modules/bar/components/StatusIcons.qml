@@ -3,6 +3,7 @@ import "root:/services"
 import "root:/utils"
 import "root:/config"
 import Quickshell
+import Quickshell.Services.UPower
 import QtQuick
 
 Item {
@@ -12,8 +13,8 @@ Item {
     property color colour: Colours.palette.m3secondary
 
     clip: true
-    implicitWidth: vertical ? Math.max(network.implicitWidth, bluetooth.implicitWidth, devices.implicitWidth) : network.implicitWidth + bluetooth.implicitWidth + bluetooth.anchors.leftMargin + (repeater.count > 0 ? devices.implicitWidth + devices.anchors.leftMargin : 0)
-    implicitHeight: vertical ? network.implicitHeight + bluetooth.implicitHeight + bluetooth.anchors.topMargin + (repeater.count > 0 ? devices.implicitHeight + devices.anchors.topMargin : 0) : Math.max(network.implicitHeight, bluetooth.implicitHeight, devices.implicitHeight)
+    implicitWidth: vertical ? Math.max(network.implicitWidth, bluetooth.implicitWidth, devices.implicitWidth, battery.implicitWidth) : network.implicitWidth + bluetooth.implicitWidth + bluetooth.anchors.leftMargin + (repeater.count > 0 ? devices.implicitWidth + devices.anchors.leftMargin : 0) + (battery.active ? battery.implicitWidth + battery.anchors.leftMargin : 0)
+    implicitHeight: vertical ? network.implicitHeight + bluetooth.implicitHeight + bluetooth.anchors.topMargin + (repeater.count > 0 ? devices.implicitHeight + devices.anchors.topMargin : 0) + (battery.active ? battery.implicitHeight + battery.anchors.topMargin : 0) : Math.max(network.implicitHeight, bluetooth.implicitHeight, devices.implicitHeight, battery.implicitHeight)
 
     MaterialIcon {
         id: network
@@ -62,6 +63,35 @@ Item {
                 text: Icons.getBluetoothIcon(modelData.icon)
                 color: root.colour
             }
+        }
+    }
+
+    Loader {
+        id: battery
+
+        anchors.left: root.vertical ? undefined : repeater.count > 0 ? devices.right : bluetooth.right
+        anchors.leftMargin: root.vertical ? 0 : Appearance.padding.smaller
+        anchors.top: root.vertical ? repeater.count > 0 ? devices.bottom : bluetooth.bottom : undefined
+        anchors.topMargin: root.vertical ? Appearance.padding.smaller : 0
+
+        anchors.horizontalCenter: root.vertical ? devices.horizontalCenter : undefined
+        anchors.verticalCenter: root.vertical ? undefined : devices.verticalCenter
+
+        active: UPower.displayDevice.isLaptopBattery
+        asynchronous: true
+
+        sourceComponent: MaterialIcon {
+            text: {
+                const device = UPower.displayDevice;
+                const perc = device.percentage;
+                const charging = device.changeRate >= 0;
+                if (perc === 1)
+                    return charging ? "battery_charging_full" : "battery_full";
+                const level = Math.floor(perc * 7);
+                return charging ? `battery_charging_${(level + 3) * 10}` : `battery_${level}_bar`;
+            }
+            color: UPower.displayDevice.percentage > 0.2 ? root.colour : Colours.palette.m3error
+            fill: 1
         }
     }
 
