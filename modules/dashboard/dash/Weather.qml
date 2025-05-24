@@ -43,6 +43,9 @@ Item {
         text: root.icon || "cloud_alert"
         color: Colours.palette.m3secondary
         font.pointSize: Appearance.font.size.extraLarge * 2
+        font.variableAxes: ({
+                opsz: Appearance.font.size.extraLarge * 1.2
+            })
     }
 
     Column {
