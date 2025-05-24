@@ -19,7 +19,7 @@ StyledRect {
 
     color: BorderConfig.colour
 
-    Component.onCompleted: Visibilities.bar = this
+    Component.onCompleted: Visibilities.bars[screen] = this
 
     Item {
         id: child

@@ -43,7 +43,7 @@ Variants {
             anchors.left: true
             anchors.right: true
 
-            margins.left: Visibilities.bar?.implicitWidth ?? 0
+            margins.left: Visibilities.bars[screen]?.implicitWidth ?? 0
 
             Variants {
                 id: regions
