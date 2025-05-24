@@ -36,10 +36,12 @@ MouseArea {
         target: Hyprland
 
         function onCursorPosChanged(): void {
-            const {
+            let {
                 x,
                 y
             } = Hyprland.cursorPos;
+            x -= QsWindow.window.margins.left;
+            y -= QsWindow.window.margins.top;
 
             // Show osd on hover
             const showOsd = root.inRightPanel(panels.osd, x, y);

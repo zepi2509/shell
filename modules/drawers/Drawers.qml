@@ -31,8 +31,8 @@ Variants {
             mask: Region {
                 x: BorderConfig.thickness
                 y: BorderConfig.thickness
-                width: scope.modelData.width - BorderConfig.thickness * 2
-                height: scope.modelData.height - BorderConfig.thickness * 2
+                width: win.width - BorderConfig.thickness * 2
+                height: win.height - BorderConfig.thickness * 2
                 intersection: Intersection.Xor
 
                 regions: regions.instances
