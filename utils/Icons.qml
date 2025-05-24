@@ -142,14 +142,16 @@ Singleton {
             "2DGraphics": "photo_library",
             RasterGraphics: "photo_library",
             TV: "tv",
-            System: "host"
+            System: "host",
+            Office: "content_paste"
         })
 
     property string osIcon: ""
     property string osName
 
     function getAppCategoryIcon(name: string, fallback: string): string {
-        const categories = DesktopEntries.applications.values.find(app => app.id === name)?.categories;
+        const lName = name.toLowerCase();
+        const categories = DesktopEntries.applications.values.find(app => app.id.toLowerCase() === lName)?.categories;
 
         if (categories)
             for (const [key, value] of Object.entries(categoryIcons))
