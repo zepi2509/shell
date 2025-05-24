@@ -40,7 +40,7 @@ Item {
         anchors.left: parent.left
 
         animate: true
-        text: root.icon
+        text: root.icon || "cloud_alert"
         color: Colours.palette.m3secondary
         font.pointSize: root.parent.height / 2 || 1
     }
@@ -68,7 +68,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             animate: true
-            text: root.description
+            text: root.description || qsTr("No weather")
 
             elide: Text.ElideRight
             width: Math.min(implicitWidth, root.parent.width - icon.implicitWidth - info.anchors.leftMargin - Appearance.padding.large * 2)
