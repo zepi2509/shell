@@ -9,14 +9,14 @@ Item {
 
     visible: height > 0
     implicitHeight: 0
-    implicitWidth: content.width + BorderConfig.rounding * 2
+    implicitWidth: content.implicitWidth + BorderConfig.rounding * 2
 
     states: State {
         name: "visible"
         when: root.visibilities.launcher
 
         PropertyChanges {
-            root.implicitHeight: content.height
+            root.implicitHeight: content.implicitHeight
         }
     }
 

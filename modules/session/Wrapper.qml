@@ -10,14 +10,14 @@ Item {
 
     visible: width > 0
     implicitWidth: 0
-    implicitHeight: content.height + BorderConfig.rounding * 2
+    implicitHeight: content.implicitHeight + BorderConfig.rounding * 2
 
     states: State {
         name: "visible"
         when: root.visibilities.session
 
         PropertyChanges {
-            root.implicitWidth: content.width
+            root.implicitWidth: content.implicitWidth
         }
     }
 

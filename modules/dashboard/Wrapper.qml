@@ -9,7 +9,17 @@ Item {
 
     visible: height > 0
     implicitHeight: 0
-    implicitWidth: content.width + BorderConfig.rounding * 2
+    implicitWidth: content.implicitWidth + BorderConfig.rounding * 2
+
+    states: State {
+        name: "visible"
+        when: root.visibilities.dashboard
+
+        PropertyChanges {
+            root.implicitHeight: content.implicitHeight
+        }
+    }
+
     transitions: [
         Transition {
             from: ""
@@ -22,7 +32,6 @@ Item {
                 easing.type: Easing.BezierSpline
                 easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
             }
-
         },
         Transition {
             from: "visible"
@@ -35,7 +44,6 @@ Item {
                 easing.type: Easing.BezierSpline
                 easing.bezierCurve: Appearance.anim.curves.emphasizedAccel
             }
-
         }
     ]
 
@@ -44,15 +52,4 @@ Item {
 
         visibilities: root.visibilities
     }
-
-    states: State {
-        name: "visible"
-        when: root.visibilities.dashboard
-
-        PropertyChanges {
-            root.implicitHeight: content.height
-        }
-
-    }
-
 }
