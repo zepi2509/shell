@@ -1,10 +1,10 @@
 pragma Singleton
 
 import "root:/config"
+import "root:/utils"
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import Qt.labs.platform
 
 Singleton {
     id: root
@@ -54,14 +54,14 @@ Singleton {
     }
 
     FileView {
-        path: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/scheme/current-mode.txt`
+        path: `${Paths.state}/scheme/current-mode.txt`
         watchChanges: true
         onFileChanged: reload()
         onLoaded: root.light = text() === "light"
     }
 
     FileView {
-        path: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/scheme/current.txt`
+        path: `${Paths.state}/scheme/current.txt`
         watchChanges: true
         onFileChanged: reload()
         onLoaded: root.load(text(), false)

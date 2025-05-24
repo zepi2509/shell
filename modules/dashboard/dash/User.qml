@@ -6,7 +6,6 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import QtQuick
-import Qt.labs.platform
 
 Row {
     id: root
@@ -31,7 +30,7 @@ Row {
 
         CachingImage {
             anchors.fill: parent
-            path: `${StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]}/.face`
+            path: `${Paths.home}/.face`
         }
 
         Behavior on color {

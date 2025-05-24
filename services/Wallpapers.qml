@@ -1,16 +1,16 @@
 pragma Singleton
 
 import "root:/utils/scripts/fuzzysort.js" as Fuzzy
+import "root:/utils"
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import Qt.labs.platform
 
 Singleton {
     id: root
 
-    readonly property string currentNamePath: `${StandardPaths.standardLocations(StandardPaths.GenericStateLocation)[0]}/caelestia/wallpaper/last.txt`.slice(7)
-    readonly property string path: `${StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]}/Wallpapers`.slice(7)
+    readonly property string currentNamePath: `${Paths.state}/wallpaper/last.txt`.slice(7)
+    readonly property string path: `${Paths.pictures}/Wallpapers`.slice(7)
 
     readonly property list<Wallpaper> list: wallpapers.instances
     property bool showPreview: false

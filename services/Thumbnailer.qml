@@ -1,15 +1,15 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
 
+import "root:/utils"
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import Qt.labs.platform
 
 Singleton {
     id: root
 
-    readonly property string thumbDir: `${StandardPaths.standardLocations(StandardPaths.GenericCacheLocation)[0]}/caelestia/thumbnails`.slice(7)
+    readonly property string thumbDir: `${Paths.cache}/thumbnails`.slice(7)
 
     function go(obj: var): var {
         return thumbComp.createObject(obj, {
