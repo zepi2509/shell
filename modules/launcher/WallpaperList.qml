@@ -51,7 +51,6 @@ PathView {
     preferredHighlightBegin: 0.5
     preferredHighlightEnd: 0.5
     highlightRangeMode: PathView.StrictlyEnforceRange
-    highlightMoveDuration: Appearance.anim.durations.short
 
     delegate: WallpaperItem {
         visibilities: root.visibilities

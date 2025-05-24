@@ -11,14 +11,14 @@ Item {
 
     implicitHeight: LauncherConfig.sizes.itemHeight
 
-    anchors.left: parent.left
-    anchors.right: parent.right
+    anchors.left: parent?.left
+    anchors.right: parent?.right
 
     StateLayer {
         radius: Appearance.rounding.full
 
         function onClicked(): void {
-            root.modelData.onClicked(root.list);
+            root.modelData?.onClicked(root.list);
         }
     }
 
@@ -31,7 +31,7 @@ Item {
         MaterialIcon {
             id: icon
 
-            text: root.modelData.icon
+            text: root.modelData?.icon ?? ""
             font.pointSize: Appearance.font.size.extraLarge
 
             anchors.verticalCenter: parent.verticalCenter
@@ -48,12 +48,12 @@ Item {
             StyledText {
                 id: name
 
-                text: root.modelData.name
+                text: root.modelData?.name ?? ""
                 font.pointSize: Appearance.font.size.normal
             }
 
             StyledText {
-                text: root.modelData.desc
+                text: root.modelData?.desc ?? ""
                 font.pointSize: Appearance.font.size.small
                 color: Colours.alpha(Colours.palette.m3outline, true)
 

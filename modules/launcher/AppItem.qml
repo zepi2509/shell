@@ -13,8 +13,8 @@ Item {
 
     implicitHeight: LauncherConfig.sizes.itemHeight
 
-    anchors.left: parent.left
-    anchors.right: parent.right
+    anchors.left: parent?.left
+    anchors.right: parent?.right
 
     StateLayer {
         radius: Appearance.rounding.full
@@ -34,7 +34,7 @@ Item {
         IconImage {
             id: icon
 
-            source: Quickshell.iconPath(root.modelData.icon, "image-missing")
+            source: Quickshell.iconPath(root.modelData?.icon, "image-missing")
             implicitSize: parent.height * 0.8
 
             anchors.verticalCenter: parent.verticalCenter
@@ -51,12 +51,12 @@ Item {
             StyledText {
                 id: name
 
-                text: root.modelData.name
+                text: root.modelData?.name ?? ""
                 font.pointSize: Appearance.font.size.normal
             }
 
             StyledText {
-                text: root.modelData.comment || root.modelData.genericName || root.modelData.name
+                text: (root.modelData?.comment || root.modelData?.genericName || root.modelData?.name) ?? ""
                 font.pointSize: Appearance.font.size.small
                 color: Colours.alpha(Colours.palette.m3outline, true)
 

@@ -124,8 +124,8 @@ Item {
     Item {
         id: empty
 
-        opacity: root.currentList.count === 0 ? 1 : 0
-        scale: root.currentList.count === 0 ? 1 : 0.5
+        opacity: root.currentList?.count === 0 ? 1 : 0
+        scale: root.currentList?.count === 0 ? 1 : 0.5
 
         implicitWidth: icon.width + text.width + Appearance.spacing.small
         implicitHeight: icon.height
