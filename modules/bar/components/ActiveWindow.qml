@@ -15,12 +15,16 @@ Item {
     implicitWidth: child.implicitWidth
     implicitHeight: child.implicitHeight
 
-    StyledRect {
+    Item {
         id: child
+
+        readonly property bool vertical: root.vertical
 
         anchors.centerIn: parent
 
         clip: true
+        implicitWidth: root.vertical ? Math.max(icon.implicitWidth, text.implicitHeight) : icon.implicitWidth + text.implicitWidth + text.anchors.leftMargin
+        implicitHeight: root.vertical ? icon.implicitHeight + text.implicitWidth + text.anchors.topMargin : Math.max(icon.implicitHeight, text.implicitheight)
 
         MaterialIcon {
             id: icon

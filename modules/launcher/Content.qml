@@ -50,6 +50,8 @@ Item {
         anchors.bottom: parent.bottom
         anchors.margins: root.padding
 
+        implicitHeight: Math.max(searchIcon.implicitHeight, search.implicitHeight, clearIcon.implicitHeight)
+
         MaterialIcon {
             id: searchIcon
 
@@ -139,6 +141,7 @@ Item {
 
                 anchors.fill: parent
                 hoverEnabled: true
+                cursorShape: search.text ? Qt.PointingHandCursor : undefined
 
                 onEntered: hovered = true
                 onExited: hovered = false

@@ -3,10 +3,14 @@ import "root:/services"
 import "root:/config"
 import QtQuick
 
-StyledRect {
+Item {
     id: root
 
+    readonly property bool vertical: parent?.vertical ?? false
     property color colour: Colours.palette.peach
+
+    implicitWidth: vertical ? Math.max(icon.implicitWidth, text.implicitWidth) : icon.implicitWidth + text.implicitWidth + text.anchors.leftMargin
+    implicitHeight: vertical ? icon.implicitHeight + text.implicitHeight + text.anchors.topMargin : Math.max(icon.implicitHeight, text.implicitHeight)
 
     MaterialIcon {
         id: icon
@@ -18,6 +22,8 @@ StyledRect {
     }
 
     AnchorText {
+        id: text
+
         prevAnchor: icon
 
         horizontalAlignment: StyledText.AlignHCenter

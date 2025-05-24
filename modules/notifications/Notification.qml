@@ -21,7 +21,7 @@ StyledRect {
     color: root.modelData?.urgency === NotificationUrgency.Critical ? Colours.palette.m3secondaryContainer : Colours.palette.m3surfaceContainer
     radius: Appearance.rounding.normal
     implicitWidth: NotifsConfig.sizes.width
-    implicitHeight: inner.height
+    implicitHeight: inner.implicitHeight
 
     x: NotifsConfig.sizes.width
     Component.onCompleted: x = 0

@@ -5,12 +5,15 @@ import "root:/config"
 import Quickshell
 import QtQuick
 
-StyledRect {
+Item {
     id: root
 
+    readonly property bool vertical: parent?.vertical ?? false
     property color colour: Colours.palette.rosewater
 
     clip: true
+    implicitWidth: vertical ? Math.max(network.implicitWidth, bluetooth.implicitWidth, devices.implicitWidth) : network.implicitWidth + bluetooth.implicitWidth + bluetooth.anchors.leftMargin + (repeater.count > 0 ? devices.implicitWidth + devices.anchors.leftMargin : 0)
+    implicitHeight: vertical ? network.implicitHeight + bluetooth.implicitHeight + bluetooth.anchors.topMargin + (repeater.count > 0 ? devices.implicitHeight + devices.anchors.topMargin : 0) : Math.max(network.implicitHeight, bluetooth.implicitHeight, devices.implicitHeight)
 
     MaterialIcon {
         id: network
@@ -35,6 +38,8 @@ StyledRect {
     }
 
     Box {
+        id: devices
+
         anchors.left: vertical ? undefined : bluetooth.right
         anchors.leftMargin: vertical ? 0 : Appearance.padding.smaller
         anchors.top: vertical ? bluetooth.bottom : undefined
@@ -44,6 +49,8 @@ StyledRect {
         anchors.verticalCenter: vertical ? undefined : bluetooth.verticalCenter
 
         Repeater {
+            id: repeater
+
             model: ScriptModel {
                 values: Bluetooth.devices.filter(d => d.connected)
             }

@@ -7,8 +7,6 @@ Rectangle {
     property bool vertical: parent?.vertical ?? false // Convenience property for propagation to children
 
     color: "transparent"
-    implicitWidth: childrenRect.width
-    implicitHeight: childrenRect.height
 
     Behavior on color {
         ColorAnimation {
