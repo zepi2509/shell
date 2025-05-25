@@ -12,7 +12,7 @@ Item {
 
     property real playerProgress: {
         const active = Players.active;
-        return active ? active.position / active.length : 0;
+        return active?.length ? active.position / active.length : 0;
     }
 
     anchors.top: parent.top
@@ -223,18 +223,11 @@ Item {
         anchors.bottomMargin: Appearance.padding.large
         anchors.margins: Appearance.padding.large * 2
 
-        playing: Players.active?.isPlaying ?? false
+        playing: visible && (Players.active?.isPlaying ?? false)
+        speed: BeatDetector.bpm / 300
         source: "root:/assets/bongocat.gif"
         asynchronous: true
         fillMode: AnimatedImage.PreserveAspectFit
-
-        Process {
-            running: true
-            command: [`${Quickshell.shellRoot}/assets/realtime-beat-detector.py`]
-            stdout: SplitParser {
-                onRead: data => bongocat.speed = parseFloat(data) / 300
-            }
-        }
     }
 
     component Control: StyledRect {

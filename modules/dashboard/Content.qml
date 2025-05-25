@@ -48,7 +48,39 @@ Item {
 
             currentIndex: tabs.currentIndex
 
-            Dash {}
+            ClippingWrapperRectangle {
+                radius: Appearance.rounding.normal
+                color: "transparent"
+
+                Dash {
+                    clip: true
+                }
+            }
+
+            ClippingWrapperRectangle {
+                radius: Appearance.rounding.normal
+                color: "transparent"
+
+                Media {
+                    clip: true
+                }
+            }
+        }
+    }
+
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: Appearance.anim.durations.large
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.emphasized
+        }
+    }
+
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: Appearance.anim.durations.large
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.emphasized
         }
     }
 }

@@ -5,6 +5,7 @@ import QtQuick
 
 Singleton {
     readonly property int mediaUpdateInterval: 500
+    readonly property int visualiserBars: 45
     readonly property Sizes sizes: Sizes {}
 
     component Sizes: QtObject {
@@ -18,5 +19,7 @@ Singleton {
         readonly property int mediaProgressThickness: 8
         readonly property int resourceProgessThickness: 10
         readonly property int weatherWidth: 250
+        readonly property int mediaCoverArtSize: 150
+        readonly property int mediaVisualiserSize: 80
     }
 }
