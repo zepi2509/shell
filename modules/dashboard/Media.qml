@@ -209,6 +209,7 @@ Item {
             Control {
                 icon: Players.active?.isPlaying ? "pause" : "play_arrow"
                 canUse: Players.active?.canTogglePlaying ?? false
+                primary: true
 
                 function onClicked(): void {
                     Players.active?.togglePlaying();
@@ -228,7 +229,7 @@ Item {
         Slider {
             id: slider
 
-            implicitWidth: controls.implicitWidth * 2
+            implicitWidth: controls.implicitWidth * 1.5
             implicitHeight: Appearance.padding.normal * 3
 
             value: root.playerProgress
@@ -336,15 +337,20 @@ Item {
 
         required property string icon
         required property bool canUse
+        property bool primary
         function onClicked(): void {
         }
 
         implicitWidth: Math.max(icon.implicitHeight, icon.implicitHeight) + Appearance.padding.small
         implicitHeight: implicitWidth
 
+        radius: Appearance.rounding.full
+        color: primary && canUse ? Colours.palette.m3primary : "transparent"
+
         StateLayer {
             disabled: !control.canUse
-            radius: Appearance.rounding.full
+            radius: parent.radius
+            color: control.primary ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
 
             function onClicked(): void {
                 control.onClicked();
@@ -358,9 +364,10 @@ Item {
             anchors.verticalCenterOffset: font.pointSize * 0.05
 
             animate: true
+            fill: 1
             text: control.icon
-            color: control.canUse ? Colours.palette.m3onSurface : Colours.palette.m3outline
-            font.pointSize: Appearance.font.size.large
+            color: control.canUse ? control.primary ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface : Colours.palette.m3outline
+            font.pointSize: Appearance.font.size.extraLarge
         }
     }
 }
