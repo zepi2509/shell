@@ -1,5 +1,6 @@
 import "root:/services"
 import "root:/config"
+import Quickshell
 import QtQuick
 import QtQuick.Shapes
 
@@ -10,6 +11,7 @@ ShapePath {
     readonly property real rounding: BorderConfig.rounding
     readonly property bool flatten: wrapper.height < rounding * 2
     readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
+    property real fullHeightRounding: wrapper.height >= QsWindow.window?.height - BorderConfig.thickness * 2 ? -rounding : rounding
 
     strokeWidth: -1
     fillColor: BorderConfig.colour
@@ -29,14 +31,14 @@ ShapePath {
         relativeY: root.wrapper.height - root.roundingY * 2
     }
     PathArc {
-        relativeX: root.rounding
+        relativeX: root.fullHeightRounding
         relativeY: root.roundingY
-        radiusX: root.rounding
+        radiusX: Math.abs(root.fullHeightRounding)
         radiusY: Math.min(root.rounding, root.wrapper.height)
-        direction: PathArc.Counterclockwise
+        direction: root.fullHeightRounding < 0 ? PathArc.Clockwise : PathArc.Counterclockwise
     }
     PathLine {
-        relativeX: root.wrapper.height > 0 ? root.wrapper.width - root.rounding * 3 : root.wrapper.width
+        relativeX: root.wrapper.height > 0 ? root.wrapper.width - root.rounding * 2 - root.fullHeightRounding : root.wrapper.width
         relativeY: 0
     }
     PathArc {
@@ -48,6 +50,14 @@ ShapePath {
 
     Behavior on fillColor {
         ColorAnimation {
+            duration: Appearance.anim.durations.normal
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.anim.curves.standard
+        }
+    }
+
+    Behavior on fullHeightRounding {
+        NumberAnimation {
             duration: Appearance.anim.durations.normal
             easing.type: Easing.BezierSpline
             easing.bezierCurve: Appearance.anim.curves.standard
