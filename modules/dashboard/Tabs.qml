@@ -8,9 +8,10 @@ import QtQuick.Controls
 Item {
     id: root
 
+    required property real nonAnimWidth
     property alias currentIndex: bar.currentIndex
 
-    implicitHeight: bar.height + indicator.height + indicator.anchors.topMargin + separator.height
+    implicitHeight: bar.implicitHeight + indicator.implicitHeight + indicator.anchors.topMargin + separator.implicitHeight
 
     TabBar {
         id: bar
@@ -53,7 +54,8 @@ Item {
 
         x: {
             const tab = bar.currentItem;
-            return tab.x + (tab.width - tab.implicitWidth) / 2;
+            const width = (root.nonAnimWidth - DashboardConfig.sizes.tabIndicatorSpacing * (bar.count - 1) * 2) / bar.count
+            return width * tab.TabBar.index + (width - tab.implicitWidth) / 2;
         }
 
         clip: true

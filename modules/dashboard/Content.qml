@@ -10,11 +10,12 @@ Item {
     id: root
 
     required property PersistentProperties visibilities
+    readonly property real nonAnimWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
 
-    implicitWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
+    implicitWidth: nonAnimWidth
     implicitHeight: tabs.implicitHeight + tabs.anchors.topMargin + view.implicitHeight + viewWrapper.anchors.margins * 2
 
     Tabs {
@@ -26,6 +27,7 @@ Item {
         anchors.topMargin: Appearance.padding.normal
         anchors.margins: Appearance.padding.large
 
+        nonAnimWidth: root.nonAnimWidth
         currentIndex: view.currentIndex
     }
 
