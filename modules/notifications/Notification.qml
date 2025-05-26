@@ -33,6 +33,7 @@ StyledRect {
         hoverEnabled: true
         cursorShape: pressed ? Qt.ClosedHandCursor : undefined
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        preventStealing: true
 
         onEntered: root.modelData?.timer.stop()
         onExited: root.modelData?.timer.start()
@@ -461,7 +462,7 @@ StyledRect {
                     TextMetrics {
                         id: actionTextMetrics
 
-                        text: modelData?.text
+                        text: modelData?.text ?? ""
                         font.family: actionText.font.family
                         font.pointSize: actionText.font.pointSize
                         elide: Text.ElideRight

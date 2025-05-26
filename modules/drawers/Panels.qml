@@ -1,3 +1,4 @@
+import "root:/services"
 import "root:/config"
 import "root:/modules/osd" as Osd
 import "root:/modules/notifications" as Notifications
@@ -21,6 +22,8 @@ Item {
 
     anchors.fill: parent
     anchors.margins: BorderConfig.thickness
+
+    Component.onCompleted: Visibilities.panels[screen] = this
 
     Osd.Wrapper {
         id: osd

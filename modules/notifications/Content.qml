@@ -14,7 +14,7 @@ Item {
     anchors.right: parent.right
 
     implicitWidth: NotifsConfig.sizes.width + root.padding * 2
-    implicitHeight: list.height + root.padding * 2
+    implicitHeight: list.implicitHeight + root.padding * 2
 
     ListView {
         id: list
@@ -31,13 +31,32 @@ Item {
         implicitHeight: {
             let height = (count - 1) * spacing;
             for (let i = 0; i < count; i++)
-                height += itemAtIndex(i).nonAnimHeight;
-            return Math.max(61, height);
+                height += itemAtIndex(i)?.nonAnimHeight ?? 0;
+
+            const screen = QsWindow.window?.screen;
+            const visibilities = Visibilities.screens[screen];
+            const panel = Visibilities.panels[screen];
+            if (visibilities && panel) {
+                if (visibilities.osd) {
+                    const h = panel.osd.y - BorderConfig.rounding * 2;
+                    if (height > h)
+                        height = h;
+                }
+
+                if (visibilities.session) {
+                    const h = panel.session.y - BorderConfig.rounding * 2;
+                    if (height > h)
+                        height = h;
+                }
+            }
+
+            return Math.max(61, Math.min(screen?.height - root.padding * 2 - BorderConfig.thickness * 2, height));
         }
 
         orientation: Qt.Vertical
         spacing: Appearance.spacing.smaller
-        interactive: false
+        cacheBuffer: QsWindow.window?.screen.height ?? 0
+        clip: true
 
         delegate: ClippingRectangle {
             id: wrapper
