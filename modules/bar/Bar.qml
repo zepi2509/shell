@@ -17,8 +17,6 @@ Item {
 
     function checkPopout(y: real): void {
         const spacing = Appearance.spacing.small;
-        const aw = activeWindow.child;
-        const awy = activeWindow.y + aw.y;
 
         const ty = tray.y;
         const th = tray.implicitHeight;
@@ -43,11 +41,7 @@ Item {
             }
         }
 
-        if (y >= awy && y <= awy + aw.implicitHeight) {
-            popouts.currentName = "activewindow";
-            popouts.currentCenter = Qt.binding(() => activeWindow.y + aw.y + aw.implicitHeight / 2);
-            popouts.hasCurrent = true;
-        } else if (y > ty && y < ty + th) {
+        if (y > ty && y < ty + th) {
             const index = Math.floor(((y - ty) / th) * trayItems.count);
             const item = trayItems.itemAt(index);
 
@@ -72,7 +66,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
 
-        implicitWidth: Math.max(osIcon.implicitWidth, workspaces.implicitWidth, activeWindow.implicitWidth, tray.implicitWidth, clock.implicitWidth, statusIcons.implicitWidth, power.implicitWidth)
+        implicitWidth: Math.max(osIcon.implicitWidth, workspaces.implicitWidth, clock.implicitWidth, tray.implicitWidth, statusIcons.implicitWidth, power.implicitWidth)
 
         OsIcon {
             id: osIcon
@@ -116,32 +110,23 @@ Item {
             }
         }
 
-        ActiveWindow {
-            id: activeWindow
+        Clock {
+            id: clock
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: workspaces.bottom
             anchors.bottom: tray.top
-            anchors.margins: Appearance.spacing.large
-
-            monitor: Brightness.getMonitorForScreen(root.screen)
+            anchors.bottomMargin: Appearance.spacing.normal
         }
 
         Tray {
             id: tray
 
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: clock.top
+            anchors.bottom: statusIcons.top
             anchors.bottomMargin: Appearance.spacing.larger
         }
 
-        Clock {
-            id: clock
-
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: statusIcons.top
-            anchors.bottomMargin: Appearance.spacing.normal
-        }
 
         StyledRect {
             id: statusIcons
