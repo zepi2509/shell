@@ -10,14 +10,7 @@ Column {
 
     spacing: Appearance.spacing.small
 
-    MaterialIcon {
-        id: icon
-
-        text: "calendar_month"
-        color: root.colour
-
-        anchors.horizontalCenter: parent.horizontalCenter
-    }
+    anchors.centerIn: parent
 
     StyledText {
         id: text
