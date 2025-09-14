@@ -12,10 +12,11 @@ StyledRect {
         Text
     }
 
-    property alias icon: label.text
+    property alias text: label.text
     property bool checked
     property bool toggle
-    property real padding: type == IconButton.Text ? Appearance.padding.small / 2 : Appearance.padding.smaller
+    property real horizontalPadding: Appearance.padding.normal
+    property real verticalPadding: Appearance.padding.smaller
     property alias font: label.font
     property int type: IconButton.Filled
 
@@ -36,8 +37,8 @@ StyledRect {
     radius: internalChecked ? Appearance.rounding.small : implicitHeight / 2
     color: type == IconButton.Text ? "transparent" : internalChecked ? activeColour : inactiveColour
 
-    implicitWidth: implicitHeight
-    implicitHeight: label.implicitHeight + padding * 2
+    implicitWidth: label.implicitWidth + horizontalPadding * 2
+    implicitHeight: label.implicitHeight + verticalPadding * 2
 
     StateLayer {
         id: stateLayer
@@ -51,16 +52,11 @@ StyledRect {
         }
     }
 
-    MaterialIcon {
+    StyledText {
         id: label
 
         anchors.centerIn: parent
         color: root.internalChecked ? root.activeOnColour : root.inactiveOnColour
-        fill: root.internalChecked ? 1 : 0
-
-        Behavior on fill {
-            Anim {}
-        }
     }
 
     Behavior on radius {
