@@ -2,7 +2,6 @@
 
 #include "service.hpp"
 #include <algorithm>
-#include <cstdint>
 #include <pipewire/pipewire.h>
 #include <qdebug.h>
 #include <qmutex.h>
@@ -36,20 +35,20 @@ PipeWireWorker::PipeWireWorker(std::stop_token token, AudioCollector* collector)
     auto props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio", PW_KEY_MEDIA_CATEGORY, "Capture", PW_KEY_MEDIA_ROLE, "Music", nullptr);
     pw_properties_set(props, PW_KEY_STREAM_CAPTURE_SINK, "true");
-    pw_properties_setf(props, PW_KEY_NODE_LATENCY, "%u/%u", nextPowerOf2(512 * collector->sampleRate() / 48000),
-        collector->sampleRate());
+    pw_properties_setf(
+        props, PW_KEY_NODE_LATENCY, "%u/%u", nextPowerOf2(512 * ac::SAMPLE_RATE / 48000), ac::SAMPLE_RATE);
     pw_properties_set(props, PW_KEY_NODE_PASSIVE, "true");
     pw_properties_set(props, PW_KEY_NODE_VIRTUAL, "true");
     pw_properties_set(props, PW_KEY_STREAM_DONT_REMIX, "false");
     pw_properties_set(props, "channelmix.upmix", "true");
 
-    std::vector<uint8_t> buffer(collector->chunkSize());
+    std::vector<uint8_t> buffer(ac::CHUNK_SIZE);
     spa_pod_builder b;
-    spa_pod_builder_init(&b, buffer.data(), static_cast<uint32_t>(buffer.size()));
+    spa_pod_builder_init(&b, buffer.data(), static_cast<quint32>(buffer.size()));
 
     spa_audio_info_raw info{};
     info.format = SPA_AUDIO_FORMAT_S16;
-    info.rate = collector->sampleRate();
+    info.rate = ac::SAMPLE_RATE;
     info.channels = 1;
 
     const spa_pod* params[1];
@@ -67,7 +66,7 @@ PipeWireWorker::PipeWireWorker(std::stop_token token, AudioCollector* collector)
 
     m_stream = pw_stream_new_simple(pw_main_loop_get_loop(m_loop), "caelestia-shell", props, &events, this);
 
-    const int success = pw_stream_connect(m_stream, PW_DIRECTION_INPUT, collector->nodeId(),
+    const int success = pw_stream_connect(m_stream, PW_DIRECTION_INPUT, PW_ID_ANY,
         static_cast<pw_stream_flags>(
             PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_RT_PROCESS),
         params, 1);
@@ -136,12 +135,12 @@ void PipeWireWorker::processStream() {
     }
 
     const spa_buffer* buf = buffer->buffer;
-    const int16_t* samples = reinterpret_cast<const int16_t*>(buf->datas[0].data);
+    const qint16* samples = reinterpret_cast<const qint16*>(buf->datas[0].data);
     if (samples == nullptr) {
         return;
     }
 
-    const uint32_t count = buf->datas[0].chunk->size / 2;
+    const quint32 count = buf->datas[0].chunk->size / 2;
     m_collector->loadChunk(samples, count);
 
     pw_stream_queue_buffer(m_stream, buffer);
@@ -163,49 +162,9 @@ unsigned int PipeWireWorker::nextPowerOf2(unsigned int n) {
     return n;
 }
 
-AudioCollector::AudioCollector(QObject* parent)
-    : Service(parent)
-    , m_sampleRate(44100)
-    , m_chunkSize(512)
-    , m_nodeId(PW_ID_ANY)
-    , m_buffer1(m_chunkSize)
-    , m_buffer2(m_chunkSize)
-    , m_readBuffer(&m_buffer1)
-    , m_writeBuffer(&m_buffer2) {}
-
-AudioCollector::~AudioCollector() {
-    stop();
-}
-
-uint32_t AudioCollector::sampleRate() const {
-    return m_sampleRate;
-}
-
-uint32_t AudioCollector::chunkSize() const {
-    return m_chunkSize;
-}
-
-uint32_t AudioCollector::nodeId() {
-    QMutexLocker locker(&m_nodeIdMutex);
-    return m_nodeId;
-}
-
-void AudioCollector::setNodeId(uint32_t nodeId) {
-    {
-        QMutexLocker locker(&m_nodeIdMutex);
-
-        if (nodeId == m_nodeId) {
-            return;
-        }
-
-        m_nodeId = nodeId;
-    }
-    emit nodeIdChanged();
-
-    if (m_thread.joinable()) {
-        stop();
-        start();
-    }
+AudioCollector& AudioCollector::instance() {
+    static AudioCollector instance;
+    return instance;
 }
 
 void AudioCollector::clearBuffer() {
@@ -216,13 +175,13 @@ void AudioCollector::clearBuffer() {
     m_writeBuffer.store(oldRead, std::memory_order_release);
 }
 
-void AudioCollector::loadChunk(const int16_t* samples, uint32_t count) {
-    if (count > m_chunkSize) {
-        count = m_chunkSize;
+void AudioCollector::loadChunk(const qint16* samples, quint32 count) {
+    if (count > ac::CHUNK_SIZE) {
+        count = ac::CHUNK_SIZE;
     }
 
     auto* writeBuffer = m_writeBuffer.load(std::memory_order_relaxed);
-    std::transform(samples, samples + count, writeBuffer->begin(), [](int16_t sample) {
+    std::transform(samples, samples + count, writeBuffer->begin(), [](qint16 sample) {
         return sample / 32768.0f;
     });
 
@@ -230,9 +189,9 @@ void AudioCollector::loadChunk(const int16_t* samples, uint32_t count) {
     m_writeBuffer.store(oldRead, std::memory_order_release);
 }
 
-uint32_t AudioCollector::readChunk(float* out, uint32_t count) {
-    if (count == 0 || count > m_chunkSize) {
-        count = m_chunkSize;
+quint32 AudioCollector::readChunk(float* out, quint32 count) {
+    if (count == 0 || count > ac::CHUNK_SIZE) {
+        count = ac::CHUNK_SIZE;
     }
 
     auto* readBuffer = m_readBuffer.load(std::memory_order_acquire);
@@ -241,9 +200,9 @@ uint32_t AudioCollector::readChunk(float* out, uint32_t count) {
     return count;
 }
 
-uint32_t AudioCollector::readChunk(double* out, uint32_t count) {
-    if (count == 0 || count > m_chunkSize) {
-        count = m_chunkSize;
+quint32 AudioCollector::readChunk(double* out, quint32 count) {
+    if (count == 0 || count > ac::CHUNK_SIZE) {
+        count = ac::CHUNK_SIZE;
     }
 
     auto* readBuffer = m_readBuffer.load(std::memory_order_acquire);
@@ -252,6 +211,17 @@ uint32_t AudioCollector::readChunk(double* out, uint32_t count) {
     });
 
     return count;
+}
+
+AudioCollector::AudioCollector(QObject* parent)
+    : Service(parent)
+    , m_buffer1(ac::CHUNK_SIZE)
+    , m_buffer2(ac::CHUNK_SIZE)
+    , m_readBuffer(&m_buffer1)
+    , m_writeBuffer(&m_buffer2) {}
+
+AudioCollector::~AudioCollector() {
+    stop();
 }
 
 void AudioCollector::start() {

@@ -8,6 +8,7 @@ Scope {
     id: root
 
     property bool launcherInterrupted
+    readonly property bool hasFullscreen: Hypr.focusedWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen === 2) ?? false
 
     CustomShortcut {
         name: "controlCenter"
@@ -19,8 +20,21 @@ Scope {
         name: "showall"
         description: "Toggle launcher, dashboard and osd"
         onPressed: {
+            if (root.hasFullscreen)
+                return;
             const v = Visibilities.getForActive();
             v.launcher = v.dashboard = v.osd = v.utilities = !(v.launcher || v.dashboard || v.osd || v.utilities);
+        }
+    }
+
+    CustomShortcut {
+        name: "dashboard"
+        description: "Toggle dashboard"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            const visibilities = Visibilities.getForActive();
+            visibilities.dashboard = !visibilities.dashboard;
         }
     }
 
@@ -28,6 +42,8 @@ Scope {
         name: "session"
         description: "Toggle session menu"
         onPressed: {
+            if (root.hasFullscreen)
+                return;
             const visibilities = Visibilities.getForActive();
             visibilities.session = !visibilities.session;
         }
@@ -38,7 +54,7 @@ Scope {
         description: "Toggle launcher"
         onPressed: root.launcherInterrupted = false
         onReleased: {
-            if (!root.launcherInterrupted) {
+            if (!root.launcherInterrupted && !root.hasFullscreen) {
                 const visibilities = Visibilities.getForActive();
                 visibilities.launcher = !visibilities.launcher;
             }
@@ -57,6 +73,8 @@ Scope {
 
         function toggle(drawer: string): void {
             if (list().split("\n").includes(drawer)) {
+                if (root.hasFullscreen && ["launcher", "session", "dashboard"].includes(drawer))
+                    return;
                 const visibilities = Visibilities.getForActive();
                 visibilities[drawer] = !visibilities[drawer];
             } else {

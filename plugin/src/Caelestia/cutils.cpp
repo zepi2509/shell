@@ -47,7 +47,7 @@ void CUtils::saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, Q
 
     auto scaledRect = rect;
     const qreal scale = target->window()->devicePixelRatio();
-    if (rect.isValid() && scale != 1.0) {
+    if (rect.isValid() && !qFuzzyCompare(scale + 1.0, 2.0)) {
         scaledRect =
             QRectF(rect.left() * scale, rect.top() * scale, rect.width() * scale, rect.height() * scale).toRect();
     }
@@ -87,10 +87,6 @@ void CUtils::saveItem(QQuickItem* target, const QUrl& path, const QRect& rect, Q
         });
 }
 
-bool CUtils::copyFile(const QUrl& source, const QUrl& target) const {
-    return this->copyFile(source, target, true);
-}
-
 bool CUtils::copyFile(const QUrl& source, const QUrl& target, bool overwrite) const {
     if (!source.isLocalFile()) {
         qWarning() << "CUtils::copyFile: source" << source << "is not a local file";
@@ -106,6 +102,15 @@ bool CUtils::copyFile(const QUrl& source, const QUrl& target, bool overwrite) co
     }
 
     return QFile::copy(source.toLocalFile(), target.toLocalFile());
+}
+
+bool CUtils::deleteFile(const QUrl& path) const {
+    if (!path.isLocalFile()) {
+        qWarning() << "CUtils::deleteFile: path" << path << "is not a local file";
+        return false;
+    }
+
+    return QFile::remove(path.toLocalFile());
 }
 
 void CUtils::getDominantColour(QQuickItem* item, QJSValue callback) {
@@ -191,7 +196,7 @@ QColor CUtils::findDominantColour(const QImage& image, int rescaleSize) const {
         img = img.convertToFormat(QImage::Format_ARGB32);
     }
 
-    std::unordered_map<uint32_t, int> colours;
+    std::unordered_map<quint32, int> colours;
     const uchar* data = img.bits();
     const int width = img.width();
     const int height = img.height();
@@ -206,16 +211,16 @@ QColor CUtils::findDominantColour(const QImage& image, int rescaleSize) const {
                 continue;
             }
 
-            uint32_t r = static_cast<uint32_t>(pixel[0] & 0xF8);
-            uint32_t g = static_cast<uint32_t>(pixel[1] & 0xF8);
-            uint32_t b = static_cast<uint32_t>(pixel[2] & 0xF8);
+            quint32 r = static_cast<quint32>(pixel[0] & 0xF8);
+            quint32 g = static_cast<quint32>(pixel[1] & 0xF8);
+            quint32 b = static_cast<quint32>(pixel[2] & 0xF8);
 
-            uint32_t colour = (r << 16) | (g << 8) | b;
+            quint32 colour = (r << 16) | (g << 8) | b;
             ++colours[colour];
         }
     }
 
-    uint32_t dominantColour = 0;
+    quint32 dominantColour = 0;
     int maxCount = 0;
     for (const auto& [colour, count] : colours) {
         if (count > maxCount) {

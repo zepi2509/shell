@@ -1,22 +1,42 @@
+pragma ComponentBehavior: Bound
+
 import qs.components
 import qs.config
+import Quickshell
 import QtQuick
 
 Item {
     id: root
 
-    required property bool visibility
+    required property var visibilities
+    required property Item sidebar
+
+    readonly property PersistentProperties props: PersistentProperties {
+        property bool recordingListExpanded: false
+        property string recordingConfirmDelete
+        property string recordingMode
+
+        reloadableId: "utilities"
+    }
+    readonly property bool shouldBeActive: visibilities.sidebar || (visibilities.utilities && Config.utilities.enabled)
 
     visible: height > 0
     implicitHeight: 0
-    implicitWidth: content.implicitWidth
+    implicitWidth: Math.max(sidebar.width, Config.utilities.sizes.width)
+
+    onStateChanged: {
+        if (state === "visible" && timer.running) {
+            timer.triggered();
+            timer.stop();
+        }
+    }
 
     states: State {
         name: "visible"
-        when: root.visibility
+        when: root.shouldBeActive
 
         PropertyChanges {
-            root.implicitHeight: content.implicitHeight
+            root.implicitHeight: content.implicitHeight + Appearance.padding.large * 2
         }
     }
 
@@ -44,7 +64,31 @@ Item {
         }
     ]
 
-    Content {
+    Timer {
+        id: timer
+
+        running: true
+        interval: Appearance.anim.durations.extraLarge
+        onTriggered: {
+            content.active = Qt.binding(() => root.shouldBeActive || root.visible);
+            content.visible = true;
+        }
+    }
+
+    Loader {
         id: content
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.margins: Appearance.padding.large
+
+        visible: false
+        active: true
+
+        sourceComponent: Content {
+            implicitWidth: Config.utilities.sizes.width - Appearance.padding.large * 2
+            props: root.props
+            visibilities: root.visibilities
+        }
     }
 }

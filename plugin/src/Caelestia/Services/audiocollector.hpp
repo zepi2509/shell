@@ -2,7 +2,6 @@
 
 #include "service.hpp"
 #include <atomic>
-#include <cstdint>
 #include <pipewire/pipewire.h>
 #include <qmutex.h>
 #include <qqmlintegration.h>
@@ -12,6 +11,13 @@
 #include <vector>
 
 namespace caelestia {
+
+namespace ac {
+
+constexpr quint32 SAMPLE_RATE = 44100;
+constexpr quint32 CHUNK_SIZE = 512;
+
+} // namespace ac
 
 class AudioCollector;
 
@@ -30,54 +36,37 @@ private:
     std::stop_token m_token;
     AudioCollector* m_collector;
 
-    void cleanup();
-
     static void handleTimeout(void* data, uint64_t expirations);
     void streamStateChanged(pw_stream_state state);
     void processStream();
-    void processSamples(const int16_t* samples, uint32_t count);
 
     [[nodiscard]] unsigned int nextPowerOf2(unsigned int n);
 };
 
 class AudioCollector : public Service {
     Q_OBJECT
-    QML_ELEMENT
-
-    Q_PROPERTY(uint32_t nodeId READ nodeId WRITE setNodeId NOTIFY nodeIdChanged)
 
 public:
-    explicit AudioCollector(QObject* parent = nullptr);
-    ~AudioCollector();
+    AudioCollector(const AudioCollector&) = delete;
+    AudioCollector& operator=(const AudioCollector&) = delete;
 
-    [[nodiscard]] uint32_t sampleRate() const;
-    [[nodiscard]] uint32_t chunkSize() const;
-
-    [[nodiscard]] uint32_t nodeId();
-    void setNodeId(uint32_t nodeId);
+    static AudioCollector& instance();
 
     void clearBuffer();
-    void loadChunk(const int16_t* samples, uint32_t count);
-    uint32_t readChunk(float* out, uint32_t count = 0);
-    uint32_t readChunk(double* out, uint32_t count = 0);
-
-signals:
-    void sampleRateChanged();
-    void chunkSizeChanged();
-    void nodeIdChanged();
+    void loadChunk(const qint16* samples, quint32 count);
+    quint32 readChunk(float* out, quint32 count = 0);
+    quint32 readChunk(double* out, quint32 count = 0);
 
 private:
-    const uint32_t m_sampleRate;
-    const uint32_t m_chunkSize;
-    uint32_t m_nodeId;
-    QMutex m_nodeIdMutex;
+    explicit AudioCollector(QObject* parent = nullptr);
+    ~AudioCollector();
 
     std::jthread m_thread;
     std::vector<float> m_buffer1;
     std::vector<float> m_buffer2;
     std::atomic<std::vector<float>*> m_readBuffer;
     std::atomic<std::vector<float>*> m_writeBuffer;
-    uint32_t m_sampleCount;
+    quint32 m_sampleCount;
 
     void reload();
     void start() override;

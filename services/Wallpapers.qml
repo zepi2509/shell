@@ -2,7 +2,7 @@ pragma Singleton
 
 import qs.config
 import qs.utils
-import Caelestia
+import Caelestia.Models
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -39,6 +39,7 @@ Searcher {
     }
 
     list: wallpapers.entries
+    key: "relativePath"
     useFuzzy: Config.launcher.useFuzzy.wallpapers
     extraOpts: useFuzzy ? ({}) : ({
             forward: false

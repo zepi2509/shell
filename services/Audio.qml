@@ -1,7 +1,7 @@
 pragma Singleton
 
 import qs.config
-import Caelestia
+import Caelestia.Services
 import Quickshell
 import Quickshell.Services.Pipewire
 
@@ -78,20 +78,13 @@ Singleton {
         objects: [...root.sinks, ...root.sources]
     }
 
-    AudioCollector {
-        id: collector
-    }
-
     CavaProvider {
         id: cava
 
-        collector: collector
         bars: Config.services.visualiserBars
     }
 
     BeatTracker {
         id: beatTracker
-
-        collector: collector
     }
 }

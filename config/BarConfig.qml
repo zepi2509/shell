@@ -47,10 +47,6 @@ JsonObject {
         {
             id: "power",
             enabled: true
-        },
-        {
-            id: "idleInhibitor",
-            enabled: false
         }
     ]
 
@@ -77,6 +73,7 @@ JsonObject {
     component Tray: JsonObject {
         property bool background: false
         property bool recolour: false
+        property list<var> iconSubs: []
     }
 
     component Status: JsonObject {

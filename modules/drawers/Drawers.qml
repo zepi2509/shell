@@ -27,6 +27,14 @@ Variants {
         StyledWindow {
             id: win
 
+            readonly property bool hasFullscreen: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen === 2) ?? false
+
+            onHasFullscreenChanged: {
+                visibilities.launcher = false;
+                visibilities.session = false;
+                visibilities.dashboard = false;
+            }
+
             screen: scope.modelData
             name: "drawers"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
@@ -64,11 +72,12 @@ Variants {
             }
 
             HyprlandFocusGrab {
-                active: (visibilities.launcher && Config.launcher.enabled) || (visibilities.session && Config.session.enabled)
+                active: (visibilities.launcher && Config.launcher.enabled) || (visibilities.session && Config.session.enabled) || (visibilities.sidebar && Config.sidebar.enabled)
                 windows: [win]
                 onCleared: {
                     visibilities.launcher = false;
                     visibilities.session = false;
+                    visibilities.sidebar = false;
                 }
             }
 
@@ -111,6 +120,7 @@ Variants {
                 property bool launcher
                 property bool dashboard
                 property bool utilities
+                property bool sidebar
 
                 Component.onCompleted: Visibilities.load(scope.modelData, this)
             }
