@@ -40,7 +40,21 @@ Variants {
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
             WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
-            mask: Region {
+            mask: {
+                if (focusGrab.active || panels.popouts.isDetached)
+                    return inputMask;
+                const mon = Hypr.monitorFor(screen);
+                return mon?.lastIpcObject.specialWorkspace.name || mon?.activeWorkspace?.lastIpcObject.windows > 0 ? inputMask : null;
+            }
+
+            anchors.top: true
+            anchors.bottom: true
+            anchors.left: true
+            anchors.right: true
+
+            Region {
+                id: inputMask
+
                 x: bar.implicitWidth
                 y: Config.border.thickness
                 width: win.width - bar.implicitWidth - Config.border.thickness
@@ -49,11 +63,6 @@ Variants {
 
                 regions: regions.instances
             }
-
-            anchors.top: true
-            anchors.bottom: true
-            anchors.left: true
-            anchors.right: true
 
             Variants {
                 id: regions
@@ -72,12 +81,16 @@ Variants {
             }
 
             HyprlandFocusGrab {
-                active: (visibilities.launcher && Config.launcher.enabled) || (visibilities.session && Config.session.enabled) || (visibilities.sidebar && Config.sidebar.enabled)
+                id: focusGrab
+
+                active: (visibilities.launcher && Config.launcher.enabled) || (visibilities.session && Config.session.enabled) || (visibilities.sidebar && Config.sidebar.enabled) || (!Config.dashboard.showOnHover && visibilities.dashboard && Config.dashboard.enabled) || (panels.popouts.currentName.startsWith("traymenu") && panels.popouts.current?.depth > 1)
                 windows: [win]
                 onCleared: {
                     visibilities.launcher = false;
                     visibilities.session = false;
                     visibilities.sidebar = false;
+                    visibilities.dashboard = false;
+                    panels.popouts.hasCurrent = false;
                 }
             }
 
